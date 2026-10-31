@@ -521,6 +521,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .contact-list { display: grid; gap: 1.25rem; margin: 0; }
 .contact-list dd { margin: 0.35rem 0 0; }
 .contact-list a { font-weight: 400; }
+.contact-list address { font-style: normal; }
 .contact-form { display: grid; gap: 1.25rem; align-content: start; }
 .field { display: grid; gap: 0.5rem; }
 .field input, .field textarea, .field select {
