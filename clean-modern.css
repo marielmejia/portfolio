@@ -324,7 +324,6 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.78125rem
 .pl-slot { position: relative; height: 12px; background: var(--line); overflow: hidden; }
 .pl-slot::after { content: ""; position: absolute; inset: 0; background: var(--ink); transform-origin: 0 50%; transform: scaleX(var(--fill, 0)); }
 .pl-stage { grid-column: 3; display: none; } /* phone only: abbreviated stage names over each bar */
-.pl-note { margin: 0; padding-top: 1.25rem; font-size: 1rem; color: var(--muted); }
 
 
 /* ---------- Tabs ---------- */
