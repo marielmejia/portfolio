@@ -70,7 +70,6 @@
   <section id="pipeline-section" aria-labelledby="pipeline-title">
     <div class="section-head">
       <h2 id="pipeline-title" class="label">Pipeline</h2>
-      <span class="label" id="pl-count"></span>
     </div>
     <p class="h2" style="max-width: 22em; margin-bottom: 2.5rem;">We are advancing a portfolio of internally invented, wholly owned NLRP3 inhibitor product candidates.</p>
     <div class="pipeline" role="group" aria-label="Development pipeline" id="pipeline"></div>
@@ -79,7 +78,6 @@
   <section id="team" aria-labelledby="team-title">
     <div class="section-head">
       <h2 id="team-title" class="label">Team</h2>
-      <span class="label" id="team-count"></span>
     </div>
     <div class="team-head">
       <p class="h2">A veteran team bringing together immunology, protein engineering and drug development.</p>
@@ -91,7 +89,6 @@
   <section id="news" aria-labelledby="news-title">
     <div class="section-head">
       <h2 id="news-title" class="label">News</h2>
-      <span class="label" id="news-count"></span>
     </div>
     <p class="h2" style="margin-bottom: 2.5rem;">Press Releases</p>
     <div class="news" id="news-list"></div>
@@ -245,7 +242,6 @@
       };
     });
   });
-  document.getElementById('pl-count').textContent = programs.length + ' Programs';
 
   // Bars start empty only when the fill can animate, so the table still reads without it
   if ('IntersectionObserver' in window && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
@@ -304,7 +300,6 @@
     const i = groups.indexOf(g);
     tabs.querySelectorAll('.tab').forEach((t, j) => { t.setAttribute('aria-selected', j === i); t.tabIndex = j === i ? 0 : -1; });
     grid.setAttribute('aria-labelledby', 'tab-' + i);
-    document.getElementById('team-count').textContent = team[g].length + ' People';
     grid.innerHTML = team[g].map((p, j) =>
       `<button class="person" type="button" data-i="${j}">` +
       `<span class="person-photo" aria-hidden="true">${photo(p)}</span>` +
@@ -409,7 +404,6 @@
     `<time class="label" datetime="${n.date}">${longDate(n.date)}</time>` +
     `<span class="news-title">${n.title}</span>` +
     `<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></a>`).join('');
-  document.getElementById('news-count').textContent = news.length + ' Press Releases';
 
 
   // Contact form: a demo, so it checks the fields and confirms here without sending anything
