@@ -28,11 +28,41 @@
     <p class="pl-note">Source: rezera.com/pipeline</p>
   </section>
 
+  <section id="team" aria-labelledby="team-title">
+    <div class="section-head">
+      <h2 id="team-title" class="label">Team</h2>
+      <span class="label" id="team-count"></span>
+    </div>
+    <div class="team-head">
+      <p class="h2">A veteran team bringing together immunology, protein engineering and drug development.</p>
+      <div class="tabs" role="tablist" aria-label="Team groups" id="team-tabs"></div>
+    </div>
+    <div class="team-grid" role="tabpanel" id="team-grid"></div>
+    <p class="pl-note">Source: santaana.bio</p>
+  </section>
+
   <footer>
     <span class="label">© 2026 Mariel Mejia</span>
     <a class="to-top" href="index.html">All Work<svg class="ar u" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 11L8 5L14 11"/></svg></a>
   </footer>
 </div>
+
+<dialog class="bio" id="bio" aria-labelledby="bio-name">
+  <div class="bio-inner">
+    <div class="bio-top">
+      <span class="label" id="bio-count"></span>
+      <button class="bio-close" type="button">Close<svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path d="M8 1V15"/></svg></button>
+    </div>
+    <span class="bio-photo" id="bio-photo"></span>
+    <h2 id="bio-name"></h2>
+    <p class="bio-role" id="bio-role"></p>
+    <p class="bio-text" id="bio-text"></p>
+    <div class="bio-nav">
+      <button type="button" id="bio-prev"><svg class="ar l" viewBox="0 0 16 16" aria-hidden="true"><path d="M11 2L5 8L11 14"/></svg>Previous</button>
+      <button type="button" id="bio-next">Next<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></button>
+    </div>
+  </div>
+</dialog>
 
 <script>
   // Five stages; each program's progress is counted in slots (fractions fill part of a slot)
@@ -105,4 +135,111 @@
     }), { threshold: 0.3 });
     fillObserver.observe(table);
   }
+
+
+  // Team: one tab per group; add a photo path to show a picture instead of initials
+  const team = {
+    'Leadership': [
+      { name: 'Peter Emtage, Ph.D.', role: 'Chief Executive Officer', bio: 'Peter leads Santa Ana Bio and is also a Venture Partner at Versant Ventures. Peter brings more than 25 years of drug development across autoimmunity, inflammation, oncology and infectious disease, including roles as Global Head of Cell Therapy Research at Kite Pharma and Chief Scientific Officer at Cell Design Labs. Peter holds a Ph.D. from McMaster University.' },
+      { name: 'Newman Yeilding, M.D.', role: 'Chief Medical Officer', bio: 'Newman has 30 years of experience bringing therapies for autoimmune and inflammatory diseases into the clinic. Over 19 years at Janssen, Newman led a global organization and guided STELARA® from early development to market leadership, and most recently advised Protagonist Therapeutics. Newman earned an M.D. at the University of Alabama at Birmingham.' },
+      { name: 'Neil Abdollahian, M.S., M.B.A.', role: 'Chief Business Officer', bio: 'Neil brings 25 years in corporate strategy and business development, from licensing and M&A to raising capital. Neil was previously Chief Business Officer at Boundless Bio and at Cidara Therapeutics, and holds an M.B.A. from Pepperdine University.' },
+      { name: 'Yun Bai, Ph.D.', role: 'Executive Vice President, CMC', bio: 'Yun leads CMC, including development, manufacturing and CDMO oversight, drawing on more than 23 years in biologics. Before Santa Ana Bio, Yun was Vice President and Head of CMC and Global Supply Chain at 89bio, after roles at Eli Lilly, Ambrx and Mapp Biopharmaceutical. Yun holds a Ph.D. in Chemical Engineering from Iowa State University.' },
+      { name: 'Zack McNealy, M.B.A.', role: 'Chief Financial Officer', bio: 'Zack has more than 15 years of financial leadership in biotech, including CFO roles at Ventus Therapeutics, Chinook Therapeutics and Inception Sciences Canada. Earlier roles include Versant Ventures, Biotie Therapies and Johnson & Johnson. Zack holds an M.B.A. from the Wharton School.' }
+    ],
+    'Board of Directors': [
+      { name: 'Michael W. Bonney', role: 'Board Chair', bio: 'Mike has more than 30 years in biotech and pharma. As CEO of Cubist Pharmaceuticals from 2003 to 2014, Mike grew the company into a leading antibiotics business that Merck acquired in 2015. Mike also chairs Autolus Therapeutics and sits on the board of Alnylam Pharmaceuticals.' },
+      { name: 'Jerel Davis, Ph.D.', role: 'Board Director', bio: 'Jerel is a Managing Director at Versant Ventures in Vancouver and has helped launch and back companies including Repare, Akero and Chinook since joining in 2011. Before Versant, Jerel was an Associate Principal at McKinsey & Company, advising healthcare companies.' },
+      { name: 'Brendan Bulik-Sullivan, Ph.D.', role: 'Board Director', bio: 'Brendan is a general partner at GV focused on life sciences. Brendan’s background is in statistics and machine learning for genetics, with research at Gritstone Oncology and the Broad Institute, and a Ph.D. in statistical genetics from Vrije Universiteit Amsterdam.' },
+      { name: 'Shinichiro Fuse, Ph.D.', role: 'Board Director', bio: 'Shin is a Partner and Managing Director at TPG Life Sciences Innovation, co-leading its venture investments. Shin was previously a Managing Director at MPM Capital and Director of Business Development at bluebird bio.' },
+      { name: 'Christine Borowski, Ph.D.', role: 'Board Director', bio: 'Christine is a Principal at Access Biotechnology. Before investing, Christine was Chief Editor of Nature Medicine, and holds a Ph.D. in Immunology from Harvard University.' },
+      { name: 'Joshua Kennedy-Smith, Ph.D.', role: 'Board Observer', bio: 'Josh is a partner and research analyst at RTW Investments, specializing in the chemistry of small and large molecules for immunology and inflammation. Josh was previously Principal Scientist at Schrödinger, began as a medicinal chemist at Roche and holds a Ph.D. in Chemistry from UC Berkeley.' },
+      { name: 'Mittie Doyle, M.D., FACR', role: 'Board Director', bio: 'Dr. Doyle is Chief Medical Officer of Aro Biotherapeutics, with more than 20 years in industry and academia. Earlier roles include Vice President and Global Therapeutic Area Head, Immunology at CSL Behring, and a board seat at DICE Therapeutics before its acquisition by Eli Lilly. Dr. Doyle earned an M.D. from Yale.' },
+      { name: 'Vineeta Agarwala, M.D., Ph.D.', role: 'Board Observer', bio: 'Vineeta is a General Partner at Andreessen Horowitz, leading investments for the a16z Bio + Health fund. Vineeta previously worked at McKinsey, the Broad Institute, Flatiron Health and GV, holds M.D. and Ph.D. degrees from Harvard Medical School and MIT, and sees patients at Stanford.' },
+      { name: 'Marcelo Bigal, M.D., Ph.D.', role: 'Board Director', bio: 'Marcelo is President and CEO of Ventus Therapeutics. As CMO and CSO at Teva Pharmaceuticals, Marcelo led the teams behind Ajovy for migraine and Austedo for Huntington’s disease, and has published more than 330 peer-reviewed papers in neurology.' },
+      { name: 'Peter Emtage, Ph.D.', role: 'Board Director, Founder and CEO', bio: 'Peter leads Santa Ana Bio and is also a Venture Partner at Versant Ventures. Peter brings more than 25 years of drug development across autoimmunity, inflammation, oncology and infectious disease, including roles at Kite Pharma and Cell Design Labs.' }
+    ],
+    'Scientific Founders': [
+      { name: 'Alexander Rudensky, Ph.D.', role: 'Scientific Founder', bio: 'Alexander chairs the Immunology Program at the Sloan Kettering Institute and is a Howard Hughes Medical Institute Investigator. A member of the National Academy of Sciences, Alexander has received the Crafoord Prize and the Vilcek Prize in Biomedical Science.' },
+      { name: 'Richard Flavell, Ph.D.', role: 'Scientific Founder', bio: 'Richard pioneered reverse genetics in the 1970s and co-discovered introns in eukaryotic genes. For decades Richard’s lab has studied innate and adaptive immunity, the inflammasome and the mechanisms of autoimmune disease.' },
+      { name: 'Graham Lord, M.D., Ph.D.', role: 'Scientific Founder', bio: 'Graham is Vice-President and Dean of the Faculty of Biology, Medicine and Health at the University of Manchester and a practicing transplant nephrologist. Graham’s research looks at how lymphocyte gene expression is regulated in mucosal and auto-inflammatory disease.' },
+      { name: 'Ansuman Satpathy, M.D., Ph.D.', role: 'Scientific Founder', bio: 'Ansu is a physician-scientist and Associate Professor of Pathology and Immunology at Stanford University, and founding director of the Stanford Center for Immunotherapy Design. Ansu’s lab combines immunology, genomics and computation to turn discoveries about the immune system into new therapies.' }
+    ]
+  };
+
+  const groups = Object.keys(team);
+  const tabs = document.getElementById('team-tabs');
+  const grid = document.getElementById('team-grid');
+  const motionOK = () => matchMedia('(prefers-reduced-motion: no-preference)').matches;
+  const initials = name => name.split(',')[0].split(' ').filter(w => /^[A-Z]/.test(w) && !w.endsWith('.')).map(w => w[0]).join('');
+  const photo = p => p.photo ? `<img src="${p.photo}" alt="">` : initials(p.name);
+  let group = groups[0];
+
+  tabs.innerHTML = groups.map((g, i) =>
+    `<button class="tab" type="button" role="tab" id="tab-${i}" aria-controls="team-grid" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}">${g}</button>`).join('');
+
+  function showGroup(g) {
+    group = g;
+    const i = groups.indexOf(g);
+    tabs.querySelectorAll('.tab').forEach((t, j) => { t.setAttribute('aria-selected', j === i); t.tabIndex = j === i ? 0 : -1; });
+    grid.setAttribute('aria-labelledby', 'tab-' + i);
+    document.getElementById('team-count').textContent = team[g].length + ' People';
+    grid.innerHTML = team[g].map((p, j) =>
+      `<button class="person" type="button" data-i="${j}">` +
+      `<span class="person-photo" aria-hidden="true">${photo(p)}</span>` +
+      `<span class="person-name">${p.name}</span><span class="person-role">${p.role}</span>` +
+      `<span class="person-more" aria-hidden="true">Read Bio<svg class="ar r" viewBox="0 0 16 16"><path d="M5 2L11 8L5 14"/></svg></span>` +
+      `</button>`).join('');
+    // Cards rise in one after another, like the homepage rows
+    if (motionOK()) grid.querySelectorAll('.person').forEach((card, j) =>
+      card.animate({ opacity: [0, 1], transform: ['translateY(40px)', 'none'] },
+        { duration: 700, delay: j * 60, easing: ease, fill: 'backwards' }));
+  }
+  tabs.addEventListener('click', e => { const t = e.target.closest('.tab'); if (t) showGroup(t.textContent); });
+  // Arrow keys move between tabs
+  tabs.addEventListener('keydown', e => {
+    const step = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+    if (!step) return;
+    const next = groups[(groups.indexOf(group) + step + groups.length) % groups.length];
+    showGroup(next);
+    tabs.querySelectorAll('.tab')[groups.indexOf(next)].focus();
+  });
+  showGroup(group);
+
+  // Bio overlay: slides in from the right over a dimmed page
+  const bio = document.getElementById('bio');
+  let current = 0;
+  function fillBio(i) {
+    const people = team[group];
+    current = (i + people.length) % people.length;
+    const p = people[current];
+    document.getElementById('bio-count').textContent = `${group}, ${current + 1} of ${people.length}`;
+    document.getElementById('bio-photo').innerHTML = photo(p);
+    document.getElementById('bio-name').textContent = p.name;
+    document.getElementById('bio-role').textContent = p.role;
+    document.getElementById('bio-text').textContent = p.bio;
+    bio.scrollTop = 0;
+  }
+  function openBio(i) {
+    fillBio(i);
+    bio.showModal();
+    if (!motionOK()) return;
+    bio.animate({ transform: ['translateX(100%)', 'none'] }, { duration: 600, easing: ease });
+    bio.animate({ opacity: [0, 1] }, { duration: 400, pseudoElement: '::backdrop' });
+  }
+  function closeBio() {
+    if (!bio.open || bio.classList.contains('closing')) return;
+    if (!motionOK()) { bio.close(); return; }
+    bio.classList.add('closing');
+    bio.animate({ opacity: [1, 0] }, { duration: 400, pseudoElement: '::backdrop', fill: 'forwards' });
+    bio.animate({ transform: ['none', 'translateX(100%)'] }, { duration: 450, easing: 'cubic-bezier(0.5, 0, 0.75, 0)', fill: 'forwards' })
+      .onfinish = () => { bio.close(); bio.getAnimations({ subtree: true }).forEach(a => a.cancel()); bio.classList.remove('closing'); };
+  }
+  grid.addEventListener('click', e => { const card = e.target.closest('.person'); if (card) openBio(+card.dataset.i); });
+  bio.querySelector('.bio-close').addEventListener('click', closeBio);
+  bio.addEventListener('cancel', e => { e.preventDefault(); closeBio(); }); // Escape slides it out too
+  bio.addEventListener('click', e => { if (e.target === bio) closeBio(); }); // a click on the dimmed page closes it
+  document.getElementById('bio-prev').addEventListener('click', () => fillBio(current - 1));
+  document.getElementById('bio-next').addEventListener('click', () => fillBio(current + 1));
+  // Focus goes back to the card that opened it
+  bio.addEventListener('close', () => { const card = grid.querySelector(`[data-i="${current}"]`); if (card) card.focus(); });
 </script>

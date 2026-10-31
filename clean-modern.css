@@ -52,6 +52,9 @@
      .next            "Next project" link bar at the end of a page
      .ar              line chevron icon (.r right, .l left, .u up)
      .pipeline        five-slot progress table (program, indication, stages)
+     .tabs            row of label-style tab buttons (red, active one black)
+     .team-grid       grid of .person cards (ink panel slides in on hover)
+     .bio             <dialog> side sheet with a person's full bio
      footer .to-top   "Back to Top" link
 
    NEEDS A LITTLE JAVASCRIPT
@@ -61,6 +64,7 @@
      .accordion.closing         add while the accordion animates shut
      .pipeline.will-fill        add "filled" when the table scrolls into view
      .pl-item.closing           add while a pipeline row animates shut
+     .bio                       open with showModal(); the script slides it in and out
    Without the script these still work; they just skip the animation.
    ========================================================================== */
 
@@ -315,6 +319,90 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.78125rem
 .pl-note { margin: 0; padding-top: 1.25rem; font-size: 1rem; color: var(--muted); }
 
 
+/* ---------- Tabs ---------- */
+/* Markup:
+   <div class="tabs" role="tablist"><button class="tab" role="tab" aria-selected="true">Leadership</button>…</div> */
+.tabs { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; }
+.tab {
+  appearance: none; background: none; border: 0; border-bottom: 1px solid transparent; padding: 0 0 0.35rem; cursor: pointer;
+  font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; color: var(--link); /* nav style */
+}
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--ink); }
+
+
+/* ---------- Team ---------- */
+/* Markup:
+   <div class="team-head"><p class="h2">Headline</p><div class="tabs">…</div></div>
+   <div class="team-grid" role="tabpanel">
+     <button class="person" type="button">
+       <span class="person-photo">PE</span>  (or an <img> inside it)
+       <span class="person-name">Name</span><span class="person-role">Title</span>
+       <span class="person-more">Read Bio <svg class="ar r">…</svg></span>
+     </button>
+   </div> */
+.team-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 1.5rem 2rem; margin-bottom: 2.5rem; }
+.team-head .h2 { max-width: 20em; }
+.team-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gutter); }
+.person {
+  appearance: none; border: 0; font: inherit; text-align: left; cursor: pointer;
+  position: relative; overflow: hidden; width: 100%;
+  display: grid; gap: 0.35rem; align-content: start;
+  background: var(--row-bg); color: var(--ink); padding: var(--gutter) var(--gutter) 1.75rem;
+}
+/* Hover (or keyboard focus): an ink panel slides in from the left and the text inverts */
+.person::before { content: ""; position: absolute; inset: 0; background: var(--ink); transform: scaleX(0); transform-origin: 0 50%; }
+.person:hover::before, .person:focus-visible::before { transform: none; }
+.person:hover, .person:focus-visible { color: var(--row-bg); }
+.person > * { position: relative; } /* above the sliding panel */
+.person:focus-visible { outline-offset: 3px; border-radius: 0; }
+.person-photo {
+  position: relative; display: grid; place-items: center; aspect-ratio: 1; overflow: hidden; margin-bottom: 1rem;
+  background: var(--line); color: var(--muted); font: 400 clamp(2rem, 4vw, 3.5rem)/1 var(--font); letter-spacing: -0.04em;
+}
+.person-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.person-name { font: 700 1.125rem/1.3 var(--font); }
+.person-role { font: 400 1rem/1.4 var(--font); color: var(--muted); }
+.person-more { margin-top: 0.75rem; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; color: var(--link); opacity: 0; translate: -0.75em 0; }
+.person:hover .person-more, .person:focus-visible .person-more { opacity: 1; translate: 0 0; }
+@media (hover: none) { .person-more { opacity: 1; translate: 0 0; } } /* touch screens have no hover to reveal it */
+
+
+/* ---------- Bio overlay ---------- */
+/* Markup:
+   <dialog class="bio"><div class="bio-inner">
+     <div class="bio-top"><span class="label">Group, 1 of 5</span><button class="bio-close">Close…</button></div>
+     <span class="bio-photo">…</span><h2>Name</h2><p class="bio-role">Title</p><p>Bio</p>
+     <div class="bio-nav"><button>Previous</button><button>Next</button></div>
+   </div></dialog> */
+.bio {
+  margin: 0 0 0 auto; padding: 0; border: 0;
+  width: min(640px, 100%); max-width: 100%; height: 100%; max-height: none;
+  background: var(--bg); color: var(--ink); overflow-y: auto; overscroll-behavior: contain;
+}
+.bio::backdrop { background: rgb(12 15 17 / 0.55); }
+html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the overlay */
+.bio-inner { min-height: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; padding: var(--gutter) 64px 2.5rem; }
+.bio-top, .bio-nav { align-self: stretch; }
+.bio-top { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding-bottom: 3rem; }
+.bio-close, .bio-nav button {
+  appearance: none; background: none; border: 0; padding: 0; cursor: pointer;
+  font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; color: var(--link); /* nav style */
+}
+.bio-close .acc-icon { margin-left: 0.5em; transform: rotate(45deg); } /* the plus, turned into an x */
+.bio-photo {
+  position: relative; display: grid; place-items: center; width: 160px; aspect-ratio: 1; overflow: hidden; margin-bottom: 1rem;
+  background: var(--line); color: var(--muted); font: 400 3rem/1 var(--font); letter-spacing: -0.04em;
+}
+.bio-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.bio-role { margin: 0; font-size: 1.25rem; line-height: 1.3; color: var(--muted); }
+.bio-text { margin: 1rem 0 2.5rem; max-width: 36em; letter-spacing: -0.03em; } /* paragraph style */
+.bio-nav { display: flex; justify-content: space-between; gap: 1rem; padding-top: 1.25rem; margin-top: auto; border-top: 1px solid var(--line); } /* sits at the bottom of the sheet */
+
+@media (max-width: 1024px) {
+  .team-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+
 /* ---------- Phones ---------- */
 @media (max-width: 760px) {
   .pipeline { padding: 0 20px 20px; }
@@ -322,6 +410,9 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.78125rem
   .pl-head { display: none; }
   .pl-head + .pl-item { border-top: 0; }
   .pl-stage { grid-column: auto; display: grid; margin-top: 0.75rem; }
+  .team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .person { padding: 12px 12px 1.25rem; }
+  .bio-inner { padding: var(--gutter) var(--gutter) 2rem; }
   .about, .detail-body { grid-template-columns: minmax(0, 1fr); }
   .gallery { grid-template-columns: minmax(0, 1fr); }
   .strip { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -337,8 +428,8 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.78125rem
 
   /* Chevrons nudge in their own direction on hover */
   .ar { transition: transform 0.25s ease; }
-  a:hover .ar.r, a:focus-visible .ar.r { transform: translateX(0.3em); }
-  a:hover .ar.l, a:focus-visible .ar.l { transform: translateX(-0.3em); }
+  a:hover .ar.r, a:focus-visible .ar.r, button:hover .ar.r, button:focus-visible .ar.r { transform: translateX(0.3em); }
+  a:hover .ar.l, a:focus-visible .ar.l, button:hover .ar.l, button:focus-visible .ar.l { transform: translateX(-0.3em); }
   a:hover .ar.u, a:focus-visible .ar.u { transform: translateY(-0.3em); }
 
   .acc-icon .v { transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1); }
@@ -361,4 +452,10 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.78125rem
 
   /* Pipeline: slots fill left to right, one after another, once the table is on screen */
   .pipeline.will-fill .pl-slot::after { transform: scaleX(0); transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--i, 0) * 0.35s + var(--row, 0) * 0.2s); }
-  .pipeline.will-fill.filled .pl-slot::after { transform: scaleX(var(--fill, 0)); }}
+  .pipeline.will-fill.filled .pl-slot::after { transform: scaleX(var(--fill, 0)); }
+
+  /* Team cards: the ink panel slides in, then "Read Bio" follows it */
+  .person { transition: color 0.3s ease; }
+  .person::before { transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .person-more { transition: opacity 0.3s ease 0.1s, translate 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s; }
+  .tab { transition: color 0.2s ease, border-color 0.2s ease; }}
