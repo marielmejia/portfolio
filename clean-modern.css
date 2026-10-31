@@ -426,10 +426,10 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
      <div class="split-body">…</div>
      <div class="split-media"><div class="split-img"><span class="label">Image placeholder</span></div></div>  (or an <img> in .split-img)
    </div>
-   Two white panels that fill the row. Content sits in the middle of its panel;
-   the image is inset at 80% of its panel, like the main video on project pages. */
-.split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gutter); }
-.split > * { background: var(--row-bg); display: grid; place-items: center; }
+   One white panel split into two columns with no visible seam. Content sits in the
+   middle of its column; the image is inset at 80% of its column, like the main video on project pages. */
+.split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: var(--row-bg); }
+.split > * { display: grid; place-items: center; }
 .split.flip .split-media { order: -1; }
 /* one left-aligned column, centered in the panel */
 .split-body { grid-template-columns: minmax(0, 30em); gap: 1.5rem; align-content: center; justify-content: center; justify-items: start; padding: 64px; }
