@@ -88,7 +88,7 @@
   --ink: #0c0f11;
   --muted: #7a7976;
   --line: #e7e7e7;
-  --nav-line: var(--line); /* pinned nav rules (white at 20% in dark mode, so they show over the hero video) */
+  --nav-line: var(--line); /* pinned nav rules (white at 12% in dark mode, so they show over the hero video) */
   --accent: var(--muted);
   --link: #FF3434;
   --acc-bg: rgb(231 231 231 / 0.5);
@@ -104,14 +104,14 @@
   :root:not([data-theme="light"]) {
     --bg: #131715; --paper: #1a1f1c; --ink: #e6ebe7; --muted: #9aa59f; --line: #333b37; --accent: var(--muted);
     --acc-bg: rgb(255 255 255 / 0.04); --acc-bg-hover: rgb(255 255 255 / 0.08); --row-bg: #1a1f1c;
-    --nav-line: rgb(255 255 255 / 0.2);
+    --nav-line: rgb(255 255 255 / 0.12);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #131715; --paper: #1a1f1c; --ink: #e6ebe7; --muted: #9aa59f; --line: #333b37; --accent: var(--muted);
   --acc-bg: rgb(255 255 255 / 0.04); --acc-bg-hover: rgb(255 255 255 / 0.08); --row-bg: #1a1f1c;
-  --nav-line: rgb(255 255 255 / 0.2);
+  --nav-line: rgb(255 255 255 / 0.12);
   color-scheme: dark;
 }
 
