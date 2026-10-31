@@ -11,6 +11,8 @@
   .wrap > section + section { margin-top: calc(180px - 4.5rem); }
   /* The hero, About and Science panels stack one gutter apart, like the page edges */
   #about-mp2, #science { margin-top: calc(var(--gutter) - 4.5rem); }
+  /* Section labels sit 12px above their headlines everywhere, as in the About, Science and Contact panels */
+  .wrap > section > .section-head { margin-bottom: 0.75rem; }
   /* Nav links glide down to their section */
   @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
   /* lands below the pinned bar (the script measures it) with a little room above the label */
