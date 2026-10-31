@@ -57,6 +57,8 @@
      .bio             <dialog> side sheet with a person's full bio
      .news            full-width press release rows (invert like .piece on hover)
      .split           two panels, centered content and an inset image (.flip mirrors them)
+     .hero            full-screen header with a background video
+     .button          solid red label-style button
      .cta             red label-style link with a chevron
      footer .to-top   "Back to Top" link
 
@@ -443,6 +445,43 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .split-img .label { color: var(--muted); }
 .split-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
+/* ---------- Hero (full-screen, video behind) ---------- */
+/* Markup (first thing inside .wrap):
+   <header class="hero">
+     <video class="hero-video" src="…" autoplay muted loop playsinline aria-hidden="true"></video>
+     <div class="topbar">…</div>
+     <div class="hero-body">
+       <h1>Headline</h1>
+       <div class="hero-side"><p>Paragraph</p><a class="button" href="…">Button</a></div>
+     </div>
+   </header>
+   Runs edge to edge (it cancels the page gutter) and fills the screen. Text is always white:
+   the video is darkened toward the bottom so it reads in light and dark mode. */
+.hero {
+  position: relative; isolation: isolate; overflow: hidden;
+  display: grid; grid-template-rows: auto 1fr; gap: 0;
+  min-height: 100vh; min-height: 100svh;
+  margin-top: calc(-1 * var(--gutter));
+  margin-inline: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px))) calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)));
+  padding: var(--gutter) max(var(--gutter), env(safe-area-inset-right, 0px)) 64px max(var(--gutter), env(safe-area-inset-left, 0px));
+  background: #000; color: #fff;
+}
+.hero-video { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
+.hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to bottom, rgb(0 0 0 / 0.65), rgb(0 0 0 / 0.55) 35%, rgb(0 0 0 / 0.85)); } /* dark enough that text inside the video recedes */
+.hero .label { color: inherit; }
+.hero-body { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 2rem var(--gutter); align-items: end; align-self: end; }
+.hero h1 { text-align: left; font-size: clamp(3rem, 7vw, 7rem); max-width: 11em; }
+.hero-side { display: grid; gap: 1.5rem; justify-items: start; }
+.hero-side p { margin: 0; max-width: 26em; letter-spacing: -0.03em; } /* paragraph style */
+
+.button {
+  display: inline-flex; align-items: center; padding: 1rem 1.4rem;
+  background: var(--link); color: #fff;
+  font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; /* label style */
+}
+.button:hover, .button:focus-visible { background: var(--ink); color: var(--row-bg); }
+.hero .button:hover, .hero .button:focus-visible { background: #fff; color: #0c0f11; } /* stays visible over the video */
+
 .cta { color: var(--link); font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; } /* nav style */
 
 .bio-nav { display: flex; justify-content: space-between; gap: 1rem; padding-top: 1.25rem; margin-top: auto; border-top: 1px solid var(--line); } /* sits at the bottom of the sheet */
@@ -467,6 +506,8 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   .split { grid-template-columns: minmax(0, 1fr); }
   .split-body { padding: 40px 20px; }
   .split .split-media { order: -1; } /* image first on both, so the stack reads the same */
+  .hero { padding-bottom: 40px; }
+  .hero-body { grid-template-columns: minmax(0, 1fr); }
   .about, .detail-body { grid-template-columns: minmax(0, 1fr); }
   .gallery { grid-template-columns: minmax(0, 1fr); }
   .strip { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -514,4 +555,5 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   .person { transition: color 0.3s ease; }
   .person::before { transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1); }
   .person-more { transition: opacity 0.3s ease 0.1s, translate 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s; }
-  .tab { transition: color 0.2s ease, border-color 0.2s ease; }}
+  .tab { transition: color 0.2s ease, border-color 0.2s ease; }
+  .button { transition: background-color 0.25s ease, color 0.25s ease; }}

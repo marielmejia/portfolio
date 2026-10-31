@@ -12,13 +12,21 @@
 </style>
 
 <div class="wrap page-in">
-  <header>
+  <header class="hero">
+    <video class="hero-video" id="hero-video" src="work/rezera.mp4" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
     <div class="topbar">
       <span class="label">MARIEL MEJIA / ART DIRECTOR AND DESIGNER</span>
       <nav aria-label="Sections">
         <a href="index.html#rezera">Rezera</a>
         <a href="index.html#work">Work</a>
       </nav>
+    </div>
+    <div class="hero-body">
+      <h1>Financial clarity for companies in motion.</h1>
+      <div class="hero-side">
+        <p>Growth brings complexity. Reports multiply. Systems drift. MP2 Collective works inside growing businesses to organize financial systems, understand performance and turn numbers into decisions leaders can act on.</p>
+        <a class="button" href="#capabilities">Explore our capabilities</a>
+      </div>
     </div>
   </header>
 
@@ -113,6 +121,13 @@
 </dialog>
 
 <script>
+  // Hero video holds still for visitors who prefer reduced motion
+  if (!matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+    const heroVideo = document.getElementById('hero-video');
+    heroVideo.removeAttribute('autoplay');
+    heroVideo.pause();
+  }
+
   // Five stages; each program's progress is counted in slots (fractions fill part of a slot)
   const stages = [['Discovery', 'Disc'], ['IND-Enabling', 'IND'], ['Phase 1', 'PH1'], ['Phase 2', 'PH2'], ['Phase 3', 'PH3']];
   const programs = [
