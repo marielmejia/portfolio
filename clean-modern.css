@@ -438,6 +438,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 /* one left-aligned column, centered in the panel */
 .split-body { grid-template-columns: minmax(0, 30em); gap: 1.5rem; align-content: center; justify-content: center; justify-items: start; padding: 64px; }
 .split-body > * { margin: 0; }
+.split-body > .label:first-child { margin-bottom: -0.75rem; } /* eyebrow sits close above its headline */
 .split-body p:not(.h2) { max-width: 30em; letter-spacing: -0.03em; } /* paragraph style */
 .split-media { aspect-ratio: 1; }
 .split-img {
