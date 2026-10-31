@@ -24,7 +24,7 @@
       <span class="label" id="pl-count"></span>
     </div>
     <p class="h2" style="max-width: 22em; margin-bottom: 2.5rem;">We are advancing a portfolio of internally invented, wholly owned NLRP3 inhibitor product candidates.</p>
-    <div class="pipeline" role="table" aria-label="Development pipeline" id="pipeline"></div>
+    <div class="pipeline" role="group" aria-label="Development pipeline" id="pipeline"></div>
     <p class="pl-note">Source: rezera.com/pipeline</p>
   </section>
 
@@ -38,26 +38,61 @@
   // Five stages; each program's progress is counted in slots (fractions fill part of a slot)
   const stages = [['Discovery', 'Disc'], ['IND-Enabling', 'IND'], ['Phase 1', 'PH1'], ['Phase 2', 'PH2'], ['Phase 3', 'PH3']];
   const programs = [
-    { name: 'Ruvonoflast', code: 'NT-0796', indication: 'CVD', progress: 4 },
-    { name: 'Trabzanoflast', code: 'NT-0150', indication: 'Neuroinflammatory conditions', progress: 3 }
+    {
+      name: 'Ruvonoflast', code: 'NT-0796', indication: 'CVD', progress: 4,
+      text: 'Ruvonoflast is Rezera’s lead program, an oral NLRP3 inhibitor designed to reach high levels in tissue and the brain. It is advancing toward Phase 3 in cardiovascular disease, with peripheral artery disease as the lead indication.'
+    },
+    {
+      name: 'Trabzanoflast', code: 'NT-0150', indication: 'Neuroinflammatory conditions', progress: 3,
+      text: 'Trabzanoflast is Rezera’s second NLRP3 inhibitor, designed to set a new benchmark for brain penetration. The company plans to advance it into Phase 2 in neuroinflammatory disease.'
+    }
   ];
 
   const table = document.getElementById('pipeline');
   const stageCells = labels => labels.map(s => `<span>${s}</span>`).join('');
+  const plus = '<svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path class="v" d="M8 1V15"/></svg>';
   table.innerHTML =
-    `<div class="pl-row pl-head" role="row"><span role="columnheader">Program</span><span role="columnheader">Indication</span>` +
+    `<div class="pl-row pl-head" aria-hidden="true"><span>Program</span><span>Indication</span>` +
     `<div class="pl-stages">${stageCells(stages.map(s => s[0]))}</div></div>` +
     programs.map((p, r) => {
       const current = stages[Math.min(Math.ceil(p.progress), stages.length) - 1][0];
       const slots = stages.map((_, i) =>
         `<span class="pl-slot" style="--fill: ${Math.max(0, Math.min(1, p.progress - i))}; --i: ${i}"></span>`).join('');
-      return `<div class="pl-row" role="row" style="--row: ${r}">` +
-        `<span class="pl-program" role="cell">${p.name}<small>${p.code}</small></span>` +
-        `<span class="pl-indication" role="cell">${p.indication}</span>` +
+      return `<details class="pl-item" style="--row: ${r}"><summary class="pl-row">` +
+        `<span class="pl-program">${p.name}${plus}<small>${p.code}</small></span>` +
+        `<span class="pl-indication">${p.indication}</span>` +
         `<div class="pl-stages pl-stage" aria-hidden="true">${stageCells(stages.map(s => s[1]))}</div>` +
-        `<div class="pl-bar" role="cell" aria-label="${p.name}: through ${current}, ${p.progress} of ${stages.length} stages">${slots}</div>` +
-        `</div>`;
+        `<div class="pl-bar" role="img" aria-label="Through ${current}, ${p.progress} of ${stages.length} stages">${slots}</div>` +
+        `</summary><div class="pl-panel"><p>${p.text}</p></div></details>`;
     }).join('');
+
+  // Rows open and close by animating their height, like the Project Details accordion
+  const ease = 'cubic-bezier(0.2, 0.7, 0.2, 1)';
+  table.querySelectorAll('.pl-item').forEach(item => {
+    const summary = item.querySelector('summary');
+    const panel = item.querySelector('.pl-panel');
+    let itemAnim = null, panelAnim = null;
+    const stop = () => { if (itemAnim) itemAnim.cancel(); if (panelAnim) panelAnim.cancel(); itemAnim = panelAnim = null; };
+    summary.addEventListener('click', e => {
+      if (!matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
+      e.preventDefault();
+      const from = item.offsetHeight; // current height, even mid-animation
+      const opening = !item.open || item.classList.contains('closing');
+      stop();
+      item.classList.toggle('closing', !opening);
+      item.open = true;
+      const to = opening ? item.offsetHeight : summary.offsetHeight + 1; // + the top border
+      itemAnim = item.animate({ height: [from + 'px', to + 'px'] }, { duration: 600, easing: ease });
+      panelAnim = panel.animate(opening
+        ? { opacity: [0, 1], transform: ['translateY(-12px)', 'none'] }
+        : { opacity: [1, 0], transform: ['none', 'translateY(-12px)'] },
+        { duration: opening ? 600 : 400, easing: ease, fill: 'forwards' });
+      itemAnim.onfinish = () => {
+        stop();
+        if (!opening) { item.open = false; item.classList.remove('closing'); }
+      };
+    });
+  });
   document.getElementById('pl-count').textContent = programs.length + ' Programs';
 
   // Bars start empty only when the fill can animate, so the table still reads without it
