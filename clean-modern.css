@@ -88,6 +88,7 @@
   --ink: #0c0f11;
   --muted: #7a7976;
   --line: #e7e7e7;
+  --nav-line: var(--line); /* pinned nav rules (white at 20% in dark mode, so they show over the hero video) */
   --accent: var(--muted);
   --link: #FF3434;
   --acc-bg: rgb(231 231 231 / 0.5);
@@ -103,12 +104,14 @@
   :root:not([data-theme="light"]) {
     --bg: #131715; --paper: #1a1f1c; --ink: #e6ebe7; --muted: #9aa59f; --line: #333b37; --accent: var(--muted);
     --acc-bg: rgb(255 255 255 / 0.04); --acc-bg-hover: rgb(255 255 255 / 0.08); --row-bg: #1a1f1c;
+    --nav-line: rgb(255 255 255 / 0.2);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #131715; --paper: #1a1f1c; --ink: #e6ebe7; --muted: #9aa59f; --line: #333b37; --accent: var(--muted);
   --acc-bg: rgb(255 255 255 / 0.04); --acc-bg-hover: rgb(255 255 255 / 0.08); --row-bg: #1a1f1c;
+  --nav-line: rgb(255 255 255 / 0.2);
   color-scheme: dark;
 }
 
@@ -461,12 +464,12 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .pinbar {
   position: fixed; inset: 0 0 auto; z-index: 10;
   min-height: 60px; align-items: stretch; padding: 0 calc(5% + 0.9 * var(--gutter));
-  border-bottom: 1px solid var(--line); color: #fff;
+  border-bottom: 1px solid var(--nav-line); color: #fff;
 }
 .pinbar .label { color: inherit; align-self: center; }
 .pinbar nav { flex-wrap: wrap; gap: 0; }
 .pinbar nav a { display: flex; align-items: center; padding: 0 1.25rem; }
-.pinbar nav a + a { border-left: 1px solid var(--line); }
+.pinbar nav a + a { border-left: 1px solid var(--nav-line); }
 .pinbar nav a:last-child { padding-right: 0; } /* last link ends on the content edge */
 /* Menu button: shown at 1024px and below, where it replaces the links */
 .menu-toggle {
