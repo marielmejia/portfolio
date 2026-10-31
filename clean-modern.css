@@ -544,6 +544,8 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .contact { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3rem var(--gutter); background: var(--row-bg); padding: 100px; }
 .contact-info { display: grid; gap: 2.5rem; align-content: start; }
 .contact-info .h2 span { display: block; color: var(--muted); } /* second line in gray */
+.contact-head { display: grid; gap: 0.75rem; } /* eyebrow sits close above its headline, like .split */
+.contact-head > * { margin: 0; }
 .contact-list { display: grid; gap: 2.25rem; margin: 0; }
 .contact-list dd { margin: 0.35rem 0 0; }
 .contact-list a { font-weight: 400; }
