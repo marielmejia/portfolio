@@ -9,6 +9,10 @@
 <style>
   /* 180px between the content sections (.wrap already spaces them 4.5rem) */
   .wrap > section + section { margin-top: calc(180px - 4.5rem); }
+  /* Nav links glide down to their section */
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+  .wrap > section { scroll-margin-top: var(--gutter); } /* lands with a little room above the label */
+  .hero nav { flex-wrap: wrap; gap: 0.5rem 1.5rem; } /* five links fit on a phone */
 </style>
 
 <div class="wrap page-in">
@@ -17,8 +21,11 @@
     <div class="topbar">
       <span class="label">MARIEL MEJIA / ART DIRECTOR AND DESIGNER</span>
       <nav aria-label="Sections">
-        <a href="index.html#rezera">Rezera</a>
-        <a href="index.html#work">Work</a>
+        <a href="#capabilities">Capabilities</a>
+        <a href="#about-mp2">About</a>
+        <a href="#pipeline-section">Pipeline</a>
+        <a href="#team">Team</a>
+        <a href="#news">News</a>
       </nav>
     </div>
     <div class="hero-body">
@@ -62,7 +69,7 @@
     <p class="pl-note">Source: mp2collective.com</p>
   </section>
 
-  <section aria-labelledby="pipeline-title">
+  <section id="pipeline-section" aria-labelledby="pipeline-title">
     <div class="section-head">
       <h2 id="pipeline-title" class="label">Pipeline</h2>
       <span class="label" id="pl-count"></span>
