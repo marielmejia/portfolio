@@ -1,0 +1,73 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rezera Pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Albert+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap">
+<link rel="stylesheet" href="clean-modern.css">
+
+<div class="wrap page-in">
+  <header>
+    <div class="topbar">
+      <span class="label">MARIEL MEJIA / ART DIRECTOR AND DESIGNER</span>
+      <nav aria-label="Sections">
+        <a href="index.html#rezera">Rezera</a>
+        <a href="index.html#work">Work</a>
+      </nav>
+    </div>
+  </header>
+
+  <section aria-labelledby="pipeline-title">
+    <div class="section-head">
+      <h2 id="pipeline-title" class="label">Pipeline</h2>
+      <span class="label" id="pl-count"></span>
+    </div>
+    <p class="h2" style="max-width: 22em; margin-bottom: 2.5rem;">We are advancing a portfolio of internally invented, wholly owned NLRP3 inhibitor product candidates.</p>
+    <div class="pipeline" role="table" aria-label="Development pipeline" id="pipeline"></div>
+    <p class="pl-note">Source: rezera.com/pipeline</p>
+  </section>
+
+  <footer>
+    <span class="label">© 2026 Mariel Mejia</span>
+    <a class="to-top" href="index.html">All Work<svg class="ar u" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 11L8 5L14 11"/></svg></a>
+  </footer>
+</div>
+
+<script>
+  // Five stages; each program's progress is counted in slots (fractions fill part of a slot)
+  const stages = [['Discovery', 'Disc'], ['IND-Enabling', 'IND'], ['Phase 1', 'PH1'], ['Phase 2', 'PH2'], ['Phase 3', 'PH3']];
+  const programs = [
+    { name: 'Ruvonoflast', code: 'NT-0796', indication: 'CVD', progress: 4 },
+    { name: 'Trabzanoflast', code: 'NT-0150', indication: 'Neuroinflammatory conditions', progress: 3 }
+  ];
+
+  const table = document.getElementById('pipeline');
+  const stageCells = labels => labels.map(s => `<span>${s}</span>`).join('');
+  table.innerHTML =
+    `<div class="pl-row pl-head" role="row"><span role="columnheader">Program</span><span role="columnheader">Indication</span>` +
+    `<div class="pl-stages">${stageCells(stages.map(s => s[0]))}</div></div>` +
+    programs.map((p, r) => {
+      const current = stages[Math.min(Math.ceil(p.progress), stages.length) - 1][0];
+      const slots = stages.map((_, i) =>
+        `<span class="pl-slot" style="--fill: ${Math.max(0, Math.min(1, p.progress - i))}; --i: ${i}"></span>`).join('');
+      return `<div class="pl-row" role="row" style="--row: ${r}">` +
+        `<span class="pl-program" role="cell">${p.name}<small>${p.code}</small></span>` +
+        `<span class="pl-indication" role="cell">${p.indication}</span>` +
+        `<div class="pl-stages pl-stage" aria-hidden="true">${stageCells(stages.map(s => s[1]))}</div>` +
+        `<div class="pl-bar" role="cell" aria-label="${p.name}: through ${current}, ${p.progress} of ${stages.length} stages">${slots}</div>` +
+        `</div>`;
+    }).join('');
+  document.getElementById('pl-count').textContent = programs.length + ' Programs';
+
+  // Bars start empty only when the fill can animate, so the table still reads without it
+  if ('IntersectionObserver' in window && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+    table.classList.add('will-fill');
+    const fillObserver = new IntersectionObserver(entries => entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      requestAnimationFrame(() => table.classList.add('filled'));
+      fillObserver.unobserve(e.target);
+    }), { threshold: 0.3 });
+    fillObserver.observe(table);
+  }
+</script>
