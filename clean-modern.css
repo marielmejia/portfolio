@@ -56,6 +56,8 @@
      .team-grid       grid of .person cards (ink panel slides in on hover)
      .bio             <dialog> side sheet with a person's full bio
      .news            full-width press release rows (invert like .piece on hover)
+     .split           two panels, centered content and an inset image (.flip mirrors them)
+     .cta             red label-style link with a chevron
      footer .to-top   "Back to Top" link
 
    NEEDS A LITTLE JAVASCRIPT
@@ -418,6 +420,31 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .news-item:hover, .news-item:focus-visible { background: var(--ink); color: var(--row-bg); }
 .news-item:focus-visible { outline-offset: 3px; border-radius: 0; }
 
+/* ---------- Split (content beside an image) ---------- */
+/* Markup:
+   <div class="split">            (add .flip to put the image on the left)
+     <div class="split-body">…</div>
+     <div class="split-media"><div class="split-img"><span class="label">Image placeholder</span></div></div>  (or an <img> in .split-img)
+   </div>
+   Two white panels that fill the row. Content sits in the middle of its panel;
+   the image is inset at 80% of its panel, like the main video on project pages. */
+.split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gutter); }
+.split > * { background: var(--row-bg); display: grid; place-items: center; }
+.split.flip .split-media { order: -1; }
+/* one left-aligned column, centered in the panel */
+.split-body { grid-template-columns: minmax(0, 30em); gap: 1.5rem; align-content: center; justify-content: center; justify-items: start; padding: 64px; }
+.split-body > * { margin: 0; }
+.split-body p:not(.h2) { max-width: 30em; letter-spacing: -0.03em; } /* paragraph style */
+.split-media { aspect-ratio: 1; }
+.split-img {
+  position: relative; overflow: hidden; width: 80%; height: 80%;
+  display: grid; place-items: center; background: var(--line);
+}
+.split-img .label { color: var(--muted); }
+.split-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+.cta { color: var(--link); font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; } /* nav style */
+
 .bio-nav { display: flex; justify-content: space-between; gap: 1rem; padding-top: 1.25rem; margin-top: auto; border-top: 1px solid var(--line); } /* sits at the bottom of the sheet */
 
 @media (max-width: 1024px) {
@@ -437,6 +464,9 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   .bio-inner { padding: var(--gutter) var(--gutter) 2rem; }
   .news-item { padding: 1.75rem 20px; }
   .news-title { font-size: 1.25rem; }
+  .split { grid-template-columns: minmax(0, 1fr); }
+  .split-body { padding: 40px 20px; }
+  .split .split-media { order: -1; } /* image first on both, so the stack reads the same */
   .about, .detail-body { grid-template-columns: minmax(0, 1fr); }
   .gallery { grid-template-columns: minmax(0, 1fr); }
   .strip { grid-template-columns: repeat(4, minmax(0, 1fr)); }
