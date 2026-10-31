@@ -298,7 +298,8 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.78125rem
 .pl-item summary { list-style: none; cursor: pointer; }
 .pl-item summary::-webkit-details-marker { display: none; }
 .pl-item summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-.pl-head { padding: 100px 0 1rem; align-items: end; }
+.pl-head { padding: 100px 0 1rem; align-items: start; } /* labels share a top line, even when a stage name wraps */
+.pl-head .pl-stages { align-items: start; }
 .pl-head > *, .pl-stages > * { font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; color: var(--ink); } /* label style */
 .pl-stages, .pl-bar { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
 .pl-program { font: 700 1.25rem/1.3 var(--font); color: var(--link); } /* red, like every other link */
