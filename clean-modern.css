@@ -488,7 +488,8 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .hero-video { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
 .hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to bottom, rgb(0 0 0 / 0.65), rgb(0 0 0 / 0.55) 35%, rgb(0 0 0 / 0.85)); } /* dark enough that text inside the video recedes */
 .hero .label { color: inherit; }
-.hero-body { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 2rem var(--gutter); align-items: end; align-self: end; }
+/* Inset to line up with the images in .split sections (inset 10% of a half-width panel = 5% of the row) */
+.hero-body { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 2rem var(--gutter); align-items: end; align-self: end; padding-inline: 5%; }
 .hero h1 { text-align: left; font-size: clamp(3rem, 7vw, 7rem); max-width: 11em; }
 .hero-side { display: grid; gap: 1.5rem; justify-items: start; }
 .hero-side p { margin: 0; max-width: 26em; letter-spacing: -0.03em; } /* paragraph style */
@@ -566,7 +567,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   .split-body { padding: 40px 20px; }
   .split .split-media { order: -1; } /* image first on both, so the stack reads the same */
   .hero { padding-bottom: 40px; }
-  .hero-body { grid-template-columns: minmax(0, 1fr); }
+  .hero-body { grid-template-columns: minmax(0, 1fr); padding-inline: 10%; } /* split images are full-width panels here */
   .contact { grid-template-columns: minmax(0, 1fr); padding: 40px 20px; }
   .about, .detail-body { grid-template-columns: minmax(0, 1fr); }
   .gallery { grid-template-columns: minmax(0, 1fr); }
