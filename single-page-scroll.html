@@ -25,6 +25,7 @@
     <a href="#pipeline-section">Pipeline</a>
     <a href="#team">Team</a>
     <a href="#news">News</a>
+    <a href="#contact">Contact</a>
   </nav>
 </div>
 
@@ -95,7 +96,39 @@
     <div class="news" id="news-list"></div>
   </section>
 
-
+  <section id="contact" aria-labelledby="contact-title">
+    <div class="section-head">
+      <h2 id="contact-title" class="label">Contact</h2>
+    </div>
+    <div class="contact">
+      <div class="contact-info">
+        <p class="h2">Bring the numbers. <span>We’ll figure it out.</span></p>
+        <dl class="contact-list">
+          <div><dt class="label">General inquiries</dt><dd><a href="mailto:info@mp2collective.com">info@mp2collective.com</a></dd></div>
+          <div><dt class="label">New client conversations</dt><dd><a href="mailto:cara@mp2collective.com">cara@mp2collective.com</a></dd></div>
+        </dl>
+      </div>
+      <!-- Demo form: it checks the fields and confirms on the page, but sends nothing anywhere -->
+      <form class="contact-form" id="contact-form" novalidate>
+        <label class="field"><span class="label">Name</span><input name="name" type="text" autocomplete="name" placeholder="Your name" required></label>
+        <label class="field"><span class="label">Email</span><input name="email" type="email" autocomplete="email" placeholder="your@email.com" required></label>
+        <label class="field"><span class="label">Company</span><input name="company" type="text" autocomplete="organization" placeholder="Company name"></label>
+        <label class="field"><span class="label">Reason for inquiry</span>
+          <span class="select"><select name="reason" required>
+            <option value="" selected>Select a reason</option>
+            <option>General</option>
+            <option>Investors</option>
+            <option>Careers</option>
+            <option>Partnering</option>
+            <option>Media</option>
+          </select></span>
+        </label>
+        <label class="field"><span class="label">Message</span><textarea name="message" placeholder="Tell us about your needs…" required></textarea></label>
+        <button class="button" type="submit">Submit<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></button>
+        <p class="form-note" id="form-note" role="status"></p>
+      </form>
+    </div>
+  </section>
 
   <footer>
     <span class="label">© 2026 Mariel Mejia</span>
@@ -335,4 +368,21 @@
     `<span class="news-title">${n.title}</span>` +
     `<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></a>`).join('');
   document.getElementById('news-count').textContent = news.length + ' Press Releases';
+
+
+  // Contact form: a demo, so it checks the fields and confirms here without sending anything
+  const form = document.getElementById('contact-form');
+  const formNote = document.getElementById('form-note');
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const firstBad = [...form.elements].find(el => el.willValidate && !el.checkValidity());
+    if (firstBad) {
+      form.reportValidity();
+      firstBad.focus();
+      formNote.textContent = 'Please fill in your name, a valid email, a reason and a message.';
+      return;
+    }
+    formNote.textContent = `Thanks, ${form.elements.name.value.trim()}. This is a demo form, so your message wasn’t sent.`;
+    form.reset();
+  });
 </script>
