@@ -11,23 +11,24 @@
   .wrap > section + section { margin-top: calc(180px - 4.5rem); }
   /* Nav links glide down to their section */
   @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
-  .wrap > section { scroll-margin-top: var(--gutter); } /* lands with a little room above the label */
-  .hero nav { flex-wrap: wrap; gap: 0.5rem 1.5rem; } /* five links fit on a phone */
+  /* lands below the pinned bar (the script measures it) with a little room above the label */
+  .wrap > section { scroll-margin-top: calc(var(--pinbar-h, 60px) + var(--gutter)); }
 </style>
 
+<div class="topbar pinbar" id="pinbar">
+  <span class="label">MARIEL MEJIA / ART DIRECTOR AND DESIGNER</span>
+  <nav aria-label="Sections">
+    <a href="#capabilities">Capabilities</a>
+    <a href="#about-mp2">About</a>
+    <a href="#pipeline-section">Pipeline</a>
+    <a href="#team">Team</a>
+    <a href="#news">News</a>
+  </nav>
+</div>
+
 <div class="wrap page-in">
-  <header class="hero">
+  <header class="hero" id="hero">
     <video class="hero-video" id="hero-video" src="work/rezera.mp4" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
-    <div class="topbar">
-      <span class="label">MARIEL MEJIA / ART DIRECTOR AND DESIGNER</span>
-      <nav aria-label="Sections">
-        <a href="#capabilities">Capabilities</a>
-        <a href="#about-mp2">About</a>
-        <a href="#pipeline-section">Pipeline</a>
-        <a href="#team">Team</a>
-        <a href="#news">News</a>
-      </nav>
-    </div>
     <div class="hero-body">
       <h1>Financial clarity for companies in motion.</h1>
       <div class="hero-side">
@@ -134,6 +135,19 @@
     heroVideo.removeAttribute('autoplay');
     heroVideo.pause();
   }
+
+  // Pinned bar: frosted once the page scrolls, dark text once it's past the hero
+  const pinbar = document.getElementById('pinbar');
+  const hero = document.getElementById('hero');
+  function updatePinbar() {
+    const h = pinbar.offsetHeight;
+    document.documentElement.style.setProperty('--pinbar-h', h + 'px');
+    pinbar.classList.toggle('scrolled', scrollY > 0);
+    pinbar.classList.toggle('on-light', hero.getBoundingClientRect().bottom <= h);
+  }
+  addEventListener('scroll', updatePinbar, { passive: true });
+  addEventListener('resize', updatePinbar);
+  updatePinbar();
 
   // Five stages; each program's progress is counted in slots (fractions fill part of a slot)
   const stages = [['Discovery', 'Disc'], ['IND-Enabling', 'IND'], ['Phase 1', 'PH1'], ['Phase 2', 'PH2'], ['Phase 3', 'PH3']];

@@ -58,6 +58,7 @@
      .news            full-width press release rows (invert like .piece on hover)
      .split           two panels, centered content and an inset image (.flip mirrors them)
      .hero            full-screen header with a background video
+     .pinbar          top bar pinned to the screen, frosted once you scroll
      .button          solid red label-style button
      .cta             red label-style link with a chevron
      footer .to-top   "Back to Top" link
@@ -70,6 +71,8 @@
      .pipeline.will-fill        add "filled" when the table scrolls into view
      .pl-item.closing           add while a pipeline row animates shut
      .bio                       open with showModal(); the script slides it in and out
+     .pinbar.scrolled           add once the page has scrolled (frosted background)
+     .pinbar.on-light           add once the bar is past the hero (dark text on a light tint)
    Without the script these still work; they just skip the animation.
    ========================================================================== */
 
@@ -445,11 +448,25 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .split-img .label { color: var(--muted); }
 .split-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
+/* ---------- Pinned top bar ---------- */
+/* Markup (before .wrap, so nothing on the page can paint over it):
+   <div class="topbar pinbar"><span class="label">Name</span><nav>…</nav></div>
+   Clear over the hero; frosted once you scroll; dark text on a light tint past the hero. */
+.pinbar {
+  position: fixed; inset: 0 0 auto; z-index: 10;
+  min-height: 60px; align-items: center; padding: 0.75rem max(var(--gutter), env(safe-area-inset-right, 0px)) 0.75rem max(var(--gutter), env(safe-area-inset-left, 0px));
+  color: #fff;
+}
+.pinbar .label { color: inherit; }
+.pinbar nav { flex-wrap: wrap; gap: 0.5rem 1.5rem; }
+.pinbar.scrolled { background: rgb(0 0 0 / 0.2); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+.pinbar.on-light { background: color-mix(in srgb, var(--bg) 72%, transparent); color: var(--ink); }
+
+
 /* ---------- Hero (full-screen, video behind) ---------- */
 /* Markup (first thing inside .wrap):
    <header class="hero">
      <video class="hero-video" src="…" autoplay muted loop playsinline aria-hidden="true"></video>
-     <div class="topbar">…</div>
      <div class="hero-body">
        <h1>Headline</h1>
        <div class="hero-side"><p>Paragraph</p><a class="button" href="…">Button</a></div>
@@ -459,11 +476,11 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
    the video is darkened toward the bottom so it reads in light and dark mode. */
 .hero {
   position: relative; isolation: isolate; overflow: hidden;
-  display: grid; grid-template-rows: auto 1fr; gap: 0;
+  display: grid; gap: 0;
   min-height: 100vh; min-height: 100svh;
   margin-top: calc(-1 * var(--gutter));
   margin-inline: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px))) calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)));
-  padding: var(--gutter) max(var(--gutter), env(safe-area-inset-right, 0px)) 64px max(var(--gutter), env(safe-area-inset-left, 0px));
+  padding: 100px max(var(--gutter), env(safe-area-inset-right, 0px)) 64px max(var(--gutter), env(safe-area-inset-left, 0px)); /* top clears the pinned bar */
   background: #000; color: #fff;
 }
 .hero-video { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
@@ -556,4 +573,5 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   .person::before { transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1); }
   .person-more { transition: opacity 0.3s ease 0.1s, translate 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s; }
   .tab { transition: color 0.2s ease, border-color 0.2s ease; }
-  .button { transition: background-color 0.25s ease, color 0.25s ease; }}
+  .button { transition: background-color 0.25s ease, color 0.25s ease; }
+  .pinbar { transition: background-color 0.3s ease, color 0.3s ease, -webkit-backdrop-filter 0.3s ease, backdrop-filter 0.3s ease; }}
