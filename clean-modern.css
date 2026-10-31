@@ -59,6 +59,8 @@
      .split           two panels, centered content and an inset image (.flip mirrors them)
      .hero            full-screen header with a background video
      .pinbar          top bar pinned to the screen, frosted once you scroll
+     .menu-toggle     Menu button that replaces the bar's links at 1024px and below
+     .menu-links      big section links inside a .bio sheet (the slide-in menu)
      .button          solid red label-style button (works on <a> and <button>)
      .contact         white panel: headline and details left, form right
      .field           form field with a label-style label above it
@@ -453,14 +455,37 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 /* ---------- Pinned top bar ---------- */
 /* Markup (before .wrap, so nothing on the page can paint over it):
    <div class="topbar pinbar"><span class="label">Name</span><nav>…</nav></div>
-   Clear over the hero; frosted once you scroll; dark text on a light tint past the hero. */
+   Clear over the hero; frosted once you scroll; dark text on a light tint past the hero.
+   A light gray rule runs under it and between the links. Its sides line up with the hero copy
+   and the .split images: one gutter plus 5% of the row (gutter + 5% of (width - 2 gutters)). */
 .pinbar {
   position: fixed; inset: 0 0 auto; z-index: 10;
-  min-height: 60px; align-items: center; padding: 0.75rem max(var(--gutter), env(safe-area-inset-right, 0px)) 0.75rem max(var(--gutter), env(safe-area-inset-left, 0px));
-  color: #fff;
+  min-height: 60px; align-items: stretch; padding: 0 calc(5% + 0.9 * var(--gutter));
+  border-bottom: 1px solid var(--line); color: #fff;
 }
-.pinbar .label { color: inherit; }
-.pinbar nav { flex-wrap: wrap; gap: 0.5rem 1.5rem; }
+.pinbar .label { color: inherit; align-self: center; }
+.pinbar nav { flex-wrap: wrap; gap: 0; }
+.pinbar nav a { display: flex; align-items: center; padding: 0 1.25rem; }
+.pinbar nav a + a { border-left: 1px solid var(--line); }
+.pinbar nav a:last-child { padding-right: 0; } /* last link ends on the content edge */
+/* Menu button: shown at 1024px and below, where it replaces the links */
+.menu-toggle {
+  display: none; align-self: center; align-items: center; gap: 0.6rem;
+  appearance: none; background: none; border: 0; padding: 0.5rem 0; cursor: pointer; color: inherit;
+  font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; /* label style */
+}
+.menu-toggle svg { width: 20px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.5; overflow: visible; }
+
+/* Menu sheet: a .bio dialog holding the section links, one per row with a rule under each */
+.bio-inner > nav { align-self: stretch; } /* the menu's links run the full width of the sheet */
+.menu-links { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.menu-links a {
+  display: flex; justify-content: space-between; align-items: center; padding: 1.1rem 0; border-bottom: 1px solid var(--line);
+  color: var(--ink); font: 400 clamp(2rem, calc(3.5vw + 6px), 2.625rem)/1.05 var(--font); letter-spacing: -0.04em; /* h2 style */
+}
+.menu-links a:hover, .menu-links a:focus-visible { color: var(--link); }
+.menu-links .ar { width: 0.45em; height: 0.45em; stroke-width: 3; color: var(--link); }
+
 .pinbar.scrolled { background: rgb(0 0 0 / 0.2); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
 .pinbar.on-light { background: color-mix(in srgb, var(--bg) 72%, transparent); color: var(--ink); }
 
@@ -550,6 +575,11 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 
 @media (max-width: 1024px) {
   .team-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* Too narrow for the links: they move into the slide-in menu behind the Menu button */
+  .pinbar nav { display: none; }
+  .pinbar { flex-wrap: nowrap; }
+  .pinbar .label { flex: 1 1 auto; min-width: 0; padding-block: 0.75rem; } /* a long name wraps in place, beside the button */
+  .menu-toggle { display: inline-flex; flex: none; }
 }
 
 
@@ -569,6 +599,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   .split-body { padding: 40px 20px; }
   .split .split-media { order: -1; } /* image first on both, so the stack reads the same */
   .hero-body { grid-template-columns: minmax(0, 1fr); padding: 0 10% 10%; } /* split images are full-width panels here */
+  .pinbar { padding-inline: calc(10% + 0.8 * var(--gutter)); }
   .contact { grid-template-columns: minmax(0, 1fr); padding: 40px 20px; }
   .about, .detail-body { grid-template-columns: minmax(0, 1fr); }
   .gallery { grid-template-columns: minmax(0, 1fr); }

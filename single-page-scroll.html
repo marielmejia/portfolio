@@ -27,6 +27,7 @@
     <a href="#news">News</a>
     <a href="#contact">Contact</a>
   </nav>
+  <button class="menu-toggle" type="button" id="menu-toggle" aria-controls="menu" aria-expanded="false">Menu<svg viewBox="0 0 20 12" aria-hidden="true"><path d="M0 1H20M0 6H20M0 11H20"/></svg></button>
 </div>
 
 <div class="wrap page-in">
@@ -151,6 +152,17 @@
       <button type="button" id="bio-prev"><svg class="ar l" viewBox="0 0 16 16" aria-hidden="true"><path d="M11 2L5 8L11 14"/></svg>Previous</button>
       <button type="button" id="bio-next">Next<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></button>
     </div>
+  </div>
+</dialog>
+
+<!-- Menu at 1024px and below: the same slide-in sheet as the bios; its links are copied from the bar's nav -->
+<dialog class="bio" id="menu" aria-label="Menu">
+  <div class="bio-inner">
+    <div class="bio-top">
+      <span class="label">Menu</span>
+      <button class="bio-close" type="button">Close<svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path d="M8 1V15"/></svg></button>
+    </div>
+    <nav aria-label="Sections"><ul class="menu-links" id="menu-links"></ul></nav>
   </div>
 </dialog>
 
@@ -315,7 +327,33 @@
   });
   showGroup(group);
 
-  // Bio overlay: slides in from the right over a dimmed page
+  // Side sheets (bio and menu): slide in from the right over a dimmed page.
+  // Any button that controls a sheet (aria-controls) reports whether it's open.
+  const setExpanded = (sheet, open) => document.querySelectorAll(`[aria-controls="${sheet.id}"]`).forEach(b => b.setAttribute('aria-expanded', open));
+  function openSheet(sheet) {
+    sheet.showModal();
+    setExpanded(sheet, true);
+    if (!motionOK()) return;
+    sheet.animate({ transform: ['translateX(100%)', 'none'] }, { duration: 600, easing: ease });
+    sheet.animate({ opacity: [0, 1] }, { duration: 400, pseudoElement: '::backdrop' });
+  }
+  function closeSheet(sheet, then) {
+    if (!sheet.open || sheet.classList.contains('closing')) return;
+    const done = () => { sheet.close(); setExpanded(sheet, false); if (then) then(); };
+    if (!motionOK()) { done(); return; }
+    sheet.classList.add('closing');
+    sheet.animate({ opacity: [1, 0] }, { duration: 400, pseudoElement: '::backdrop', fill: 'forwards' });
+    sheet.animate({ transform: ['none', 'translateX(100%)'] }, { duration: 450, easing: 'cubic-bezier(0.5, 0, 0.75, 0)', fill: 'forwards' })
+      .onfinish = () => { sheet.getAnimations({ subtree: true }).forEach(a => a.cancel()); sheet.classList.remove('closing'); done(); };
+  }
+  // Close button, Escape and a click on the dimmed page all slide a sheet out
+  function wireSheet(sheet) {
+    sheet.querySelector('.bio-close').addEventListener('click', () => closeSheet(sheet));
+    sheet.addEventListener('cancel', e => { e.preventDefault(); closeSheet(sheet); });
+    sheet.addEventListener('click', e => { if (e.target === sheet) closeSheet(sheet); });
+  }
+
+  // Bio overlay
   const bio = document.getElementById('bio');
   let current = 0;
   function fillBio(i) {
@@ -329,29 +367,32 @@
     document.getElementById('bio-text').textContent = p.bio;
     bio.scrollTop = 0;
   }
-  function openBio(i) {
-    fillBio(i);
-    bio.showModal();
-    if (!motionOK()) return;
-    bio.animate({ transform: ['translateX(100%)', 'none'] }, { duration: 600, easing: ease });
-    bio.animate({ opacity: [0, 1] }, { duration: 400, pseudoElement: '::backdrop' });
-  }
-  function closeBio() {
-    if (!bio.open || bio.classList.contains('closing')) return;
-    if (!motionOK()) { bio.close(); return; }
-    bio.classList.add('closing');
-    bio.animate({ opacity: [1, 0] }, { duration: 400, pseudoElement: '::backdrop', fill: 'forwards' });
-    bio.animate({ transform: ['none', 'translateX(100%)'] }, { duration: 450, easing: 'cubic-bezier(0.5, 0, 0.75, 0)', fill: 'forwards' })
-      .onfinish = () => { bio.close(); bio.getAnimations({ subtree: true }).forEach(a => a.cancel()); bio.classList.remove('closing'); };
-  }
-  grid.addEventListener('click', e => { const card = e.target.closest('.person'); if (card) openBio(+card.dataset.i); });
-  bio.querySelector('.bio-close').addEventListener('click', closeBio);
-  bio.addEventListener('cancel', e => { e.preventDefault(); closeBio(); }); // Escape slides it out too
-  bio.addEventListener('click', e => { if (e.target === bio) closeBio(); }); // a click on the dimmed page closes it
+  grid.addEventListener('click', e => { const card = e.target.closest('.person'); if (card) { fillBio(+card.dataset.i); openSheet(bio); } });
+  wireSheet(bio);
   document.getElementById('bio-prev').addEventListener('click', () => fillBio(current - 1));
   document.getElementById('bio-next').addEventListener('click', () => fillBio(current + 1));
   // Focus goes back to the card that opened it
   bio.addEventListener('close', () => { const card = grid.querySelector(`[data-i="${current}"]`); if (card) card.focus(); });
+
+  // Menu (1024px and below): the bar's links, big, in a sheet behind the Menu button
+  const menu = document.getElementById('menu');
+  const menuToggle = document.getElementById('menu-toggle');
+  document.getElementById('menu-links').innerHTML = [...document.querySelectorAll('#pinbar nav a')].map(a =>
+    `<li><a href="${a.getAttribute('href')}">${a.textContent}<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></a></li>`).join('');
+  menuToggle.addEventListener('click', () => openSheet(menu));
+  wireSheet(menu);
+  // A link slides the menu out, then glides down to its section
+  menu.addEventListener('click', e => {
+    const link = e.target.closest('.menu-links a');
+    if (!link) return;
+    e.preventDefault();
+    closeSheet(menu, () => {
+      history.pushState(null, '', link.getAttribute('href'));
+      document.querySelector(link.getAttribute('href')).scrollIntoView({ behavior: motionOK() ? 'smooth' : 'auto' });
+    });
+  });
+  // Widening past the breakpoint brings the bar's links back, so the menu closes
+  matchMedia('(min-width: 1025px)').addEventListener('change', e => { if (e.matches && menu.open) { menu.close(); setExpanded(menu, false); } });
 
 
   // News: newest first; each row opens the full press release in a new tab
