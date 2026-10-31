@@ -55,6 +55,7 @@
      .tabs            row of label-style tab buttons (red, active one black)
      .team-grid       grid of .person cards (ink panel slides in on hover)
      .bio             <dialog> side sheet with a person's full bio
+     .news            full-width press release rows (invert like .piece on hover)
      footer .to-top   "Back to Top" link
 
    NEEDS A LITTLE JAVASCRIPT
@@ -396,6 +397,27 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .bio-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .bio-role { margin: 0; font-size: 1.25rem; line-height: 1.3; color: var(--muted); }
 .bio-text { margin: 1rem 0 2.5rem; max-width: 36em; letter-spacing: -0.03em; } /* paragraph style */
+/* ---------- News ---------- */
+/* Markup:
+   <div class="news">
+     <a class="news-item" href="…">
+       <time class="label">October 21, 2026</time>
+       <span class="news-title">Headline</span>
+       <svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg>
+     </a>
+   </div> */
+.news { display: grid; gap: var(--gutter); }
+.news-item {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.75rem 2rem; align-items: center;
+  background: var(--row-bg); color: var(--ink); font-weight: 400; padding: 2.5rem 100px;
+}
+.news-item time { grid-column: 1; color: inherit; }
+.news-title { grid-column: 1; font: 400 1.5rem/1.3 var(--font); letter-spacing: -0.03em; max-width: 36em; text-wrap: pretty; }
+.news-item .ar { grid-column: 2; grid-row: 1 / span 2; width: 0.9rem; height: 0.9rem; margin: 0; color: var(--link); stroke-width: 3; }
+/* Hover (or keyboard focus): the panel inverts, like the project cards */
+.news-item:hover, .news-item:focus-visible { background: var(--ink); color: var(--row-bg); }
+.news-item:focus-visible { outline-offset: 3px; border-radius: 0; }
+
 .bio-nav { display: flex; justify-content: space-between; gap: 1rem; padding-top: 1.25rem; margin-top: auto; border-top: 1px solid var(--line); } /* sits at the bottom of the sheet */
 
 @media (max-width: 1024px) {
@@ -413,6 +435,8 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   .team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .person { padding: 12px 12px 1.25rem; }
   .bio-inner { padding: var(--gutter) var(--gutter) 2rem; }
+  .news-item { padding: 1.75rem 20px; }
+  .news-title { font-size: 1.25rem; }
   .about, .detail-body { grid-template-columns: minmax(0, 1fr); }
   .gallery { grid-template-columns: minmax(0, 1fr); }
   .strip { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -425,6 +449,8 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 @media (prefers-reduced-motion: no-preference) {
   .piece { transition: transform 0.25s ease, background-color 0.3s ease, color 0.3s ease; }
   .piece:hover { transform: translateY(-3px); }
+  .news-item { transition: transform 0.25s ease, background-color 0.3s ease, color 0.3s ease; }
+  .news-item:hover { transform: translateY(-3px); }
 
   /* Chevrons nudge in their own direction on hover */
   .ar { transition: transform 0.25s ease; }

@@ -41,6 +41,16 @@
     <p class="pl-note">Source: santaana.bio</p>
   </section>
 
+  <section id="news" aria-labelledby="news-title">
+    <div class="section-head">
+      <h2 id="news-title" class="label">News</h2>
+      <span class="label" id="news-count"></span>
+    </div>
+    <p class="h2" style="margin-bottom: 2.5rem;">Press Releases</p>
+    <div class="news" id="news-list"></div>
+    <p class="pl-note">Source: santaana.bio</p>
+  </section>
+
   <footer>
     <span class="label">© 2026 Mariel Mejia</span>
     <a class="to-top" href="index.html">All Work<svg class="ar u" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 11L8 5L14 11"/></svg></a>
@@ -242,4 +252,21 @@
   document.getElementById('bio-next').addEventListener('click', () => fillBio(current + 1));
   // Focus goes back to the card that opened it
   bio.addEventListener('close', () => { const card = grid.querySelector(`[data-i="${current}"]`); if (card) card.focus(); });
+
+
+  // News: newest first; each row opens the full press release in a new tab
+  const pressBase = 'https://www.santaana.bio/press-release/';
+  const news = [
+    { date: '2026-10-21', title: 'Santa Ana Bio to Present Preclinical Data on SAB05, a CD40-Targeted Glucocorticoid Antibody-Drug Conjugate, at ACR Convergence 2026', slug: 'santa-ana-bio-to-present-preclinical-data-on-sab05-a-cd40-targeted-glucocorticoid-antibody-drug-conjugate-at-acr-convergence-2026' },
+    { date: '2026-09-14', title: 'Santa Ana Bio Announces First Subjects Dosed in Phase 1 Study of SAB01 to Treat Autoimmune Inflammatory Diseases', slug: 'santa-ana-bio-announces-first-subjects-dosed-in-phase-1-study-of-sab01-to-treat-autoimmune-inflammatory-diseases' },
+    { date: '2026-02-10', title: 'Santa Ana Bio Announces the Appointment of Newman Yeilding as Chief Medical Officer', slug: 'santa-ana-bio-announces-the-appointment-of-newman-yeilding-as-chief-medical-officer' },
+    { date: '2025-11-11', title: 'Santa Ana Bio Announces the Appointment of Mike Bonney as Chair of the Board', slug: 'santa-ana-bio-announces-the-appointment-of-mike-bonney-as-chair-of-the-board' }
+  ];
+  const longDate = iso => new Date(iso + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  document.getElementById('news-list').innerHTML = news.map(n =>
+    `<a class="news-item" href="${pressBase}${n.slug}/" target="_blank" rel="noopener">` +
+    `<time class="label" datetime="${n.date}">${longDate(n.date)}</time>` +
+    `<span class="news-title">${n.title}</span>` +
+    `<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></a>`).join('');
+  document.getElementById('news-count').textContent = news.length + ' Press Releases';
 </script>
