@@ -13,10 +13,17 @@
   #about-mp2, #science { margin-top: calc(var(--gutter) - 4.5rem); }
   /* Section labels sit 12px above their headlines everywhere, as in the About, Science and Contact panels */
   .wrap > section > .section-head { margin-bottom: 0.75rem; }
-  /* Pipeline label and headline inset by the chart's own padding, so they line up with the program names */
-  #pipeline-section > .section-head, #pipeline-section > .h2 { --pl-inset: 100px; padding-inline: var(--pl-inset); }
-  #pipeline-section > .h2 { max-width: calc(22em + 2 * var(--pl-inset)); } /* padding counts inside max-width */
-  @media (max-width: 760px) { #pipeline-section > .section-head, #pipeline-section > .h2 { --pl-inset: 20px; } }
+  /* Inset by the panels' own inner padding (100px, 20px on phones): the Pipeline and News labels and headlines
+     line up with the text inside the chart and the news rows, and everything in Team sits on that same inset */
+  #pipeline-section > .section-head, #pipeline-section > .h2,
+  #news > .section-head, #news > .h2,
+  #team > * { --inset: 100px; padding-inline: var(--inset); }
+  #pipeline-section > .h2 { max-width: calc(22em + 2 * var(--inset)); } /* padding counts inside max-width */
+  @media (max-width: 760px) {
+    #pipeline-section > .section-head, #pipeline-section > .h2,
+    #news > .section-head, #news > .h2,
+    #team > * { --inset: 20px; }
+  }
   /* Nav links glide down to their section */
   @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
   /* lands below the pinned bar (the script measures it) with a little room above the label */

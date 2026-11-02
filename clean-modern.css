@@ -352,8 +352,8 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.78125rem
      </button>
    </div> */
 .team-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 1.5rem 2rem; margin-bottom: 2.5rem; }
-.team-head .h2 { max-width: 20em; }
-.team-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gutter); }
+.team-head .h2 { flex: 1 1 0; min-width: min(100%, 16em); max-width: 20em; } /* narrows before the tabs wrap under it */
+.team-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gutter); } /* three at most, two on phones */
 .person {
   appearance: none; border: 0; font: inherit; text-align: left; cursor: pointer;
   position: relative; overflow: hidden; width: 100%;
@@ -577,7 +577,6 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .bio-nav { display: flex; justify-content: space-between; gap: 1rem; padding-top: 1.25rem; margin-top: auto; border-top: 1px solid var(--line); } /* sits at the bottom of the sheet */
 
 @media (max-width: 1024px) {
-  .team-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   /* Too narrow for the links: they move into the slide-in menu behind the Menu button */
   .pinbar nav { display: none; }
   .pinbar { flex-wrap: nowrap; }
