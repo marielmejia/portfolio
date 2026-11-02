@@ -13,6 +13,10 @@
   #about-mp2, #science { margin-top: calc(var(--gutter) - 4.5rem); }
   /* Section labels sit 12px above their headlines everywhere, as in the About, Science and Contact panels */
   .wrap > section > .section-head { margin-bottom: 0.75rem; }
+  /* Pipeline label and headline inset by the chart's own padding, so they line up with the program names */
+  #pipeline-section > .section-head, #pipeline-section > .h2 { --pl-inset: 100px; padding-inline: var(--pl-inset); }
+  #pipeline-section > .h2 { max-width: calc(22em + 2 * var(--pl-inset)); } /* padding counts inside max-width */
+  @media (max-width: 760px) { #pipeline-section > .section-head, #pipeline-section > .h2 { --pl-inset: 20px; } }
   /* Nav links glide down to their section */
   @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
   /* lands below the pinned bar (the script measures it) with a little room above the label */
@@ -73,7 +77,7 @@
     <div class="section-head">
       <h2 id="pipeline-title" class="label">Pipeline</h2>
     </div>
-    <p class="h2" style="max-width: 22em; margin-bottom: 2.5rem;">We are advancing a portfolio of internally invented, wholly owned NLRP3 inhibitor product candidates.</p>
+    <p class="h2" style="margin-bottom: 2.5rem;">We are advancing a portfolio of internally invented, wholly owned NLRP3 inhibitor product candidates.</p>
     <div class="pipeline" role="group" aria-label="Development pipeline" id="pipeline"></div>
   </section>
 
