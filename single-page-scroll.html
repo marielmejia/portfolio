@@ -5,6 +5,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Albert+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap">
+<link rel="stylesheet" href="https://use.typekit.net/tpm7itx.css"> <!-- Adobe Fonts: Abril Titling Condensed for headlines -->
 <link rel="stylesheet" href="clean-modern.css">
 <style>
   /* 180px between the content sections (.wrap already spaces them 4.5rem) */
@@ -13,6 +14,11 @@
   #about-mp2, #science { margin-top: calc(var(--gutter) - 4.5rem); }
   /* Section labels sit 12px above their headlines everywhere, as in the About, Science and Contact panels */
   .wrap > section > .section-head { margin-bottom: 0.75rem; }
+  /* Trying Abril Titling Condensed (Adobe Fonts) for H1 and H2 headlines on this page only. It loads from the
+     Adobe Fonts project link in the <head>; until that's added, browsers fall back to a plain serif. The small
+     section labels (h2.label) keep the label style. */
+  h1, h2:not(.label), .h2 { font-family: "abril-titling-condensed", serif; font-style: normal; font-weight: 400;
+    letter-spacing: -0.01em; } /* the -6% / -4% tracking was tuned for Albert Sans and crowds this condensed serif */
   /* Inset by the panels' own inner padding (100px, 20px on phones): the Pipeline and News labels and headlines
      line up with the text inside the chart and the news rows, and everything in Team sits on that same inset */
   #pipeline-section > .section-head, #pipeline-section > .h2,
