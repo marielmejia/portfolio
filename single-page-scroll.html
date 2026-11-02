@@ -197,6 +197,30 @@
   addEventListener('resize', updatePinbar);
   updatePinbar();
 
+  // The bar slides up out of view while scrolling down and back in on any scroll up.
+  // It always shows at the very top, and small jitters (under 6px) don't toggle it.
+  let lastY = scrollY;
+  function tuckPinbar() {
+    const y = scrollY, delta = y - lastY;
+    if (y <= pinbar.offsetHeight) pinbar.classList.remove('tucked');
+    else if (delta > 6) pinbar.classList.add('tucked');
+    else if (delta < -6) pinbar.classList.remove('tucked');
+    else return; // too small to count; keep measuring from the last real move
+    lastY = y;
+  }
+  addEventListener('scroll', tuckPinbar, { passive: true });
+
+  // Hero box shrinks (to 88%) as it scrolls away; held still for reduced motion
+  let scaleQueued = false;
+  function updateHeroScale() {
+    scaleQueued = false;
+    if (!matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
+    const progress = Math.min(Math.max(scrollY / hero.offsetHeight, 0), 1);
+    hero.style.setProperty('--hero-scale', (1 - 0.12 * progress).toFixed(4));
+  }
+  addEventListener('scroll', () => { if (!scaleQueued) { scaleQueued = true; requestAnimationFrame(updateHeroScale); } }, { passive: true });
+  updateHeroScale();
+
   // Five stages; each program's progress is counted in slots (fractions fill part of a slot)
   const stages = [['Discovery', 'Disc'], ['IND-Enabling', 'IND'], ['Phase 1', 'PH1'], ['Phase 2', 'PH2'], ['Phase 3', 'PH3']];
   const programs = [
