@@ -343,7 +343,7 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.78125rem
 
 /* ---------- Team ---------- */
 /* Markup:
-   <div class="team-head"><p class="h2">Headline</p><div class="tabs">…</div></div>
+   <div class="team-head"><p class="h2">Headline</p><div class="tabs">…</div></div>  (tabs under the headline)
    <div class="team-grid" role="tabpanel">
      <button class="person" type="button">
        <span class="person-photo">PE</span>  (or an <img> inside it)
@@ -351,8 +351,8 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.78125rem
        <span class="person-more">Read Bio <svg class="ar r">…</svg></span>
      </button>
    </div> */
-.team-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 1.5rem 2rem; margin-bottom: 2.5rem; }
-.team-head .h2 { flex: 1 1 0; min-width: min(100%, 16em); max-width: 20em; } /* narrows before the tabs wrap under it */
+.team-head { display: grid; justify-items: start; gap: 1.5rem; margin-bottom: 2.5rem; } /* tabs sit under the headline, on its left edge */
+.team-head .h2 { max-width: 20em; }
 .team-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gutter); } /* three at most, two on phones */
 .person {
   appearance: none; border: 0; font: inherit; text-align: left; cursor: pointer;
