@@ -18,8 +18,8 @@
      Adobe Fonts project link in the <head>; until that's added, browsers fall back to a plain serif. The small
      section labels (h2.label) keep the label style. */
   h1, h2:not(.label), .h2 { font-family: "abril-titling-condensed", serif; font-style: normal; font-weight: 300; /* shows as 400 until a 300 weight is added to the Adobe Fonts project */
-    letter-spacing: 0.01em; } /* the -6% / -4% tracking was tuned for Albert Sans and crowds this condensed serif */
-  h2:not(.label), .h2 { font-size: clamp(2rem, calc(3.5vw + 6px), 2.75rem); } /* tops out at 44px (framework: 42px) */
+    letter-spacing: 0; } /* the -6% / -4% tracking was tuned for Albert Sans and crowds this condensed serif */
+  h2:not(.label), .h2 { font-size: clamp(2rem, calc(3.5vw + 6px), 2.875rem); } /* tops out at 46px (framework: 42px) */
   /* Inset by the panels' own inner padding (100px, 20px on phones): the Pipeline and News labels and headlines
      line up with the text inside the chart and the news rows, and everything in Team sits on that same inset */
   #pipeline-section > .section-head, #pipeline-section > .h2,
@@ -54,7 +54,7 @@
   <header class="hero" id="hero">
     <video class="hero-video" id="hero-video" src="work/Rezera_Campaign_Video_R2.mp4" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
     <div class="hero-body">
-      <h1>Main headline goes here.</h1>
+      <h1>Main headline<br> goes here.</h1>
       <div class="hero-side">
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.</p>
         <a class="button" href="#science">Explore our science</a>
