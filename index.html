@@ -42,7 +42,7 @@
     margin: 0; /* the gutter is the whole page margin */
     background: var(--bg);
     color: var(--ink);
-    font: 400 1.25rem/1.5 var(--font);
+    font: 400 1.125rem/1.5 var(--font); /* 18px body text */
     padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
     padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
   }
@@ -176,7 +176,7 @@
   .accordion[open]:not(.closing) .acc-icon .v { transform: scaleY(0); } /* flips back as soon as closing starts */
   .accordion .detail-body { padding: 0.25rem 1.1rem 1.5rem; }
   .detail-body { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 2rem var(--gutter); align-items: start; }
-  .detail-body p { margin: 0; font-size: 1.25rem; line-height: 1.5; max-width: 36em; }
+  .detail-body p { margin: 0; font-size: 1.125rem; line-height: 1.5; max-width: 36em; }
   /* Paragraph style: slightly tighter than the global -2% */
   .about-text p:not(.h2), .detail-body p, .about-text p:not(.h2) *, .detail-body p * { letter-spacing: -0.03em; }
   .gallery .media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }

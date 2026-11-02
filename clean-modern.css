@@ -16,7 +16,7 @@
      H1 / display   400, clamp(48px, 11vw, 136px), line-height 0.92, -0.06em
      H2 / .h2       400, clamp(32px, 3.5vw + 6px, 42px), line-height 1.05, -0.04em
      H3 / .h3       400, clamp(20px, 1.2vw + 10px, 28px), line-height 1.15, -0.03em
-     Body           400, 20px, line-height 1.5, -0.02em
+     Body           400, 18px, line-height 1.5, -0.02em
      Paragraph      body, but -0.03em (bio and project text)
      Tagline        400, 24px, line-height 1.3, gray
      Label          400, 12.5px, line-height 1.3, +0.03em, UPPERCASE, black
@@ -123,7 +123,7 @@ body {
   margin: 0; /* the gutter is the whole page margin */
   background: var(--bg);
   color: var(--ink);
-  font: 400 1.25rem/1.5 var(--font);
+  font: 400 1.125rem/1.5 var(--font); /* 18px body text */
   padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
   padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
 }
@@ -258,7 +258,7 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.78125rem
 .bleed #d-video { top: 10%; left: 10%; width: 80%; height: 80%; transform: none; border-radius: 20px; }
 
 .detail-body { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 2rem var(--gutter); align-items: start; }
-.detail-body p { margin: 0; font-size: 1.25rem; line-height: 1.5; max-width: 36em; }
+.detail-body p { margin: 0; font-size: 1.125rem; line-height: 1.5; max-width: 36em; }
 
 .gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gutter); }
 .bleed + .gallery { margin-top: calc(var(--gutter) - 2.5rem); } /* leaves one gutter under the video */
@@ -327,7 +327,7 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.78125rem
 .pl-item[open]:not(.closing) .acc-icon .v { transform: scaleY(0); } /* plus becomes minus */
 .pl-program small { display: block; font: 400 1rem/1.4 var(--font); color: var(--muted); }
 .pl-panel { padding: 0 0 2rem; }
-.pl-panel p { margin: 0; max-width: 36em; font-size: 1.25rem; line-height: 1.5; letter-spacing: -0.03em; } /* paragraph style */
+.pl-panel p { margin: 0; max-width: 36em; font-size: 1.125rem; line-height: 1.5; letter-spacing: -0.03em; } /* paragraph style */
 .pl-indication { font-size: 1.125rem; line-height: 1.4; }
 .pl-slot { position: relative; height: 12px; background: var(--line); overflow: hidden; }
 .pl-slot::after { content: ""; position: absolute; inset: 0; background: var(--ink); transform-origin: 0 50%; transform: scaleX(var(--fill, 0)); }
