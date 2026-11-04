@@ -120,7 +120,7 @@
   .topbar nav { display: flex; gap: 1.5rem; }
   .topbar nav a { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; } /* label style, in red */
   h1 {
-    font: 100 clamp(2.5rem, 11vw, 8.5rem)/1 var(--font-serif); /* 40px floor so "Crafting Brands" fits a 375px phone in this wider serif */
+    font: 100 clamp(2.1875rem, calc(11vw - 5px), 8.1875rem)/1 var(--font-serif); /* 35px to 131px; low floor so "Crafting Brands" fits a 375px phone in this wider serif */
     letter-spacing: 0;
     margin: 0;
     text-wrap: balance;
@@ -212,7 +212,7 @@
   .detail-inner { width: 100%; }
   .detail-head { display: grid; gap: 1.5rem; }
   .back { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; }
-  .detail-title { font: 100 clamp(3rem, 11vw, 8.5rem)/1 var(--font-serif); letter-spacing: 0; margin: 0; text-wrap: balance; }
+  .detail-title { font: 100 clamp(2.6875rem, calc(11vw - 5px), 8.1875rem)/1 var(--font-serif); /* 43px to 131px */ letter-spacing: 0; margin: 0; text-wrap: balance; }
   .detail-tagline { font-size: 1.5rem; line-height: 1.3; margin: 0; color: var(--ink); max-width: 30em; }
   .bleed {
     position: relative;
