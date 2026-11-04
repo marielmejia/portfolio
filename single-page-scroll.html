@@ -31,7 +31,7 @@
   }
   #news > .section-head .label, #news > .h2 { color: #0c0f11; }
   /* Frosted rows, like the nav, so the image shows through; the black rollover stays solid */
-  #news .news-item { background: color-mix(in srgb, var(--row-bg) 60%, transparent); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+  #news .news-item { background: color-mix(in srgb, var(--row-bg) 45%, transparent); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
   #news .news-item:hover, #news .news-item:focus-visible { background: var(--ink); }
   /* Inset by the panels' own inner padding (100px, 20px on phones): the Pipeline and News labels and headlines
      line up with the text inside the chart and the news rows, and everything in Team sits on that same inset */
@@ -124,7 +124,11 @@
       <h2 id="news-title" class="label">News</h2>
     </div>
     <p class="h2" style="margin-bottom: 2.5rem;">Press Releases</p>
-    <div class="news" id="news-list"></div>
+    <div class="carousel" id="news-carousel">
+      <button class="carousel-btn" type="button" data-dir="-1" aria-label="Previous press releases" aria-controls="news-list"><svg class="ar l" viewBox="0 0 16 16" aria-hidden="true"><path d="M11 2L5 8L11 14"/></svg></button>
+      <div class="carousel-track" id="news-list" role="region" aria-label="Press releases" tabindex="0"></div>
+      <button class="carousel-btn" type="button" data-dir="1" aria-label="Next press releases" aria-controls="news-list"><svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></button>
+    </div>
   </section>
 
   <section id="contact" aria-labelledby="contact-title">
@@ -461,6 +465,24 @@
     `<time class="label" datetime="${n.date}">${longDate(n.date)}</time>` +
     `<span class="news-title">${n.title}</span>` +
     `<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></a>`).join('');
+
+  // Carousels: the side buttons move one card at a time and grey out at either end
+  document.querySelectorAll('.carousel').forEach(carousel => {
+    const track = carousel.querySelector('.carousel-track');
+    const buttons = carousel.querySelectorAll('.carousel-btn');
+    const step = () => { const card = track.firstElementChild; return card ? card.offsetWidth + parseFloat(getComputedStyle(track).columnGap) : track.clientWidth; };
+    const update = () => {
+      const max = track.scrollWidth - track.clientWidth;
+      buttons.forEach(b => { b.disabled = b.dataset.dir === '-1' ? track.scrollLeft <= 1 : track.scrollLeft >= max - 1; });
+    };
+    buttons.forEach(b => b.addEventListener('click', () => {
+      track.scrollBy({ left: +b.dataset.dir * step(), behavior: motionOK() ? 'smooth' : 'auto' });
+    }));
+    track.addEventListener('scroll', update, { passive: true });
+    addEventListener('resize', update);
+    addEventListener('load', update); // again once fonts and styles have settled the card widths
+    update();
+  });
 
 
   // Contact form: a demo, so it checks the fields and confirms here without sending anything

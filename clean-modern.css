@@ -57,6 +57,7 @@
      .team-grid       grid of .person cards (ink panel slides in on hover)
      .bio             <dialog> side sheet with a person's full bio
      .news            full-width press release rows (invert like .piece on hover)
+     .carousel        horizontal card track with previous/next buttons on the sides
      .split           two panels, centered content and an inset image (.flip mirrors them)
      .hero            full-screen header with a background video
      .pinbar          top bar pinned to the screen, frosted once you scroll
@@ -432,6 +433,41 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .news-item:hover, .news-item:focus-visible { background: var(--ink); color: var(--row-bg); }
 .news-item:focus-visible { outline-offset: 3px; border-radius: 0; }
 
+
+/* ---------- Carousel ---------- */
+/* Markup:
+   <div class="carousel">
+     <button class="carousel-btn" data-dir="-1" aria-label="Previous"><svg class="ar l">…</svg></button>
+     <div class="carousel-track" tabindex="0">…cards…</div>
+     <button class="carousel-btn" data-dir="1" aria-label="Next"><svg class="ar r">…</svg></button>
+   </div>
+   Three cards per view (two at 1024px and below, one on phones). The buttons sit in the 100px side
+   columns, so the cards line up with inset content above; on phones they move under the track.
+   The track scrolls and snaps on its own too (trackpad, swipe, keyboard). */
+.carousel { --per-view: 3; --carousel-gap: 1px; display: grid; grid-template-columns: 100px minmax(0, 1fr) 100px; align-items: center; }
+.carousel-track {
+  display: grid; grid-auto-flow: column; gap: var(--carousel-gap);
+  grid-auto-columns: calc((100% - (var(--per-view) - 1) * var(--carousel-gap)) / var(--per-view));
+  overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none;
+  padding-block: 6px; /* room for the cards' hover lift */
+}
+.carousel-track::-webkit-scrollbar { display: none; }
+.carousel-track > * { scroll-snap-align: start; }
+.carousel-track:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.carousel-btn {
+  justify-self: center; display: grid; place-items: center; width: 48px; height: 48px;
+  appearance: none; border: 0; padding: 0; cursor: pointer;
+  background: color-mix(in srgb, var(--row-bg) 80%, transparent); color: var(--link);
+  -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+}
+.carousel-btn .ar { width: 0.8rem; height: 0.8rem; margin: 0; stroke-width: 3; }
+.carousel-btn:hover:not(:disabled), .carousel-btn:focus-visible { background: var(--ink); color: var(--row-bg); }
+.carousel-btn:disabled { opacity: 0.35; cursor: default; }
+/* News cards in a carousel: date on top, headline, arrow at the bottom */
+.carousel .news-item { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr auto; align-items: start; gap: 1rem; padding: 2rem; min-height: 18rem; }
+.carousel .news-title { font-size: 1.375rem; }
+.carousel .news-item .ar { grid-column: 1; grid-row: 3; }
+
 /* ---------- Split (content beside an image) ---------- */
 /* Markup:
    <div class="split">            (add .flip to put the image on the left)
@@ -592,6 +628,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   .pinbar { flex-wrap: nowrap; }
   .pinbar .label { flex: 1 1 auto; min-width: 0; padding-block: 0.75rem; } /* a long name wraps in place, beside the button */
   .menu-toggle { display: inline-flex; flex: none; }
+  .carousel { --per-view: 2; }
 }
 
 
@@ -607,6 +644,12 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   .bio-inner { padding: var(--gutter) var(--gutter) 2rem; }
   .news-item { padding: 1.75rem 20px; }
   .news-title { font-size: 1.25rem; }
+  .carousel { --per-view: 1; grid-template-columns: minmax(0, 1fr) auto auto; gap: 1rem 4px; }
+  .carousel-track { grid-column: 1 / -1; grid-row: 1; }
+  .carousel-btn { grid-row: 2; }
+  .carousel-btn[data-dir="-1"] { grid-column: 2; } /* both buttons under the track, on the right */
+  .carousel-btn[data-dir="1"] { grid-column: 3; }
+  .carousel .news-item { padding: 1.5rem; min-height: 14rem; }
   .split { grid-template-columns: minmax(0, 1fr); }
   .split-body { padding: 40px 20px; }
   .split .split-media { order: -1; } /* image first on both, so the stack reads the same */
