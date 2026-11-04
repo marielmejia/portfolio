@@ -274,16 +274,6 @@
   }
   addEventListener('scroll', tuckPinbar, { passive: true });
 
-  // Hero box shrinks (to 88%) as it scrolls away; held still for reduced motion
-  let scaleQueued = false;
-  function updateHeroScale() {
-    scaleQueued = false;
-    if (!matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
-    const progress = Math.min(Math.max(scrollY / hero.offsetHeight, 0), 1);
-    hero.style.setProperty('--hero-scale', (1 - 0.12 * progress).toFixed(4));
-  }
-  addEventListener('scroll', () => { if (!scaleQueued) { scaleQueued = true; requestAnimationFrame(updateHeroScale); } }, { passive: true });
-  updateHeroScale();
 
   // Contact background parallax: the image layer drifts against the scroll, from +15% of the section's height
   // as it enters the bottom of the screen to -15% as it leaves the top
