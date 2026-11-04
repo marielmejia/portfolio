@@ -10,8 +10,8 @@
 <style>
   /* 180px between the content sections (.wrap already spaces them 4.5rem) */
   .wrap > section + section { margin-top: calc(180px - 4.5rem); }
-  /* The hero, About and Science panels stack one gutter apart, like the page edges */
-  #about-mp2, #science { margin-top: calc(var(--gutter) - 4.5rem); }
+  /* The hero, About and Science panels stack one gutter apart, like the page edges; so do News and Contact */
+  #about-mp2, #science, #contact { margin-top: calc(var(--gutter) - 4.5rem); }
   /* Section labels sit 12px above their headlines everywhere, as in the About, Science and Contact panels */
   .wrap > section > .section-head { margin-bottom: 0.75rem; }
   /* Trying Abril Titling Condensed (Adobe Fonts) for H1 and H2 headlines on this page only. It loads from the
@@ -27,7 +27,14 @@
   #news {
     margin-inline: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px))) calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)));
     padding: 100px max(var(--gutter), env(safe-area-inset-right, 0px)) 100px max(var(--gutter), env(safe-area-inset-left, 0px));
-    background: #e9e9e9 url("work/colorFlow.png") 50% 0 / cover no-repeat;
+    position: relative; isolation: isolate; overflow: hidden; background: #e9e9e9;
+  }
+  /* The image is a layer 30% taller than the section; the page script slides it up to 15% either way
+     as the section scrolls past (parallax). Reduced motion leaves it still. */
+  #news::before {
+    content: ""; position: absolute; inset: -15% 0; z-index: -1;
+    background: url("work/colorFlow.png") 50% 0 / cover no-repeat;
+    transform: translateY(var(--parallax, 0px)); will-change: transform;
   }
   #news > .section-head .label, #news > .h2 { color: #0c0f11; }
   /* Frosted rows, like the nav, so the image shows through; the black rollover stays solid */
@@ -247,6 +254,22 @@
   }
   addEventListener('scroll', () => { if (!scaleQueued) { scaleQueued = true; requestAnimationFrame(updateHeroScale); } }, { passive: true });
   updateHeroScale();
+
+  // News background parallax: the image layer drifts against the scroll, from +15% of the section's height
+  // as it enters the bottom of the screen to -15% as it leaves the top
+  const newsSection = document.getElementById('news');
+  let parallaxQueued = false;
+  function updateParallax() {
+    parallaxQueued = false;
+    if (!matchMedia('(prefers-reduced-motion: no-preference)').matches) { newsSection.style.removeProperty('--parallax'); return; }
+    const r = newsSection.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > innerHeight) return; // off screen
+    const progress = (innerHeight - r.top) / (innerHeight + r.height); // 0 entering, 1 leaving
+    newsSection.style.setProperty('--parallax', ((0.5 - progress) * 0.3 * r.height).toFixed(1) + 'px');
+  }
+  addEventListener('scroll', () => { if (!parallaxQueued) { parallaxQueued = true; requestAnimationFrame(updateParallax); } }, { passive: true });
+  addEventListener('resize', updateParallax);
+  updateParallax();
 
   // Five stages; each program's progress is counted in slots (fractions fill part of a slot)
   const stages = [['Discovery', 'Disc'], ['IND-Enabling', 'IND'], ['Phase 1', 'PH1'], ['Phase 2', 'PH2'], ['Phase 3', 'PH3']];
