@@ -11,6 +11,14 @@
   .wrap > section + section { margin-top: calc(180px - 4.5rem); }
   /* The hero, About and Science panels stack one gutter apart, like the page edges */
   #about-mp2, #science { margin-top: calc(var(--gutter) - 4.5rem); }
+  /* About and Science run edge to edge as one white band: the section's white reaches the screen edges while the
+     gutter padding keeps the panels (and their images) exactly where they were. Science meets About with no gap. */
+  #about-mp2, #science {
+    background: var(--row-bg);
+    margin-inline: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px))) calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)));
+    padding-inline: max(var(--gutter), env(safe-area-inset-left, 0px)) max(var(--gutter), env(safe-area-inset-right, 0px));
+  }
+  #science { margin-top: -4.5rem; } /* cancels .wrap's gap so it butts against About */
   /* Section labels sit 12px above their headlines everywhere, as in the About, Science and Contact panels */
   .wrap > section > .section-head { margin-bottom: 0.75rem; }
   /* News sits on the colorFlow image, edge to edge. The negative margins cancel the page gutter and the padding
