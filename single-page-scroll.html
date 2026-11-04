@@ -82,6 +82,8 @@
     #news > .section-head, #news > .h2,
     #team > * { --inset: 20px; }
   }
+  /* About and Science images slide up (from 80px below their place) as they scroll into view; set by the page script */
+  #about-mp2 .split-img, #science .split-img { transform: translateY(var(--img-shift, 0px)); will-change: transform; }
   /* Nav links glide down to their section */
   @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
   /* lands below the pinned bar (the script measures it) with a little room above the label */
@@ -298,6 +300,26 @@
   addEventListener('scroll', () => { if (!parallaxQueued) { parallaxQueued = true; requestAnimationFrame(updateParallax); } }, { passive: true });
   addEventListener('resize', updateParallax);
   updateParallax();
+
+  // About and Science images: slide up from 80px below their place as an image's top enters the bottom
+  // of the screen, landing once its center reaches the middle; held in place for reduced motion
+  const slideImgs = document.querySelectorAll('#about-mp2 .split-img, #science .split-img');
+  let imgSlideQueued = false;
+  function updateImgSlide() {
+    imgSlideQueued = false;
+    const motion = matchMedia('(prefers-reduced-motion: no-preference)').matches;
+    slideImgs.forEach(img => {
+      if (!motion) { img.style.removeProperty('--img-shift'); return; }
+      const r = img.getBoundingClientRect();
+      const start = innerHeight, end = innerHeight / 2 - r.height / 2; // top positions where it begins and finishes
+      const t = Math.min(1, Math.max(0, (start - r.top) / (start - end)));
+      const eased = 1 - Math.pow(1 - t, 3); // ease out, so it settles softly
+      img.style.setProperty('--img-shift', (80 * (1 - eased)).toFixed(1) + 'px');
+    });
+  }
+  addEventListener('scroll', () => { if (!imgSlideQueued) { imgSlideQueued = true; requestAnimationFrame(updateImgSlide); } }, { passive: true });
+  addEventListener('resize', updateImgSlide);
+  updateImgSlide();
 
   // Five stages; each program's progress is counted in slots (fractions fill part of a slot)
   const stages = [['Discovery', 'Disc'], ['IND-Enabling', 'IND'], ['Phase 1', 'PH1'], ['Phase 2', 'PH2'], ['Phase 3', 'PH3']];
