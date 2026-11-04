@@ -10,8 +10,8 @@
 <style>
   /* 180px between the content sections (.wrap already spaces them 4.5rem) */
   .wrap > section + section { margin-top: calc(180px - 4.5rem); }
-  /* The hero, About and Science panels stack one gutter apart, like the page edges; so do News and Contact */
-  #about-mp2, #science, #contact { margin-top: calc(var(--gutter) - 4.5rem); }
+  /* The hero, About and Science panels stack one gutter apart, like the page edges */
+  #about-mp2, #science { margin-top: calc(var(--gutter) - 4.5rem); }
   /* Section labels sit 12px above their headlines everywhere, as in the About, Science and Contact panels */
   .wrap > section > .section-head { margin-bottom: 0.75rem; }
   /* Trying Abril Titling Condensed (Adobe Fonts) for H1 and H2 headlines on this page only. It loads from the
@@ -42,6 +42,10 @@
   #contact {
     --row-bg: #0c0f11; --ink: #ffffff; --bg: #1a1f1c; --muted: #9aa59f; --line: #333b37; --accent: #9aa59f;
     color: var(--ink); color-scheme: dark;
+    /* Edge to edge in the ink color, touching News; the gutter padding is the dark band around the panel */
+    background: #0c0f11; margin-top: -4.5rem; /* cancels .wrap's gap so it meets the News background */
+    margin-inline: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px))) calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)));
+    padding: var(--gutter) max(var(--gutter), env(safe-area-inset-right, 0px)) var(--gutter) max(var(--gutter), env(safe-area-inset-left, 0px));
   }
   /* Frosted rows, like the nav, so the image shows through; the black rollover stays solid */
   /* Dark-tinted buttons with white chevrons, so they read over both the pale and the deep parts of the image */
