@@ -37,6 +37,12 @@
     transform: translateY(var(--parallax, 0px)); will-change: transform;
   }
   #news > .section-head .label, #news > .h2 { color: #0c0f11; }
+  /* Contact in reverse: the framework's colors flipped for this section only. The panel takes the ink color,
+     text goes white, fields go dark; red links and the button stay red. */
+  #contact {
+    --row-bg: #0c0f11; --ink: #ffffff; --bg: #1a1f1c; --muted: #9aa59f; --line: #333b37; --accent: #9aa59f;
+    color: var(--ink); color-scheme: dark;
+  }
   /* Frosted rows, like the nav, so the image shows through; the black rollover stays solid */
   /* Dark-tinted buttons with white chevrons, so they read over both the pale and the deep parts of the image */
   #news .carousel-btn { background: rgb(12 15 17 / 0.4); color: #fff; }
