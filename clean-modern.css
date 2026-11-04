@@ -72,6 +72,7 @@
    NEEDS A LITTLE JAVASCRIPT
      .media .ready              add "ready" to an <img>/<video> once loaded (fade-in)
      .piece.will-reveal         add "revealed" when the card scrolls into view
+     .text-reveal               text waiting to slide up; add "revealed" when it scrolls into view
      .page-in                   add to a page section to play the slide-up entrance
      .accordion.closing         add while the accordion animates shut
      .pipeline.will-fill        add "filled" when the table scrolls into view
@@ -702,6 +703,10 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   #home.page-in header h1 .h1-part { transform-origin: 50% 100%; animation: h1-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
   #home.page-in header h1 .h1-part + .h1-part { animation-delay: 0.6s; }
   @keyframes h1-in { from { opacity: 0; transform: translateY(120px) scale(1.6); } 40% { opacity: 1; } to { opacity: 1; transform: none; } }
+
+  /* Text slides up as it scrolls into view: the page script adds .text-reveal, then .revealed on screen */
+  .text-reveal { opacity: 0; translate: 0 40px; transition: opacity 0.8s ease, translate 0.8s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .text-reveal.revealed { opacity: 1; translate: 0 0; }
 
   /* Cards slide up as they scroll into view (translate, so the hover lift still works) */
   .piece.will-reveal { opacity: 0; translate: 0 80px; transition: opacity 0.9s ease, translate 0.9s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.25s ease, background-color 0.3s ease, color 0.3s ease; }
