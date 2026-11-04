@@ -19,13 +19,14 @@
     padding-inline: max(var(--gutter), env(safe-area-inset-left, 0px)) max(var(--gutter), env(safe-area-inset-right, 0px));
   }
   #science { margin-top: -4.5rem; } /* cancels .wrap's gap so it butts against About */
+  /* About and Science images are 4:3 at 80% of their column, with 10% of the column's width above and below */
+  #about-mp2 .split-media, #science .split-media { aspect-ratio: auto; padding-block: 10%; }
+  #about-mp2 .split-img, #science .split-img { height: auto; aspect-ratio: 4 / 3; }
   /* On wide screens About and Science take the same 200px side inset as the other sections: the panel pads in
-     by 200px, and the text and image each sit against that inset (the gap stays between them) */
+     by 200px, the image sits against that inset and the copy stays centered in its column */
   @media (min-width: 1025px) {
     #about-mp2 .split, #science .split { padding-inline: 200px; }
-    #science .split-body { justify-content: start; padding-left: 0; }
     #science .split-media { justify-items: end; }
-    #about-mp2 .split-body { justify-content: end; padding-right: 0; }
     #about-mp2 .split-media { justify-items: start; }
     /* The nav and the hero copy line up on the same inset: one gutter plus 200px from the screen edges */
     .pinbar { padding-inline: calc(max(var(--gutter), env(safe-area-inset-left, 0px)) + 200px) calc(max(var(--gutter), env(safe-area-inset-right, 0px)) + 200px); }
