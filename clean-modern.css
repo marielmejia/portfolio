@@ -337,12 +337,16 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.78125rem
 /* ---------- Tabs ---------- */
 /* Markup:
    <div class="tabs" role="tablist"><button class="tab" role="tab" aria-selected="true">Leadership</button>…</div> */
-.tabs { display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; }
+/* Styled like the pinned nav: a 60px row with a light rule under it, links split by thin rules,
+   the first one starting on the content edge. The selected tab turns black. */
+.tabs { display: flex; flex-wrap: wrap; min-height: 60px; border-bottom: 1px solid var(--line); }
 .tab {
-  appearance: none; background: none; border: 0; border-bottom: 1px solid transparent; padding: 0 0 0.35rem; cursor: pointer;
+  appearance: none; background: none; border: 0; display: flex; align-items: center; padding: 0 1.25rem; cursor: pointer;
   font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; color: var(--link); /* nav style */
 }
-.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--ink); }
+.tab:first-child { padding-left: 0; }
+.tab + .tab { border-left: 1px solid var(--line); }
+.tab[aria-selected="true"] { color: var(--ink); }
 
 
 /* ---------- Team ---------- */
@@ -355,7 +359,8 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.78125rem
        <span class="person-more">Read Bio <svg class="ar r">…</svg></span>
      </button>
    </div> */
-.team-head { display: grid; justify-items: start; gap: 1.5rem; margin-bottom: 2.5rem; } /* tabs sit under the headline, on its left edge */
+.team-head { display: grid; justify-items: start; gap: 3rem; margin-bottom: 3rem; } /* tabs sit under the headline, on its left edge */
+.team-head .tabs { justify-self: stretch; } /* the tab row's rule runs the full width of the cards below */
 .team-head .h2 { max-width: 20em; }
 .team-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gutter); } /* four across, three at 1024px and below, two on phones */
 .person {
@@ -641,6 +646,10 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   .pl-head + .pl-item { border-top: 0; }
   .pl-stage { grid-column: auto; display: grid; margin-top: 0.75rem; }
   .team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* Phones: too narrow for the tabs in one row, so they stack as a list, one rule between each */
+  .tabs { flex-direction: column; min-height: 0; }
+  .tab { min-height: 48px; padding: 0; }
+  .tab + .tab { border-left: 0; border-top: 1px solid var(--line); }
   .person { padding: 12px 12px 1.25rem; }
   .bio-inner { padding: var(--gutter) var(--gutter) 2rem; }
   .news-item { padding: 1.75rem 20px; }
