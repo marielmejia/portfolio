@@ -21,37 +21,49 @@
   #science { margin-top: -4.5rem; } /* cancels .wrap's gap so it butts against About */
   /* Section labels sit 12px above their headlines everywhere, as in the About, Science and Contact panels */
   .wrap > section > .section-head { margin-bottom: 0.75rem; }
-  /* News sits on the colorFlow image, edge to edge. The negative margins cancel the page gutter and the padding
-     puts it back, so the content stays where it was. The label and headline sit on the image's light top, so they
-     stay dark in dark mode too. */
+  /* News sits on solid black, edge to edge. The negative margins cancel the page gutter and the padding puts it
+     back, so the content stays where it was; 180px below the cards (100px + 80px). Label and headline are white. */
   #news {
     margin-inline: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px))) calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)));
-    padding: 100px max(var(--gutter), env(safe-area-inset-right, 0px)) 100px max(var(--gutter), env(safe-area-inset-left, 0px));
-    position: relative; isolation: isolate; overflow: hidden; background: #e9e9e9;
+    padding: 100px max(var(--gutter), env(safe-area-inset-right, 0px)) 180px max(var(--gutter), env(safe-area-inset-left, 0px));
+    background: #0c0f11;
   }
-  /* The image is a layer 30% taller than the section; the page script slides it up to 15% either way
-     as the section scrolls past (parallax). Reduced motion leaves it still. */
-  #news::before {
-    content: ""; position: absolute; inset: -15% 0; z-index: -1;
-    background: url("work/colorFlow.png") 50% 0 / cover no-repeat;
-    transform: translateY(var(--parallax, 0px)); will-change: transform;
-  }
-  #news > .section-head .label, #news > .h2 { color: #0c0f11; }
+  #news > .section-head .label, #news > .h2 { color: #fff; }
   /* Contact in reverse: the framework's colors flipped for this section only. The panel takes the ink color,
      text goes white, fields go dark; red links and the button stay red. */
   #contact {
     --row-bg: #0c0f11; --ink: #ffffff; --bg: #1a1f1c; --muted: #9aa59f; --line: #333b37; --accent: #9aa59f;
     color: var(--ink); color-scheme: dark;
-    /* Edge to edge in the ink color, touching News; the gutter padding is the dark band around the panel */
+    /* Edge to edge on the colorFlow image, touching News; the gutter padding is the band of image around the panel */
+    position: relative; isolation: isolate; overflow: hidden;
     background: #0c0f11; margin-top: -4.5rem; /* cancels .wrap's gap so it meets the News background */
     margin-inline: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px))) calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)));
     padding: var(--gutter) max(var(--gutter), env(safe-area-inset-right, 0px)) var(--gutter) max(var(--gutter), env(safe-area-inset-left, 0px));
   }
-  /* Frosted rows, like the nav, so the image shows through; the black rollover stays solid */
-  /* Dark-tinted buttons with white chevrons, so they read over both the pale and the deep parts of the image */
-  #news .carousel-btn { background: rgb(12 15 17 / 0.4); color: #fff; }
-  #news .carousel-btn:hover:not(:disabled), #news .carousel-btn:focus-visible { background: #0c0f11; }
-  #news .news-item { background: color-mix(in srgb, var(--row-bg) 40%, transparent); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+  /* Form fields: see-through with white strokes and white text; a missed required field still turns red */
+  #contact .field input, #contact .field textarea, #contact .field select { background: transparent; border-color: rgb(255 255 255 / 0.2); color: #fff; } /* stroke: white at 20%, like the nav over the hero */
+  #contact .field :user-invalid { border-color: var(--link); }
+  /* Black overlay over the image (under the panel), to darken it */
+  #contact::after { content: ""; position: absolute; inset: 0; z-index: -1; background: rgb(0 0 0 / 0.6); }
+  /* Frosted panel so the image shows through behind the text and form; fields stay solid */
+  /* Inset like the News cards (100px), so the panel lines up with them and the image shows at the sides.
+     On phones the cards run gutter to gutter (their buttons move below), so the panel does too. */
+  #contact .contact { margin: 100px; } /* the same 100px above and below, so the image frames it evenly */
+  @media (max-width: 760px) { #contact .contact { margin: 0; } }
+  #contact .contact { background: rgb(255 255 255 / 0.08); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+  /* The image is a layer 30% taller than the section; the page script slides it up to 15% either way
+     as the section scrolls past (parallax). Reduced motion leaves it still. */
+  #contact::before {
+    content: ""; position: absolute; inset: -15% 0; z-index: -1;
+    background: url("work/colorFlow.png") 50% 0 / cover no-repeat;
+    transform: translateY(var(--parallax, 0px)); will-change: transform;
+  }
+  /* Buttons frosted like the cards, with white chevrons; solid white with a dark chevron on hover */
+  #news .carousel-btn { background: rgb(255 255 255 / 0.15); color: #fff; }
+  #news .carousel-btn:hover:not(:disabled), #news .carousel-btn:focus-visible { background: #fff; color: #0c0f11; }
+  /* Cards: white frosted at 8% over the black, white text; the hover goes solid white with dark text */
+  #news .news-item { --row-bg: #0c0f11; --ink: #ffffff; }
+  #news .news-item { background: rgb(255 255 255 / 0.08); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
   #news .news-item:hover, #news .news-item:focus-visible { background: var(--ink); }
   /* Inset by the panels' own inner padding (100px, 20px on phones): the Pipeline and News labels and headlines
      line up with the text inside the chart and the news rows, and everything in Team sits on that same inset */
@@ -265,17 +277,17 @@
   addEventListener('scroll', () => { if (!scaleQueued) { scaleQueued = true; requestAnimationFrame(updateHeroScale); } }, { passive: true });
   updateHeroScale();
 
-  // News background parallax: the image layer drifts against the scroll, from +15% of the section's height
+  // Contact background parallax: the image layer drifts against the scroll, from +15% of the section's height
   // as it enters the bottom of the screen to -15% as it leaves the top
-  const newsSection = document.getElementById('news');
+  const parallaxSection = document.getElementById('contact');
   let parallaxQueued = false;
   function updateParallax() {
     parallaxQueued = false;
-    if (!matchMedia('(prefers-reduced-motion: no-preference)').matches) { newsSection.style.removeProperty('--parallax'); return; }
-    const r = newsSection.getBoundingClientRect();
+    if (!matchMedia('(prefers-reduced-motion: no-preference)').matches) { parallaxSection.style.removeProperty('--parallax'); return; }
+    const r = parallaxSection.getBoundingClientRect();
     if (r.bottom < 0 || r.top > innerHeight) return; // off screen
     const progress = (innerHeight - r.top) / (innerHeight + r.height); // 0 entering, 1 leaving
-    newsSection.style.setProperty('--parallax', ((0.5 - progress) * 0.3 * r.height).toFixed(1) + 'px');
+    parallaxSection.style.setProperty('--parallax', ((0.5 - progress) * 0.3 * r.height).toFixed(1) + 'px');
   }
   addEventListener('scroll', () => { if (!parallaxQueued) { parallaxQueued = true; requestAnimationFrame(updateParallax); } }, { passive: true });
   addEventListener('resize', updateParallax);
