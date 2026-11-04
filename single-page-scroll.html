@@ -21,6 +21,18 @@
     letter-spacing: 0; } /* the -6% / -4% tracking was tuned for Albert Sans and crowds this condensed serif */
   h2:not(.label), .h2 { font-size: clamp(2rem, calc(3.5vw + 6px), 3.125rem); } /* tops out at 50px (framework: 42px) */
   h1 { letter-spacing: -0.01em; } /* a touch tighter than the H2 at display size */
+  /* News sits on the colorFlow image, edge to edge. The negative margins cancel the page gutter and the padding
+     puts it back, so the content stays where it was. The label and headline sit on the image's light top, so they
+     stay dark in dark mode too. */
+  #news {
+    margin-inline: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px))) calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)));
+    padding: 100px max(var(--gutter), env(safe-area-inset-right, 0px)) 100px max(var(--gutter), env(safe-area-inset-left, 0px));
+    background: #e9e9e9 url("work/colorFlow.jpg") 50% 0 / cover no-repeat;
+  }
+  #news > .section-head .label, #news > .h2 { color: #0c0f11; }
+  /* Frosted rows, like the nav, so the image shows through; the black rollover stays solid */
+  #news .news-item { background: color-mix(in srgb, var(--row-bg) 60%, transparent); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+  #news .news-item:hover, #news .news-item:focus-visible { background: var(--ink); }
   /* Inset by the panels' own inner padding (100px, 20px on phones): the Pipeline and News labels and headlines
      line up with the text inside the chart and the news rows, and everything in Team sits on that same inset */
   #pipeline-section > .section-head, #pipeline-section > .h2,
