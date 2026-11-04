@@ -31,7 +31,10 @@
   }
   #news > .section-head .label, #news > .h2 { color: #0c0f11; }
   /* Frosted rows, like the nav, so the image shows through; the black rollover stays solid */
-  #news .news-item { background: color-mix(in srgb, var(--row-bg) 45%, transparent); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+  /* Dark-tinted buttons with white chevrons, so they read over both the pale and the deep parts of the image */
+  #news .carousel-btn { background: rgb(12 15 17 / 0.4); color: #fff; }
+  #news .carousel-btn:hover:not(:disabled), #news .carousel-btn:focus-visible { background: #0c0f11; }
+  #news .news-item { background: color-mix(in srgb, var(--row-bg) 40%, transparent); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
   #news .news-item:hover, #news .news-item:focus-visible { background: var(--ink); }
   /* Inset by the panels' own inner padding (100px, 20px on phones): the Pipeline and News labels and headlines
      line up with the text inside the chart and the news rows, and everything in Team sits on that same inset */

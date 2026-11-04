@@ -444,7 +444,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
    Three cards per view (two at 1024px and below, one on phones). The buttons sit in the 100px side
    columns, so the cards line up with inset content above; on phones they move under the track.
    The track scrolls and snaps on its own too (trackpad, swipe, keyboard). */
-.carousel { --per-view: 3; --carousel-gap: 1px; display: grid; grid-template-columns: 100px minmax(0, 1fr) 100px; align-items: center; }
+.carousel { --per-view: 3; --carousel-gap: var(--gutter); display: grid; grid-template-columns: 100px minmax(0, 1fr) 100px; align-items: center; }
 .carousel-track {
   display: grid; grid-auto-flow: column; gap: var(--carousel-gap);
   grid-auto-columns: calc((100% - (var(--per-view) - 1) * var(--carousel-gap)) / var(--per-view));
