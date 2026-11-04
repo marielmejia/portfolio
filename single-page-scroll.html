@@ -46,9 +46,9 @@
   /* Black overlay over the image (under the panel), to darken it */
   #contact::after { content: ""; position: absolute; inset: 0; z-index: -1; background: rgb(0 0 0 / 0.6); }
   /* Frosted panel so the image shows through behind the text and form; fields stay solid */
-  /* Inset like the News cards (100px), so the panel lines up with them and the image shows at the sides.
+  /* Inset like the News cards (200px at the sides), so the panel lines up with them and the image shows there.
      On phones the cards run gutter to gutter (their buttons move below), so the panel does too. */
-  #contact .contact { margin: 100px; } /* the same 100px above and below, so the image frames it evenly */
+  #contact .contact { margin: 100px 200px; } /* 100px above and below frames the image; 200px sides match the cards */
   @media (max-width: 760px) { #contact .contact { margin: 0; } }
   #contact .contact { background: rgb(255 255 255 / 0.08); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
   /* The image is a layer 30% taller than the section; the page script slides it up to 15% either way
@@ -65,11 +65,17 @@
   #news .news-item { --row-bg: #0c0f11; --ink: #ffffff; }
   #news .news-item { background: rgb(255 255 255 / 0.08); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
   #news .news-item:hover, #news .news-item:focus-visible { background: var(--ink); }
-  /* Inset by the panels' own inner padding (100px, 20px on phones): the Pipeline and News labels and headlines
+  /* Inset by the panels' own inner padding (200px, 20px on phones): the Pipeline and News labels and headlines
      line up with the text inside the chart and the news rows, and everything in Team sits on that same inset */
   #pipeline-section > .section-head, #pipeline-section > .h2,
   #news > .section-head, #news > .h2,
-  #team > * { --inset: 100px; padding-inline: var(--inset); }
+  #team > * { --inset: 200px; padding-inline: var(--inset); }
+  /* The same 200px side inset inside the Pipeline chart and in the News carousel's arrow columns */
+  #pipeline-section .pipeline { background: transparent; } /* the chart sits on the page background, no white panel */
+  @media (min-width: 761px) {
+    #pipeline-section .pipeline { padding-inline: 200px; }
+    #news .carousel { grid-template-columns: 200px minmax(0, 1fr) 200px; }
+  }
   #pipeline-section > .h2 { max-width: calc(22em + 2 * var(--inset)); } /* padding counts inside max-width */
   @media (max-width: 760px) {
     #pipeline-section > .section-head, #pipeline-section > .h2,
