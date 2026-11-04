@@ -22,6 +22,18 @@
   /* About and Science images are 4:3 at 80% of their column, with 10% of the column's width above and below */
   #about-mp2 .split-media, #science .split-media { aspect-ratio: auto; padding-block: 10%; }
   #about-mp2 .split-img, #science .split-img { height: auto; aspect-ratio: 4 / 3; }
+  /* The band opens and closes with double space: About gets that same space again above it, Science below it.
+     It matches the image's own 10% (of its column) so the top of About and the bottom of Science read as 20% */
+  #about-mp2 .split { padding-top: 5%; }   /* two columns: 10% of a column is 5% of the row */
+  #science .split { padding-bottom: 5%; }
+  @media (min-width: 1025px) {             /* the row is 400px narrower here (200px side insets) */
+    #about-mp2 .split { padding-top: calc(5% - 20px); }
+    #science .split { padding-bottom: calc(5% - 20px); }
+  }
+  @media (max-width: 760px) {              /* one column: the image spans the row */
+    #about-mp2 .split { padding-top: 10%; }
+    #science .split { padding-bottom: 10%; }
+  }
   /* On wide screens About and Science take the same 200px side inset as the other sections: the panel pads in
      by 200px, the image sits against that inset and the copy stays centered in its column */
   @media (min-width: 1025px) {
