@@ -466,8 +466,7 @@
   document.getElementById('news-list').innerHTML = news.map(n =>
     `<a class="news-item" href="${pressBase}${n.slug}/" target="_blank" rel="noopener">` +
     `<time class="label" datetime="${n.date}">${longDate(n.date)}</time>` +
-    `<span class="news-title">${n.title}</span>` +
-    `<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></a>`).join('');
+    `<span class="news-title">${n.title}</span></a>`).join('');
 
   // Carousels: the side buttons move one card at a time and grey out at either end
   document.querySelectorAll('.carousel').forEach(carousel => {

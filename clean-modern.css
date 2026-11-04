@@ -464,7 +464,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .carousel-btn:hover:not(:disabled), .carousel-btn:focus-visible { background: var(--ink); color: var(--row-bg); }
 .carousel-btn:disabled { opacity: 0.35; cursor: default; }
 /* News cards in a carousel: date on top, headline, arrow at the bottom */
-.carousel .news-item { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr auto; align-items: start; gap: 1rem; padding: 2rem; min-height: 18rem; }
+.carousel .news-item { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; align-items: start; gap: 1rem; padding: 2rem; min-height: 18rem; }
 .carousel .news-title { font-size: 1.375rem; }
 .carousel .news-item .ar { grid-column: 1; grid-row: 3; }
 
