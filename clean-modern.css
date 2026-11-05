@@ -20,7 +20,7 @@
      Paragraph      body, but -0.01em (bio and project text)
      Small text     200, 16px, line-height 1.4 (titles, codes, form fields)
      Label          400, 12.5px, line-height 1.3, +0.05em, UPPERCASE, black
-     Nav link       label style, in red (also tabs, CTAs, "Read more")
+     Nav link       400, 15px, line-height normal, 0, Title Case, red (also tabs, CTAs, "Read More")
      Text link      300, red
      Program name   300, 20px, red (pipeline)
      Accordion head 200, 18px
@@ -166,7 +166,7 @@ h3, .h3 { font: 200 1.375rem/1.3 var(--font); letter-spacing: -0.02em; margin: 0
 header { display: grid; gap: 1.75rem; }
 .topbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem 2rem; padding-bottom: 0.9rem; }
 .topbar nav { display: flex; gap: 1.5rem; }
-.topbar nav a { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; } /* label style, in red */
+.topbar nav a { color: var(--link); text-decoration: none; font: 400 0.9375rem/normal var(--font); letter-spacing: 0; } /* label style, in red */
 
 .section-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem 2rem; margin-bottom: 1.75rem; }
 
@@ -245,14 +245,14 @@ header { display: grid; gap: 1.75rem; }
 
 /* ---------- Footer ---------- */
 footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem var(--gutter); padding-top: 2.5rem; }
-footer .to-top { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; } /* matches the nav */
+footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/normal var(--font); letter-spacing: 0; } /* matches the nav */
 
 
 /* ---------- Project detail page ---------- */
 #detail { padding-block: var(--gutter); display: grid; gap: 2.5rem; }
 .detail-inner { width: 100%; }
 .detail-head { display: grid; gap: 1.5rem; }
-.back { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; }
+.back { color: var(--link); text-decoration: none; font: 400 0.9375rem/normal var(--font); letter-spacing: 0; }
 .detail-title { font: 200 clamp(3rem, 11vw, 8.5rem)/1 var(--font); letter-spacing: -0.05em; margin: 0; text-wrap: balance; }
 .detail-tagline { font-size: 1.5rem; line-height: 1.3; margin: 0; color: var(--muted); max-width: 30em; }
 
@@ -347,7 +347,7 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.78125rem
 .tabs { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; min-height: 60px; } /* equal columns, sized to the longest tab */
 .tab {
   appearance: none; background: none; border: 0; display: flex; align-items: center; justify-content: center; padding: 0 1.25rem; cursor: pointer;
-  font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; color: var(--link); /* nav style */
+  font: 400 0.9375rem/normal var(--font); letter-spacing: 0; color: var(--link); /* nav style */
 }
 .tab { border-left: 1px solid var(--line); } /* a rule on both sides of every tab, labels centered */
 .tab:last-child { border-right: 1px solid var(--line); }
@@ -388,7 +388,7 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.78125rem
 .person-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .person-name { margin-bottom: 0.2rem; font-size: 1.25rem; } /* .h3 type at a fixed 20px, a step down for the narrower cards */
 .person-role { font: 200 1rem/1.4 var(--font); color: var(--muted); }
-.person-more { margin-top: 0.75rem; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; color: var(--link); opacity: 0; translate: -0.75em 0; }
+.person-more { margin-top: 0.75rem; font: 400 0.9375rem/normal var(--font); letter-spacing: 0; color: var(--link); opacity: 0; translate: -0.75em 0; }
 .person:hover .person-more, .person:focus-visible .person-more { opacity: 1; translate: 0 0; }
 @media (hover: none) { .person-more { opacity: 1; translate: 0 0; } } /* touch screens have no hover to reveal it */
 
@@ -412,7 +412,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .bio-top { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding-bottom: 3rem; }
 .bio-close, .bio-nav button {
   appearance: none; background: none; border: 0; padding: 0; cursor: pointer;
-  font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; color: var(--link); /* nav style */
+  font: 400 0.9375rem/normal var(--font); letter-spacing: 0; color: var(--link); /* nav style */
 }
 .bio-close .acc-icon { margin-left: 0.5em; transform: rotate(45deg); } /* the plus, turned into an x */
 .bio-photo {
@@ -478,7 +478,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .carousel .news-item time::after { content: ""; display: block; width: 30px; height: 3px; margin-top: 0.75rem; background: currentColor; } /* short rule under the date; turns white with the hover */
 .carousel .news-item .ar { grid-column: 1; grid-row: 3; }
 /* "Read more" line at the bottom of a card, label style in red, arrow after the text */
-.news-more { align-self: end; color: var(--link); font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; }
+.news-more { align-self: end; color: var(--link); font: 400 0.9375rem/normal var(--font); letter-spacing: 0; }
 .news-item .news-more .ar { width: 0.6em; height: 0.6em; margin: 0 0 0 0.35em; stroke-width: 4; } /* the .ar size, not the big row arrow */
 
 /* ---------- Split (content beside an image) ---------- */
@@ -518,10 +518,9 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   --nav-line: rgb(255 255 255 / 0.2); /* faint white over the hero video */
 }
 .pinbar .label { color: inherit; align-self: center; }
-.pinbar nav { flex-wrap: wrap; gap: 0; }
-.pinbar nav a { display: flex; align-items: center; padding: 0 1.25rem; }
+.pinbar nav { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 0; } /* every link as wide as the longest one */
+.pinbar nav a { display: flex; align-items: center; justify-content: center; padding: 0 1.25rem; }
 .pinbar nav a + a { border-left: 1px solid var(--nav-line); }
-.pinbar nav a:last-child { padding-right: 0; } /* last link ends on the content edge */
 /* Menu button: shown at 1024px and below, where it replaces the links */
 .menu-toggle {
   display: none; align-self: center; align-items: center; gap: 0.6rem;
@@ -627,7 +626,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .contact-form .button { justify-self: start; margin-top: 0.5rem; }
 .form-note { margin: 0; font-size: 1rem; color: var(--muted); }
 
-.cta { color: var(--link); font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; } /* nav style */
+.cta { color: var(--link); font: 400 0.9375rem/normal var(--font); letter-spacing: 0; } /* nav style */
 
 .bio-nav { display: flex; justify-content: space-between; gap: 1rem; padding-top: 1.25rem; margin-top: auto; border-top: 1px solid var(--line); } /* sits at the bottom of the sheet */
 
