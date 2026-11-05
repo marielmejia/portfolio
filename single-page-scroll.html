@@ -7,6 +7,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Albert+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap">
 <link rel="stylesheet" href="clean-modern.css">
 <style>
+  /* Side inset shared by every section: fluid from 60px on a 768px tablet up to 200px at 1680px and wider */
+  :root { --inset-x: clamp(60px, calc(15.35vw - 57.9px), 200px); }
   /* 180px between the content sections (.wrap already spaces them 4.5rem) */
   .wrap > section + section { margin-top: calc(180px - 4.5rem); }
   /* About sits right under the hero with no gap (cancels .wrap's 4.5rem) */
@@ -24,25 +26,23 @@
   #about-mp2 .split-img, #science .split-img { height: auto; aspect-ratio: 4 / 3; }
   /* The band opens and closes with double space: About gets that same space again above it, Science below it.
      It matches the image's own 10% (of its column) so the top of About and the bottom of Science read as 20% */
-  #about-mp2 .split { padding-top: 5%; }   /* two columns: 10% of a column is 5% of the row */
-  #science .split { padding-bottom: 5%; }
-  @media (min-width: 1025px) {             /* the row is 400px narrower here (200px side insets) */
-    #about-mp2 .split { padding-top: calc(5% - 20px); }
-    #science .split { padding-bottom: calc(5% - 20px); }
+  @media (min-width: 761px) {              /* two columns, a side inset each side: 10% of a column */
+    #about-mp2 .split { padding-top: calc(5% - var(--inset-x) / 10); }
+    #science .split { padding-bottom: calc(5% - var(--inset-x) / 10); }
   }
   @media (max-width: 760px) {              /* one column: the image spans the row */
     #about-mp2 .split { padding-top: 10%; }
     #science .split { padding-bottom: 10%; }
   }
-  /* On wide screens About and Science take the same 200px side inset as the other sections: the panel pads in
-     by 200px, the image sits against that inset and the copy stays centered in its column */
-  @media (min-width: 1025px) {
-    #about-mp2 .split, #science .split { padding-inline: 200px; }
+  /* Above phone width About and Science take the same side inset as the other sections: the panel pads in
+     by it, the image sits against that inset and the copy stays centered in its column */
+  @media (min-width: 761px) {
+    #about-mp2 .split, #science .split { padding-inline: var(--inset-x); }
     #science .split-media { justify-items: end; }
     #about-mp2 .split-media { justify-items: start; }
-    /* The nav and the hero copy line up on the same inset: one gutter plus 200px from the screen edges */
-    .pinbar { padding-inline: calc(max(var(--gutter), env(safe-area-inset-left, 0px)) + 200px) calc(max(var(--gutter), env(safe-area-inset-right, 0px)) + 200px); }
-    .hero-body { padding-inline: 200px; }
+    /* The nav (or the Menu bar on tablets) and the hero copy line up on the same inset: one gutter plus the side inset from the screen edges */
+    .pinbar { padding-inline: calc(max(var(--gutter), env(safe-area-inset-left, 0px)) + var(--inset-x)) calc(max(var(--gutter), env(safe-area-inset-right, 0px)) + var(--inset-x)); }
+    .hero-body { padding-inline: var(--inset-x); }
   }
   /* Section labels sit 12px above their headlines everywhere, as in the About, Science and Contact panels */
   .wrap > section > .section-head { margin-bottom: 0.75rem; }
@@ -71,9 +71,9 @@
   /* Black overlay over the image (under the panel), to darken it */
   #contact::after { content: ""; position: absolute; inset: 0; z-index: -1; background: rgb(0 0 0 / 0.6); }
   /* Frosted panel so the image shows through behind the text and form; fields stay solid */
-  /* Inset like the News cards (200px at the sides), so the panel lines up with them and the image shows there.
+  /* Inset like the News cards (the side inset), so the panel lines up with them and the image shows there.
      On phones the cards run gutter to gutter (their buttons move below), so the panel does too. */
-  #contact .contact { margin: 100px 200px; } /* 100px above and below frames the image; 200px sides match the cards */
+  #contact .contact { margin: 100px var(--inset-x); } /* 100px above and below frames the image; the sides match the cards */
   @media (max-width: 760px) { #contact .contact { margin: 0; } }
   #contact .contact { background: rgb(255 255 255 / 0.08); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
   /* The image is a layer 30% taller than the section; the page script slides it up to 15% either way
@@ -90,16 +90,16 @@
   #news .news-item { --row-bg: #0c0f11; --ink: #ffffff; }
   #news .news-item { background: rgb(255 255 255 / 0.08); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
   #news .news-item:hover, #news .news-item:focus-visible { background: var(--ink); }
-  /* Inset by the panels' own inner padding (200px, 20px on phones): the Pipeline and News labels and headlines
+  /* Inset by the panels' own inner padding (the side inset, 20px on phones): the Pipeline and News labels and headlines
      line up with the text inside the chart and the news rows, and everything in Team sits on that same inset */
   #pipeline-section > .section-head, #pipeline-section > .h2,
   #news > .section-head, #news > .h2,
-  #team > * { --inset: 200px; padding-inline: var(--inset); }
-  /* The same 200px side inset inside the Pipeline chart and in the News carousel's arrow columns */
+  #team > * { --inset: var(--inset-x); padding-inline: var(--inset); }
+  /* The same side inset inside the Pipeline chart and in the News carousel's arrow columns */
   #pipeline-section .pipeline { background: transparent; } /* the chart sits on the page background, no white panel */
   @media (min-width: 761px) {
-    #pipeline-section .pipeline { padding-inline: 200px; }
-    #news .carousel { grid-template-columns: 200px minmax(0, 1fr) 200px; }
+    #pipeline-section .pipeline { padding-inline: var(--inset-x); }
+    #news .carousel { grid-template-columns: var(--inset-x) minmax(0, 1fr) var(--inset-x); }
   }
   #pipeline-section > .h2 { max-width: calc(22em + 2 * var(--inset)); } /* padding counts inside max-width */
   @media (max-width: 760px) {
