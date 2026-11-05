@@ -60,10 +60,12 @@
      by it, the image runs from its column out to the screen edge */
   @media (min-width: 761px) {
     #science .split { padding-inline: var(--inset-x); }
-    /* Copy in the left column starts right on the inset, in line with the Pipeline label and headline */
-    #science .split:not(.flip) .split-body { justify-content: start; padding-left: 0; }
-    /* Second row: the copy sits further in from the image: up to 128px (double the usual 64px), less on smaller screens */
-    #science .split.flip .split-body { justify-content: start; padding-left: clamp(40px, 7vw, 128px); }
+    /* Both rows: the copy block sits centered, across and down, in its cell, with the same 64px padding on every side */
+    #science .split-body { justify-content: center; align-content: center; padding: 64px; }
+    /* ...and the text cell runs out to the screen edge on its outer side too, like the image, so each cell is exactly
+       half the screen and the copy centers in what you see, not in the inset area */
+    #science .split:not(.flip) .split-body { margin-left: calc(-1 * (var(--inset-x) + max(var(--gutter), env(safe-area-inset-left, 0px)))); }
+    #science .split.flip .split-body { margin-right: calc(-1 * (var(--inset-x) + max(var(--gutter), env(safe-area-inset-right, 0px)))); }
     /* The nav (or the Menu bar on tablets) and the hero copy line up on the same inset: one gutter plus the side inset from the screen edges */
     .pinbar { padding-inline: calc(max(var(--gutter), env(safe-area-inset-left, 0px)) + var(--inset-x)) calc(max(var(--gutter), env(safe-area-inset-right, 0px)) + var(--inset-x)); }
     .hero-body { padding-inline: var(--inset-x); }
@@ -562,7 +564,7 @@
   document.getElementById('news-list').innerHTML = news.map(n =>
     `<a class="news-item" href="${pressBase}${n.slug}/" target="_blank" rel="noopener">` +
     `<time class="label" datetime="${n.date}">${longDate(n.date)}</time>` +
-    `<span class="news-title">${n.title}</span>` +
+    `<h3 class="news-title">${n.title}</h3>` +
     `<span class="news-more">Read more<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></span></a>`).join('');
 
   // Carousels: the side buttons move one card at a time and grey out at either end

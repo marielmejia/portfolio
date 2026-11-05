@@ -13,9 +13,9 @@
      <meta name="viewport" content="width=device-width, initial-scale=1">
 
    TYPE SCALE (all Geist)
-     H1 / display   200, clamp(48px, 11vw, 136px), line-height 0.92, -0.05em
+     H1 / display   200, clamp(48px, 11vw, 136px), line-height 1, -0.05em
      H2 / .h2       200, clamp(32px, 3.5vw + 6px, 42px), line-height 1.15, -0.03em
-     H3 / .h3       200, clamp(20px, 1.2vw + 10px, 28px), line-height 1.15, -0.02em
+     H3 / .h3       200, 22px (20px on phones), line-height 1.3, -0.02em (also the News card title)
      Body           200, 18px, line-height 1.5, 0
      Paragraph      body, but -0.01em (bio and project text)
      Small text     200, 16px, line-height 1.4 (titles, codes, form fields)
@@ -145,7 +145,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 }
 
 h1 {
-  font: 200 clamp(3rem, 11vw, 8.5rem)/0.92 var(--font);
+  font: 200 clamp(3rem, 11vw, 8.5rem)/1 var(--font);
   letter-spacing: -0.05em;
   margin: 0;
   text-wrap: balance;
@@ -156,7 +156,7 @@ h1 .h1-part { color: inherit; display: inline-block; } /* one animated line of t
 header h1 { text-align: center; } /* homepage headline only */
 
 h2, .h2 { font: 200 clamp(2rem, calc(3.5vw + 6px), 2.625rem)/1.15 var(--font); letter-spacing: -0.03em; margin: 0; text-wrap: balance; }
-h3, .h3 { font: 200 clamp(1.25rem, calc(1.2vw + 10px), 1.75rem)/1.15 var(--font); letter-spacing: -0.02em; margin: 0; text-wrap: balance; } /* between H2 and body */
+h3, .h3 { font: 200 1.375rem/1.3 var(--font); letter-spacing: -0.02em; margin: 0; text-wrap: balance; } /* between H2 and body; also the News card title */
 
 /* Paragraph style: slightly tighter than body text (-1%) */
 .about-text p:not(.h2), .detail-body p, .about-text p:not(.h2) *, .detail-body p * { letter-spacing: -0.01em; }
@@ -253,7 +253,7 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.78125rem
 .detail-inner { width: 100%; }
 .detail-head { display: grid; gap: 1.5rem; }
 .back { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; }
-.detail-title { font: 200 clamp(3rem, 11vw, 8.5rem)/0.92 var(--font); letter-spacing: -0.05em; margin: 0; text-wrap: balance; }
+.detail-title { font: 200 clamp(3rem, 11vw, 8.5rem)/1 var(--font); letter-spacing: -0.05em; margin: 0; text-wrap: balance; }
 .detail-tagline { font-size: 1.5rem; line-height: 1.3; margin: 0; color: var(--muted); max-width: 30em; }
 
 /* Main video panel: video at 80%, centered on black, rounded corners */
@@ -427,7 +427,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
    <div class="news">
      <a class="news-item" href="…">
        <time class="label">October 21, 2026</time>
-       <span class="news-title">Headline</span>
+       <h3 class="news-title">Headline</h3>
        <svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg>
      </a>
    </div> */
@@ -437,7 +437,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   background: var(--row-bg); color: var(--ink); font-weight: 200; padding: 2.5rem 100px;
 }
 .news-item time { grid-column: 1; color: inherit; }
-.news-title { grid-column: 1; font: 200 1.5rem/1.3 var(--font); letter-spacing: -0.02em; max-width: 36em; text-wrap: pretty; }
+.news-title { grid-column: 1; max-width: 36em; text-wrap: pretty; } /* H3 type */
 .news-item .ar { grid-column: 2; grid-row: 1 / span 2; width: 0.9rem; height: 0.9rem; margin: 0; color: var(--link); stroke-width: 3; }
 /* Hover (or keyboard focus): the panel inverts, like the project cards */
 .news-item:hover, .news-item:focus-visible { background: var(--ink); color: var(--row-bg); }
@@ -475,7 +475,6 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .carousel-btn:disabled { opacity: 0.35; cursor: default; }
 /* News cards in a carousel: date on top, headline, arrow at the bottom */
 .carousel .news-item { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; align-items: start; gap: 1rem; padding: 2rem; min-height: 22rem; } /* headline row stretches; "Read more" stays at the bottom */
-.carousel .news-title { font-size: 1.375rem; }
 .carousel .news-item time::after { content: ""; display: block; width: 30px; height: 3px; margin-top: 0.75rem; background: currentColor; } /* short rule under the date; turns white with the hover */
 .carousel .news-item .ar { grid-column: 1; grid-row: 3; }
 /* "Read more" line at the bottom of a card, label style in red, arrow after the text */
@@ -658,7 +657,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   .person { padding: 12px 12px 1.25rem; }
   .bio-inner { padding: var(--gutter) var(--gutter) 2rem; }
   .news-item { padding: 1.75rem 20px; }
-  .news-title { font-size: 1.25rem; }
+  h3, .h3 { font-size: 1.25rem; }
   .carousel { --per-view: 1; grid-template-columns: minmax(0, 1fr) auto auto; gap: 1rem 4px; }
   .carousel-track { grid-column: 1 / -1; grid-row: 1; }
   .carousel-btn { grid-row: 2; }
