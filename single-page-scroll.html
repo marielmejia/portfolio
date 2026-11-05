@@ -158,7 +158,6 @@
       <h1>Main headline<br> goes here.</h1>
       <div class="hero-side">
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.</p>
-        <a class="button" href="#science">Explore our science</a>
       </div>
     </div>
   </header>
@@ -466,7 +465,6 @@
       `<button class="person" type="button" data-i="${j}">` +
       `<span class="person-photo" aria-hidden="true">${photo(p)}</span>` +
       `<span class="person-name h3">${p.name}</span><span class="person-role">${p.role}</span>` +
-      `<span class="person-more" aria-hidden="true">Read Bio<svg class="ar r" viewBox="0 0 16 16"><path d="M5 2L11 8L5 14"/></svg></span>` +
       `</button>`).join('');
     // Cards rise in one after another, like the homepage rows
     if (motionOK()) grid.querySelectorAll('.person').forEach((card, j) =>
@@ -605,7 +603,7 @@
   // Text slides up into place as it scrolls into view. Every visible block of text below the hero gets it
   // (the hero has its own entrance); blocks that arrive together rise one after another.
   if ('IntersectionObserver' in window && motionOK()) {
-    const skip = '#hero, .pinbar, dialog, option, .person-more, .form-note, .person-photo, .split-img, details:not([open]) > :not(summary), .contact-form'; // image boxes, closed accordion text and the form stay put
+    const skip = '#hero, .pinbar, dialog, option, .form-note, .person-photo, .split-img, details:not([open]) > :not(summary), .contact-form'; // image boxes, closed accordion text and the form stay put
     const blocks = new Set();
     const walker = document.createTreeWalker(document.querySelector('.wrap'), NodeFilter.SHOW_TEXT,
       { acceptNode: n => n.textContent.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT });
