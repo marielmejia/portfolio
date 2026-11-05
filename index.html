@@ -38,7 +38,7 @@
     color-scheme: dark;
   }
 
-  * { box-sizing: border-box; letter-spacing: 0.01em; } /* text at its natural spacing; uppercase labels set their own */
+  * { box-sizing: border-box; letter-spacing: 0.02em; } /* text at its natural spacing; uppercase labels set their own */
   [hidden] { display: none !important; } /* keeps the inactive page hidden even though #detail sets display: grid */
   body {
     margin: 0; /* the gutter is the whole page margin */
@@ -58,12 +58,12 @@
   body:has(> #home[hidden]) .bg-video { display: none; } /* homepage only, not on project pages */
   .wrap { padding-block: var(--gutter); display: grid; gap: 4.5rem; }
 
-  a { color: var(--link); font-weight: 200; text-decoration: none; }
+  a { color: var(--link); font-weight: 300; text-decoration: none; }
   a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
 
   .label {
-    font: 300 0.78125rem/1.3 var(--font); /* 12.5px */
-    letter-spacing: 0.04em;
+    font: 400 0.78125rem/1.3 var(--font); /* 12.5px */
+    letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--ink);
   }
@@ -118,7 +118,7 @@
   .hero-card.far img { filter: blur(2px) saturate(0.8); }
   .topbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem 2rem; padding-bottom: 0.9rem; }
   .topbar nav { display: flex; gap: 1.5rem; }
-  .topbar nav a { color: var(--link); text-decoration: none; font: 300 0.78125rem/1.3 var(--font); letter-spacing: 0.04em; text-transform: uppercase; } /* label style, in red */
+  .topbar nav a { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; } /* label style, in red */
   h1 {
     font: 200 clamp(2.1875rem, calc(11vw - 5px), 8.1875rem)/1 var(--font-serif); /* 35px to 131px; low floor so "Crafting Brands" fits a 375px phone in this wider serif */
     letter-spacing: 0.01em;
@@ -168,8 +168,8 @@
 
   .piece-body { padding: 1.25rem 0 0; display: grid; gap: 0.85rem; align-content: start; }
   .spec { width: 100%; border-collapse: collapse; font: 200 1rem/1.4 var(--font-serif); }
-  .spec a { font-weight: 200; }
-  .spec th { text-align: left; font: 300 0.78125rem/1.3 var(--font); letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink); width: 34%; padding: 0.3rem 0; vertical-align: baseline; } /* label style */
+  .spec a { font-weight: 300; }
+  .spec th { text-align: left; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink); width: 34%; padding: 0.3rem 0; vertical-align: baseline; } /* label style */
   .spec td { padding: 0.3rem 0; vertical-align: baseline; }
   /* Homepage cards: each label sits above its value in one column */
   .piece .spec, .piece .spec tbody, .piece .spec tr, .piece .spec th, .piece .spec td { display: block; width: auto; padding: 0; }
@@ -197,7 +197,7 @@
   .ar.r { margin-left: 0.35em; }
   .ar.l { margin-right: 0.35em; }
   .ar.u { margin-left: 0.35em; }
-  footer .to-top { color: var(--link); text-decoration: none; font: 300 0.78125rem/1.3 var(--font); letter-spacing: 0.04em; text-transform: uppercase; } /* matches the top navigation */
+  footer .to-top { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; } /* matches the top navigation */
 
   /* Clickable cards */
   .piece { position: relative; }
@@ -211,7 +211,7 @@
   #detail { padding-block: var(--gutter); display: grid; gap: 2.5rem; }
   .detail-inner { width: 100%; }
   .detail-head { display: grid; gap: 1.5rem; }
-  .back { color: var(--link); text-decoration: none; font: 300 0.78125rem/1.3 var(--font); letter-spacing: 0.04em; text-transform: uppercase; }
+  .back { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; }
   .detail-title { font: 200 clamp(2.6875rem, calc(11vw - 5px), 8.1875rem)/1 var(--font-serif); /* 43px to 131px */ letter-spacing: 0.01em; margin: 0; text-wrap: balance; }
   .detail-tagline { font-size: 1.5rem; line-height: 1.3; margin: 0; color: var(--ink); max-width: 30em; }
   .bleed {

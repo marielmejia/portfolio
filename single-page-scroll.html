@@ -11,35 +11,59 @@
   :root { --inset-x: clamp(60px, calc(15.35vw - 57.9px), 200px); }
   /* 180px between the content sections (.wrap already spaces them 4.5rem) */
   .wrap > section + section { margin-top: calc(180px - 4.5rem); }
-  /* About sits right under the hero with no gap (cancels .wrap's 4.5rem) */
-  #about-mp2, #science { margin-top: -4.5rem; }
-  /* About and Science run edge to edge as one white band: the section's white reaches the screen edges while the
-     gutter padding keeps the panels (and their images) exactly where they were. Science meets About with no gap. */
-  #about-mp2, #science {
+  /* About sits right under the hero, and Science right under About, with no gap (cancels .wrap's 4.5rem) */
+  #about, #science { margin-top: -4.5rem; }
+  /* About and Science run edge to edge: the section's band reaches the screen edges while the gutter padding keeps
+     the content where it was */
+  #about, #science {
     background: var(--row-bg);
     margin-inline: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px))) calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)));
     padding-inline: max(var(--gutter), env(safe-area-inset-left, 0px)) max(var(--gutter), env(safe-area-inset-right, 0px));
   }
-  #science { margin-top: -4.5rem; } /* cancels .wrap's gap so it butts against About */
-  /* About and Science images are 4:3 at 80% of their column, with 10% of the column's width above and below */
-  #about-mp2 .split-media, #science .split-media { aspect-ratio: auto; padding-block: 10%; }
-  #about-mp2 .split-img, #science .split-img { height: auto; aspect-ratio: 4 / 3; }
-  /* The band opens and closes with double space: About gets that same space again above it, Science below it.
-     It matches the image's own 10% (of its column) so the top of About and the bottom of Science read as 20% */
-  @media (min-width: 761px) {              /* two columns, a side inset each side: 10% of a column */
-    #about-mp2 .split { padding-top: calc(5% - var(--inset-x) / 10); }
-    #science .split { padding-bottom: calc(5% - var(--inset-x) / 10); }
+  /* About: a white band on the side inset. Two columns: the section label on the left; on the right a long
+     paragraph in the H2 style with an accordion under it */
+  #about { padding-block: 180px; }
+  #about > * { padding-inline: var(--inset-x); }
+  .about-cols { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 7fr); /* 30/70 */ gap: 1.5rem calc(2 * var(--gutter)); align-items: start; }
+  .about-cols .section-head { margin: 0; padding-top: 0.6em; } /* the label sits level with the top of the paragraph's first line */
+  .about-main { display: grid; gap: 3rem; }
+  .about-main > .h2 { margin: 0; text-wrap: pretty; }
+  #about .accordion .detail-body { display: block; }
+  #about .accordion .detail-body p { margin: 0; }
+  @media (max-width: 760px) {
+    #about { padding-block: 100px; }
+    #about > * { padding-inline: 20px; }
+    .about-cols { grid-template-columns: minmax(0, 1fr); }
+    .about-cols .section-head { padding-top: 0; }
   }
-  @media (max-width: 760px) {              /* one column: the image spans the row */
-    #about-mp2 .split { padding-top: 10%; }
-    #science .split { padding-bottom: 10%; }
+  /* Science in dark mode: the same token swap as Contact, so the band, text and placeholders invert */
+  #science {
+    --row-bg: #0c0f11; --ink: #ffffff; --bg: #1a1f1c; --muted: #9aa59f; --line: #333b37; --accent: #9aa59f;
+    color: var(--ink); color-scheme: dark;
   }
-  /* Above phone width About and Science take the same side inset as the other sections: the panel pads in
-     by it, the image sits against that inset and the copy stays centered in its column */
+  /* Science images fill their whole cell: the full column width and the row's full height. An invisible 4:3 strut
+     sets the cell's minimum height; taller copy stretches the cell and the image with it. */
+  #science .split-media { aspect-ratio: auto; padding: 0; place-items: stretch; align-self: stretch; min-width: 0; }
+  #science .split-media::before { content: ""; grid-area: 1 / 1; padding-top: 75%; }
+  #science .split-img { grid-area: 1 / 1; width: 100%; height: 100%; }
+  /* Narrower copy in both rows: 24em, down from the framework's 30em */
+  #science .split-body { grid-template-columns: minmax(0, 24em); }
+  /* ...and run out to the edge of the screen on their outer side: past the side inset and the page gutter */
   @media (min-width: 761px) {
-    #about-mp2 .split, #science .split { padding-inline: var(--inset-x); }
-    #science .split-media { justify-items: end; }
-    #about-mp2 .split-media { justify-items: start; }
+    #science .split:not(.flip) .split-media { margin-right: calc(-1 * (var(--inset-x) + max(var(--gutter), env(safe-area-inset-right, 0px)))); }
+    #science .split.flip .split-media { margin-left: calc(-1 * (var(--inset-x) + max(var(--gutter), env(safe-area-inset-left, 0px)))); }
+  }
+  @media (max-width: 760px) { /* stacked: the image spans the screen edge to edge */
+    #science .split-media { margin-inline: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px))) calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px))); }
+  }
+  /* Above phone width the Science rows take the same side inset as the other sections: the panel pads in
+     by it, the image runs from its column out to the screen edge */
+  @media (min-width: 761px) {
+    #science .split { padding-inline: var(--inset-x); }
+    /* Copy in the left column starts right on the inset, in line with the Pipeline label and headline */
+    #science .split:not(.flip) .split-body { justify-content: start; padding-left: 0; }
+    /* Second row: the copy sits further in from the image: up to 128px (double the usual 64px), less on smaller screens */
+    #science .split.flip .split-body { justify-content: start; padding-left: clamp(40px, 7vw, 128px); }
     /* The nav (or the Menu bar on tablets) and the hero copy line up on the same inset: one gutter plus the side inset from the screen edges */
     .pinbar { padding-inline: calc(max(var(--gutter), env(safe-area-inset-left, 0px)) + var(--inset-x)) calc(max(var(--gutter), env(safe-area-inset-right, 0px)) + var(--inset-x)); }
     .hero-body { padding-inline: var(--inset-x); }
@@ -73,8 +97,9 @@
   /* Frosted panel so the image shows through behind the text and form; fields stay solid */
   /* Inset like the News cards (the side inset), so the panel lines up with them and the image shows there.
      On phones the cards run gutter to gutter (their buttons move below), so the panel does too. */
-  #contact .contact { margin: 100px var(--inset-x); } /* 100px above and below frames the image; the sides match the cards */
+  #contact .contact { margin: calc(180px - var(--gutter)) var(--inset-x); } /* 180px of image above and below (with the section's gutter), like the space under the News cards; the sides match the cards */
   @media (max-width: 760px) { #contact .contact { margin: 0; } }
+  @media (min-width: 761px) { #contact .contact { padding: 60px; } } /* inner padding: 60px, down from the framework's 100px */
   #contact .contact { background: rgb(255 255 255 / 0.08); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
   /* The image is a layer 30% taller than the section; the page script slides it up to 15% either way
      as the section scrolls past (parallax). Reduced motion leaves it still. */
@@ -107,8 +132,6 @@
     #news > .section-head, #news > .h2,
     #team > * { --inset: 20px; }
   }
-  /* About and Science images slide up (from 80px below their place) as they scroll into view; set by the page script */
-  #about-mp2 .split-img, #science .split-img { transform: translateY(var(--img-shift, 0px)); will-change: transform; }
   /* Nav links glide down to their section */
   @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
   /* lands below the pinned bar (the script measures it) with a little room above the label */
@@ -118,7 +141,7 @@
 <div class="topbar pinbar" id="pinbar">
   <span class="label">MARIEL MEJIA / ART DIRECTOR AND DESIGNER</span>
   <nav aria-label="Sections">
-    <a href="#about-mp2">About</a>
+    <a href="#about">About</a>
     <a href="#science">Science</a>
     <a href="#pipeline-section">Pipeline</a>
     <a href="#team">Team</a>
@@ -141,15 +164,20 @@
   </header>
 
 
-  <section id="about-mp2" aria-labelledby="about-mp2-title">
-    <div class="split flip">
-      <div class="split-body">
-        <h2 id="about-mp2-title" class="label">About</h2>
-        <p class="h2">Translating immune biology into precision therapeutics.</p>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-        <a class="cta" href="https://www.mp2collective.com/about" target="_blank" rel="noopener">Learn about us<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></a>
+  <section id="about" aria-labelledby="about-title">
+    <div class="about-cols">
+      <div class="section-head">
+        <h2 id="about-title" class="label">About</h2>
       </div>
-      <div class="split-media"><div class="split-img" role="img" aria-label="Image placeholder"><span class="label">Image placeholder</span></div></div>
+      <div class="about-main">
+        <p class="h2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <details class="accordion">
+          <summary>Our approach<svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path class="v" d="M8 1V15"/></svg></summary>
+          <div class="detail-body about-text">
+            <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.</p>
+          </div>
+        </details>
+      </div>
     </div>
   </section>
 
@@ -157,9 +185,15 @@
     <div class="split">
       <div class="split-body">
         <h2 id="science-title" class="label">Science</h2>
+        <p class="h2">Translating immune biology into precision therapeutics.</p>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+      </div>
+      <div class="split-media"><div class="split-img" role="img" aria-label="Image placeholder"><span class="label">Image placeholder</span></div></div>
+    </div>
+    <div class="split flip">
+      <div class="split-body">
         <p class="h2">Disrupting disease at the cells that drive it.</p>
         <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem.</p>
-        <a class="cta" href="https://www.mp2collective.com/services" target="_blank" rel="noopener">Explore our capabilities<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></a>
       </div>
       <div class="split-media"><div class="split-img" role="img" aria-label="Image placeholder"><span class="label">Image placeholder</span></div></div>
     </div>
@@ -276,29 +310,18 @@
   // Pinned bar: frosted once the page scrolls, dark text once it's past the hero
   const pinbar = document.getElementById('pinbar');
   const hero = document.getElementById('hero');
+  const darkBands = ['hero', 'science', 'news', 'contact'].map(id => document.getElementById(id));
   function updatePinbar() {
     const h = pinbar.offsetHeight;
     document.documentElement.style.setProperty('--pinbar-h', h + 'px');
     pinbar.classList.toggle('scrolled', scrollY > 0);
-    pinbar.classList.toggle('on-light', hero.getBoundingClientRect().bottom <= h);
+    // light style only while the bar sits over a light section; over the hero and the dark bands it stays dark
+    const overDark = darkBands.some(el => { const r = el.getBoundingClientRect(); return r.top < h && r.bottom > h; });
+    pinbar.classList.toggle('on-light', !overDark);
   }
   addEventListener('scroll', updatePinbar, { passive: true });
   addEventListener('resize', updatePinbar);
   updatePinbar();
-
-  // The bar slides up out of view while scrolling down and back in on any scroll up.
-  // It always shows at the very top, and small jitters (under 6px) don't toggle it.
-  let lastY = scrollY;
-  function tuckPinbar() {
-    const y = scrollY, delta = y - lastY;
-    if (y <= pinbar.offsetHeight) pinbar.classList.remove('tucked');
-    else if (delta > 6) pinbar.classList.add('tucked');
-    else if (delta < -6) pinbar.classList.remove('tucked');
-    else return; // too small to count; keep measuring from the last real move
-    lastY = y;
-  }
-  addEventListener('scroll', tuckPinbar, { passive: true });
-
 
   // Contact background parallax: the image layer drifts against the scroll, from +15% of the section's height
   // as it enters the bottom of the screen to -15% as it leaves the top
@@ -315,26 +338,6 @@
   addEventListener('scroll', () => { if (!parallaxQueued) { parallaxQueued = true; requestAnimationFrame(updateParallax); } }, { passive: true });
   addEventListener('resize', updateParallax);
   updateParallax();
-
-  // About and Science images: slide up from 80px below their place as an image's top enters the bottom
-  // of the screen, landing once its center reaches the middle; held in place for reduced motion
-  const slideImgs = document.querySelectorAll('#about-mp2 .split-img, #science .split-img');
-  let imgSlideQueued = false;
-  function updateImgSlide() {
-    imgSlideQueued = false;
-    const motion = matchMedia('(prefers-reduced-motion: no-preference)').matches;
-    slideImgs.forEach(img => {
-      if (!motion) { img.style.removeProperty('--img-shift'); return; }
-      const r = img.getBoundingClientRect();
-      const start = innerHeight, end = innerHeight / 2 - r.height / 2; // top positions where it begins and finishes
-      const t = Math.min(1, Math.max(0, (start - r.top) / (start - end)));
-      const eased = 1 - Math.pow(1 - t, 3); // ease out, so it settles softly
-      img.style.setProperty('--img-shift', (80 * (1 - eased)).toFixed(1) + 'px');
-    });
-  }
-  addEventListener('scroll', () => { if (!imgSlideQueued) { imgSlideQueued = true; requestAnimationFrame(updateImgSlide); } }, { passive: true });
-  addEventListener('resize', updateImgSlide);
-  updateImgSlide();
 
   // Five stages; each program's progress is counted in slots (fractions fill part of a slot)
   const stages = [['Discovery', 'Disc'], ['IND-Enabling', 'IND'], ['Phase 1', 'PH1'], ['Phase 2', 'PH2'], ['Phase 3', 'PH3']];
@@ -367,11 +370,11 @@
         `</summary><div class="pl-panel"><p>${p.text}</p></div></details>`;
     }).join('');
 
-  // Rows open and close by animating their height, like the Project Details accordion
+  // Accordions open and close softly: the box eases to its new height while the content fades and slides in.
+  // closedHeight gives the height of the shut box (the summary, plus any border).
   const ease = 'cubic-bezier(0.2, 0.7, 0.2, 1)';
-  table.querySelectorAll('.pl-item').forEach(item => {
+  function softAccordion(item, panel, closedHeight) {
     const summary = item.querySelector('summary');
-    const panel = item.querySelector('.pl-panel');
     let itemAnim = null, panelAnim = null;
     const stop = () => { if (itemAnim) itemAnim.cancel(); if (panelAnim) panelAnim.cancel(); itemAnim = panelAnim = null; };
     summary.addEventListener('click', e => {
@@ -382,7 +385,7 @@
       stop();
       item.classList.toggle('closing', !opening);
       item.open = true;
-      const to = opening ? item.offsetHeight : summary.offsetHeight + 1; // + the top border
+      const to = opening ? item.offsetHeight : closedHeight(summary);
       itemAnim = item.animate({ height: [from + 'px', to + 'px'] }, { duration: 600, easing: ease });
       panelAnim = panel.animate(opening
         ? { opacity: [0, 1], transform: ['translateY(-12px)', 'none'] }
@@ -393,7 +396,11 @@
         if (!opening) { item.open = false; item.classList.remove('closing'); }
       };
     });
-  });
+  }
+  // Pipeline rows (the + 1 is the row's top border)
+  table.querySelectorAll('.pl-item').forEach(item => softAccordion(item, item.querySelector('.pl-panel'), s => s.offsetHeight + 1));
+  // About accordion
+  document.querySelectorAll('#about .accordion').forEach(item => softAccordion(item, item.querySelector('.detail-body'), s => s.offsetHeight));
 
   // Bars start empty only when the fill can animate, so the table still reads without it
   if ('IntersectionObserver' in window && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
