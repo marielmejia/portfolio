@@ -150,6 +150,7 @@
   @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
   /* lands below the pinned bar (the script measures it) with a little room above the label */
   .wrap > section { scroll-margin-top: calc(var(--pinbar-h, 60px) + var(--gutter)); }
+  .wrap > section[tabindex="-1"]:focus { outline: none; } /* the nav glide focuses the section it lands on (for keyboards and screen readers); no ring around it */
 
   /* Text Reveal 01 (About): GSAP SplitText cuts the text into lines, each rises from under a clipping mask.
      Hidden until the script runs, so it never flashes in its final state. */
