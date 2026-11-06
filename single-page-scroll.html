@@ -5,7 +5,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap">
-<link rel="stylesheet" href="clean-modern.css">
+<link rel="stylesheet" href="clean-modern-scroll.css">
 <style>
   /* Side inset shared by every section: fluid from 60px on a 768px tablet up to 200px at 1680px and wider */
   :root { --inset-x: clamp(60px, calc(15.35vw - 57.9px), 200px); }
@@ -332,6 +332,7 @@
   const pinbar = document.getElementById('pinbar');
   const hero = document.getElementById('hero');
   const darkBands = ['hero', 'science', 'news', 'contact'].map(id => document.getElementById(id));
+  const navLinks = [...pinbar.querySelectorAll('nav a[href^="#"]')].map(a => ({ a, section: document.querySelector(a.getAttribute('href')) })).filter(l => l.section);
   function updatePinbar() {
     const h = pinbar.offsetHeight;
     document.documentElement.style.setProperty('--pinbar-h', h + 'px');
@@ -343,6 +344,12 @@
       return r.top - dy < h && r.bottom - dy > h;
     });
     pinbar.classList.toggle('on-light', !overDark);
+    // active link: the section crossing a line 35% down the screen (the last one once the page bottoms out)
+    const probe = innerHeight * 0.35, atEnd = innerHeight + scrollY >= document.documentElement.scrollHeight - 2;
+    let current = null;
+    navLinks.forEach(({ a, section }) => { const r = section.getBoundingClientRect(); if (r.top <= probe && r.bottom > probe) current = a; });
+    if (atEnd) current = navLinks[navLinks.length - 1].a;
+    navLinks.forEach(({ a }) => a === current ? a.setAttribute('aria-current', 'location') : a.removeAttribute('aria-current'));
   }
   addEventListener('scroll', updatePinbar, { passive: true });
   addEventListener('resize', updatePinbar);

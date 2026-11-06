@@ -1,0 +1,741 @@
+/* ==========================================================================
+   CLEAN MODERN
+   A minimal portfolio framework by Mariel Mejia.
+   Extracted from the Mariel Mejia portfolio site, October 2026.
+
+   SETUP
+   Load the font in the page <head>, before this stylesheet:
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap">
+     <link rel="stylesheet" href="clean-modern-scroll.css">
+   And the viewport tag:
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+   TYPE SCALE (all Geist)
+     H1 / display   200, clamp(48px, 11vw, 136px), line-height 1, -0.05em
+     H2 / .h2       200, clamp(32px, 3.5vw + 6px, 42px), line-height 1.15, -0.03em
+     H3 / .h3       200, 22px (20px on phones), line-height 1.3, -0.02em (also the News card title)
+     Body           200, 18px, line-height 1.5, 0
+     Paragraph      body, but -0.01em (bio and project text)
+     Small text     200, 16px, line-height 1.4 (titles, codes, form fields)
+     Label          400, 12.5px, line-height 1.3, +0.05em, UPPERCASE, black
+     Nav link       400, 15px, line-height normal, 0, Title Case, red (also tabs, CTAs, "Read More")
+     Text link      300, red
+     Program name   300, 20px, red (pipeline)
+     Accordion head 200, 18px
+     Timeline year  200, 16px, line-height 1.65, tabular numbers
+
+   COLORS (light / dark)
+     --bg      #f7f7f7 / #131715   page background
+     --ink     #0c0f11 / #e6ebe7   text ("black")
+     --muted   #7a7976 / #9aa59f   gray text
+     --link    #FF3434             red links
+     --line    #e7e7e7 / #333b37   loading placeholder gray
+     --row-bg  #ffffff / #1a1f1c   project card panel
+
+   GRID
+     One gutter for everything: 24px (20px at 1024px and below).
+     Media boxes use a 1256:720 ratio (export at 1884x1080).
+     Phones (760px and below) collapse to one column.
+
+   COMPONENTS
+     .topbar          name label left, red nav right
+     .label           small uppercase label
+     .section-head    heading row with a label on each side
+     .piece           clickable project card (white panel, inverts on hover)
+     .strip           row of five media boxes inside a card
+     .media           ratio box for an image or video (fades in when ready)
+     .spec            label / value table (stacks inside cards)
+     .about           photo + bio two-column block
+     .timeline        year + role list
+     .accordion       <details> panel with a plus that turns into a minus
+     .bleed           large video panel, video inset on black, rounded corners
+     .gallery         two-column media grid
+     .next            "Next project" link bar at the end of a page
+     .ar              line chevron icon (.r right, .l left, .u up)
+     .pipeline        five-slot progress table (program, indication, stages)
+     .tabs            row of label-style tab buttons (ink text, red line under the selected one)
+     .team-grid       grid of .person cards (ink panel slides in on hover)
+     .bio             <dialog> side sheet with a person's full bio
+     .news            full-width press release rows (invert like .piece on hover)
+     .carousel        horizontal card track with previous/next buttons on the sides
+     .split           two panels, centered content and an inset image (.flip mirrors them)
+     .hero            full-screen header with a background video
+     .pinbar          top bar pinned to the screen, frosted once you scroll
+     .menu-toggle     Menu button that replaces the bar's links at 1024px and below
+     .menu-links      big section links inside a .bio sheet (the slide-in menu)
+     .button          solid red label-style button (works on <a> and <button>)
+     .contact         white panel: headline and details left, form right
+     .field           form field with a label-style label above it
+     .cta             red label-style link with a chevron
+     footer .to-top   "Back to Top" link
+
+   NEEDS A LITTLE JAVASCRIPT
+     .media .ready              add "ready" to an <img>/<video> once loaded (fade-in)
+     .piece.will-reveal         add "revealed" when the card scrolls into view
+     .text-reveal               text waiting to slide up; add "revealed" when it scrolls into view
+     .page-in                   add to a page section to play the slide-up entrance
+     .accordion.closing         add while the accordion animates shut
+     .pipeline.will-fill        add "filled" when the table scrolls into view
+     .pl-item.closing           add while a pipeline row animates shut
+     .bio                       open with showModal(); the script slides it in and out
+     .pinbar.scrolled           add once the page has scrolled (frosted background)
+     .pinbar.on-light           add once the bar is past the hero (dark text on a light tint)
+     .pinbar.tucked             add while scrolling down (slides up out of view), remove on scroll up
+     .pinbar nav a[aria-current] set on the link whose section is on screen (red line under it)
+   Without the script these still work; they just skip the animation.
+   ========================================================================== */
+
+
+/* ---------- Tokens ---------- */
+:root {
+  --bg: #f7f7f7;
+  --paper: #f7f8f5;
+  --ink: #0c0f11;
+  --muted: #7a7976;
+  --line: #e7e7e7;
+  --accent: var(--muted);
+  --link: #FF3434;
+  --acc-bg: rgb(231 231 231 / 0.5);
+  --acc-bg-hover: #e7e7e7;
+  --row-bg: #ffffff;
+  --font: "Geist", "Helvetica Neue", Arial, sans-serif;
+  --gutter: 24px; /* one value for page margins and every column/row gutter */
+}
+@media (max-width: 1024px) {
+  :root { --gutter: 20px; }
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131715; --paper: #1a1f1c; --ink: #e6ebe7; --muted: #9aa59f; --line: #333b37; --accent: var(--muted);
+    --acc-bg: rgb(255 255 255 / 0.04); --acc-bg-hover: rgb(255 255 255 / 0.08); --row-bg: #1a1f1c;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131715; --paper: #1a1f1c; --ink: #e6ebe7; --muted: #9aa59f; --line: #333b37; --accent: var(--muted);
+  --acc-bg: rgb(255 255 255 / 0.04); --acc-bg-hover: rgb(255 255 255 / 0.08); --row-bg: #1a1f1c;
+  color-scheme: dark;
+}
+
+
+/* ---------- Base ---------- */
+* { box-sizing: border-box; letter-spacing: 0; }
+[hidden] { display: none !important; }
+body {
+  margin: 0; /* the gutter is the whole page margin */
+  background: var(--bg);
+  color: var(--ink);
+  font: 200 1.125rem/1.5 var(--font); /* 18px body text */
+  padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
+}
+.wrap { padding-block: var(--gutter); display: grid; gap: 4.5rem; }
+
+a { color: var(--link); font-weight: 300; text-decoration: none; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+
+/* ---------- Type ---------- */
+.label {
+  font: 400 0.78125rem/1.3 var(--font); /* 12.5px */
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+h1 {
+  font: 200 clamp(3rem, 11vw, 8.5rem)/1 var(--font);
+  letter-spacing: -0.05em;
+  margin: 0;
+  text-wrap: balance;
+}
+h1 span { color: var(--accent); }
+h1 * { letter-spacing: inherit; } /* anything inside an H1 keeps its -5% */
+h1 .h1-part { color: inherit; display: inline-block; } /* one animated line of the headline */
+header h1 { text-align: center; } /* homepage headline only */
+
+h2, .h2 { font: 200 clamp(2rem, calc(3.5vw + 6px), 2.625rem)/1.15 var(--font); letter-spacing: -0.03em; margin: 0; text-wrap: balance; }
+h3, .h3 { font: 200 1.375rem/1.3 var(--font); letter-spacing: -0.02em; margin: 0; text-wrap: balance; } /* between H2 and body; also the News card title */
+
+/* Paragraph style: slightly tighter than body text (-1%) */
+.about-text p:not(.h2), .detail-body p, .about-text p:not(.h2) *, .detail-body p * { letter-spacing: -0.01em; }
+
+
+/* ---------- Header and navigation ---------- */
+header { display: grid; gap: 1.75rem; }
+.topbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem 2rem; padding-bottom: 0.9rem; }
+.topbar nav { display: flex; gap: 1.5rem; }
+.topbar nav a { color: var(--link); text-decoration: none; font: 400 0.9375rem/normal var(--font); letter-spacing: 0; } /* label style, in red */
+
+.section-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem 2rem; margin-bottom: 1.75rem; }
+
+
+/* ---------- Icons: line chevrons ---------- */
+/* Markup: <svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg>
+   right  M5 2L11 8L5 14   left  M11 2L5 8L11 14   up  M2 11L8 5L14 11   up-right  M4 4H12V12 */
+.ar { display: inline-block; width: 0.6em; height: 0.6em; vertical-align: 0; overflow: visible; fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: square; stroke-linejoin: miter; vector-effect: non-scaling-stroke; }
+.ar.r { margin-left: 0.35em; }
+.ar.l { margin-right: 0.35em; }
+.ar.u { margin-left: 0.35em; }
+
+
+/* ---------- Media boxes ---------- */
+.media {
+  aspect-ratio: 1256 / 720;
+  max-width: 100%;
+  position: relative;
+  overflow: hidden;
+  background: var(--line); /* light gray until the picture arrives */
+}
+.media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Older videos with black strips baked into the sides: slightly wider so the strips sit outside the box */
+.media video, .bleed video {
+  position: absolute; top: 0; left: 50%;
+  width: 102.1%; height: 100%;
+  transform: translateX(-50%);
+  object-fit: cover; display: block;
+}
+/* MP4s exported without strips fill the box exactly (whole-pixel edges, no gray hairline) */
+.media video[src$=".mp4"], .media video[data-src$=".mp4"], .bleed video[src$=".mp4"] { width: 100%; left: 0; transform: none; }
+/* Fade in once loaded (script adds .ready) */
+.media video, .media img { opacity: 0; }
+.media .ready { opacity: 1; }
+.media:has(> .ready) { background: transparent; }
+
+
+/* ---------- Project cards (homepage) ---------- */
+.work { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gutter); }
+.piece { position: relative; background: var(--row-bg); padding: 100px; display: grid; grid-template-rows: auto 1fr; }
+.piece .stretched { position: absolute; inset: 0; z-index: 1; } /* whole card is the link */
+.piece .stretched:focus-visible { outline-offset: -3px; border-radius: 0; }
+/* Hover (or keyboard focus): the panel inverts */
+.piece:hover, .piece:has(.stretched:focus-visible) { background: var(--ink); color: var(--row-bg); }
+.piece-body { padding: 1.25rem 0 0; display: grid; gap: 0.85rem; align-content: start; }
+.strip { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--gutter); }
+
+
+/* ---------- Spec table (label / value) ---------- */
+.spec { width: 100%; border-collapse: collapse; font: 200 1rem/1.4 var(--font); }
+.spec th { text-align: left; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink); width: 34%; padding: 0.3rem 0; vertical-align: baseline; } /* label style */
+.spec td { padding: 0.3rem 0; vertical-align: baseline; }
+/* Inside cards: each label sits above its value */
+.piece .spec { color: inherit; }
+.piece .spec, .piece .spec tbody, .piece .spec tr, .piece .spec th, .piece .spec td { display: block; width: auto; padding: 0; }
+.piece .spec tbody { display: grid; gap: 0.6rem; }
+.piece h2 + .spec { margin-top: -0.6rem; }
+
+
+/* ---------- About ---------- */
+.about { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 2rem var(--gutter); padding-top: 2.5rem; }
+.about-side { display: grid; gap: 1rem; align-content: start; }
+.about-photo { width: 100%; max-width: 250px; height: auto; aspect-ratio: 1; object-fit: cover; display: block; background: var(--line); overflow: hidden; }
+.about-text { display: grid; gap: 1rem; }
+.about-text p { margin: 0; }
+.about-text a { font-weight: 300; }
+.about-text .h2 { margin-bottom: 0.5rem; } /* extra room under the lead sentence */
+
+
+/* ---------- Timeline ---------- */
+.timeline-label { margin-top: 2.5rem; }
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+.timeline li { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: 1rem; font-size: 1.125rem; }
+.timeline time { font: 200 1rem/1.65 var(--font); color: var(--ink); font-variant-numeric: tabular-nums; }
+
+
+/* ---------- Footer ---------- */
+footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem var(--gutter); padding-top: 2.5rem; }
+footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/normal var(--font); letter-spacing: 0; } /* matches the nav */
+
+
+/* ---------- Project detail page ---------- */
+#detail { padding-block: var(--gutter); display: grid; gap: 2.5rem; }
+.detail-inner { width: 100%; }
+.detail-head { display: grid; gap: 1.5rem; }
+.back { color: var(--link); text-decoration: none; font: 400 0.9375rem/normal var(--font); letter-spacing: 0; }
+.detail-title { font: 200 clamp(3rem, 11vw, 8.5rem)/1 var(--font); letter-spacing: -0.05em; margin: 0; text-wrap: balance; }
+.detail-tagline { font-size: 1.5rem; line-height: 1.3; margin: 0; color: var(--muted); max-width: 30em; }
+
+/* Main video panel: video at 80%, centered on black, rounded corners */
+.bleed { position: relative; aspect-ratio: 1256 / 720; width: 100%; overflow: hidden; background: #000; }
+.bleed #d-video { top: 10%; left: 10%; width: 80%; height: 80%; transform: none; border-radius: 20px; }
+
+.detail-body { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 2rem var(--gutter); align-items: start; }
+.detail-body p { margin: 0; font-size: 1.125rem; line-height: 1.5; max-width: 36em; }
+
+.gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gutter); }
+.bleed + .gallery { margin-top: calc(var(--gutter) - 2.5rem); } /* leaves one gutter under the video */
+
+/* Next-project bar: label left, H2 project name right */
+.next {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem 2rem;
+  padding-top: 1.25rem;
+  color: var(--link); text-decoration: none;
+}
+.next .ar { width: 0.5em; height: 0.5em; stroke-width: 3; }
+
+
+/* ---------- Accordion ---------- */
+/* Markup:
+   <details class="accordion">
+     <summary>Project Details<svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path class="v" d="M8 1V15"/></svg></summary>
+     <div class="detail-body">…</div>
+   </details> */
+.accordion { background: var(--acc-bg); overflow: hidden; }
+.accordion:hover { background: var(--acc-bg-hover); }
+.accordion summary {
+  list-style: none; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  padding: 0.9rem 1.1rem;
+  font: 200 1.125rem/1.3 var(--font); color: var(--ink);
+}
+.accordion summary::-webkit-details-marker { display: none; }
+.accordion summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.acc-icon { width: 0.7em; height: 0.7em; flex: none; overflow: visible; fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: square; vector-effect: non-scaling-stroke; }
+.acc-icon .v { transform-origin: 8px 8px; }
+.accordion[open]:not(.closing) .acc-icon .v { transform: scaleY(0); } /* plus becomes minus */
+.accordion .detail-body { padding: 0.25rem 1.1rem 1.5rem; }
+
+
+/* ---------- Pipeline (five-slot progress bar) ---------- */
+/* Markup:
+   <div class="pipeline">
+     <div class="pl-row pl-head" aria-hidden="true"><span>Program</span>… <div class="pl-stages">5 × <span></span></div></div>
+     <details class="pl-item">
+       <summary class="pl-row">
+         <span class="pl-program">Name<svg class="acc-icon">…</svg><small>Code</small></span><span class="pl-indication">…</span>
+         <div class="pl-bar" role="img" aria-label="…"><span class="pl-slot" style="--fill: 1"></span> × 5</div>
+       </summary>
+       <div class="pl-panel"><p>One paragraph about the program.</p></div>
+     </details>
+   </div>
+   The whole row opens its panel; the plus beside the name turns into a minus.
+   --fill is how much of a slot is done, 0 to 1 (partial slots are fine). */
+.pipeline { display: grid; background: var(--row-bg); padding: 0 100px 100px; }
+.pl-row {
+  display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 3fr);
+  gap: 0.5rem var(--gutter); align-items: center;
+  padding: 1.6rem 0;
+}
+.pl-item { border-top: 1px solid var(--line); overflow: hidden; } /* clips the panel while its height animates */
+.pl-item summary { list-style: none; cursor: pointer; }
+.pl-item summary::-webkit-details-marker { display: none; }
+.pl-item summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.pl-head { padding: 100px 0 1rem; align-items: start; } /* labels share a top line, even when a stage name wraps */
+.pl-head .pl-stages { align-items: start; }
+.pl-head > *, .pl-stages > * { font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink); } /* label style */
+.pl-stages, .pl-bar { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+.pl-program { font: 300 1.25rem/1.3 var(--font); color: var(--link); } /* red, like every other link */
+.pl-program .acc-icon { width: 0.6em; height: 0.6em; margin-left: 0.5em; vertical-align: 0.05em; }
+.pl-item[open]:not(.closing) .acc-icon .v { transform: scaleY(0); } /* plus becomes minus */
+.pl-program small { display: block; font: 200 1rem/1.4 var(--font); color: var(--muted); }
+.pl-panel { padding: 0 0 2rem; }
+.pl-panel p { margin: 0; max-width: 36em; font-size: 1.125rem; line-height: 1.5; letter-spacing: -0.01em; } /* paragraph style */
+.pl-indication { font-size: 1.125rem; line-height: 1.4; }
+.pl-slot { position: relative; height: 12px; background: var(--line); overflow: hidden; }
+.pl-slot::after { content: ""; position: absolute; inset: 0; background: var(--ink); transform-origin: 0 50%; transform: scaleX(var(--fill, 0)); }
+.pl-stage { grid-column: 3; display: none; } /* phone only: abbreviated stage names over each bar */
+
+
+/* ---------- Tabs ---------- */
+/* Markup:
+   <div class="tabs-bar"><div class="tabs" role="tablist"><button class="tab" role="tab" aria-selected="true">Leadership</button>…</div></div>
+   The bar carries the rule across the full width; the tabs inside all take the width of the longest one. */
+/* Styled like the pinned nav: a 60px row with a light rule under it and thin rules on both sides of
+   each tab, labels centered. The selected tab turns black. */
+.tabs-bar { border-bottom: 1px solid var(--line); }
+.tabs { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; min-height: 60px; } /* equal columns, sized to the longest tab */
+.tab {
+  appearance: none; background: none; border: 0; display: flex; align-items: center; justify-content: center; padding: 0 1.25rem; cursor: pointer;
+  font: 400 0.9375rem/normal var(--font); letter-spacing: 0; color: var(--ink); /* nav style, in ink: the line marks the selected tab */
+}
+.tab { border-left: 1px solid var(--line); } /* a rule on both sides of every tab, labels centered */
+.tab:last-child { border-right: 1px solid var(--line); }
+.tab[aria-selected="true"] { color: var(--ink); }
+/* Same line as the pinned nav: 4px red under the selected tab, gray (the rule's color) on hover, faded in and out */
+.tab { position: relative; }
+.tab::before, .tab::after { content: ""; position: absolute; inset: auto 0 0; height: 4px; opacity: 0; pointer-events: none; }
+.tab::before { background: var(--line); }   /* hover line, gray */
+.tab::after { background: var(--link); }    /* selected line, red, drawn on top of the hover line */
+.tab:hover::before, .tab[aria-selected="true"]::after { opacity: 1; }
+
+
+/* ---------- Team ---------- */
+/* Markup:
+   <div class="team-head"><p class="h2">Headline</p><div class="tabs-bar">…</div></div>  (tabs under the headline)
+   <div class="team-grid" role="tabpanel">
+     <button class="person" type="button">
+       <span class="person-photo">PE</span>  (or an <img> inside it)
+       <span class="person-name h3">Name</span><span class="person-role">Title</span>
+       <span class="person-more">Read Bio <svg class="ar r">…</svg></span>
+     </button>
+   </div> */
+.team-head { display: grid; justify-items: start; gap: 3rem; margin-bottom: 3rem; } /* tabs sit under the headline, on its left edge */
+.team-head .tabs-bar { justify-self: stretch; } /* the tab row's rule runs the full width of the cards below */
+.team-head .h2 { max-width: 20em; }
+.team-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gutter); } /* four across, three at 1024px and below, two on phones */
+.person {
+  appearance: none; border: 0; font: inherit; text-align: left; cursor: pointer;
+  position: relative; overflow: hidden; width: 100%;
+  display: grid; gap: 0.35rem; align-content: start;
+  background: var(--row-bg); color: var(--ink); padding: var(--gutter) var(--gutter) 1.75rem;
+}
+/* Hover (or keyboard focus): an ink panel slides in from the left and the text inverts */
+.person::before { content: ""; position: absolute; inset: 0; background: var(--ink); transform: scaleX(0); transform-origin: 0 50%; }
+.person:hover::before, .person:focus-visible::before { transform: none; }
+.person:hover, .person:focus-visible { color: var(--row-bg); }
+.person > * { position: relative; } /* above the sliding panel */
+.person:focus-visible { outline-offset: 3px; border-radius: 0; }
+.person-photo {
+  position: relative; display: grid; place-items: center; aspect-ratio: 3 / 4; overflow: hidden;
+  margin: calc(-1 * var(--gutter)) calc(-1 * var(--gutter)) 1rem; /* flush with the card's top and sides */
+  background: var(--line); color: var(--muted); font: 200 clamp(2rem, 4vw, 3.5rem)/1 var(--font); letter-spacing: -0.03em;
+}
+.person-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.person-name { margin-bottom: 0.2rem; font-size: 1.25rem; } /* .h3 type at a fixed 20px, a step down for the narrower cards */
+.person-role { font: 200 1rem/1.4 var(--font); color: var(--muted); }
+.person-more { margin-top: 0.75rem; font: 400 0.9375rem/normal var(--font); letter-spacing: 0; color: var(--link); opacity: 0; translate: -0.75em 0; }
+.person:hover .person-more, .person:focus-visible .person-more { opacity: 1; translate: 0 0; }
+@media (hover: none) { .person-more { opacity: 1; translate: 0 0; } } /* touch screens have no hover to reveal it */
+
+
+/* ---------- Bio overlay ---------- */
+/* Markup:
+   <dialog class="bio"><div class="bio-inner">
+     <div class="bio-top"><span class="label">Group, 1 of 5</span><button class="bio-close">Close…</button></div>
+     <span class="bio-photo">…</span><h2>Name</h2><p class="bio-role">Title</p><p>Bio</p>
+     <div class="bio-nav"><button>Previous</button><button>Next</button></div>
+   </div></dialog> */
+.bio {
+  margin: 0 0 0 auto; padding: 0; border: 0;
+  width: min(640px, 100%); max-width: 100%; height: 100%; max-height: none;
+  background: var(--bg); color: var(--ink); overflow-y: auto; overscroll-behavior: contain;
+}
+.bio::backdrop { background: rgb(12 15 17 / 0.55); }
+html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the overlay */
+.bio-inner { min-height: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; padding: var(--gutter) 64px 2.5rem; }
+.bio-top, .bio-nav { align-self: stretch; }
+.bio-top { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding-bottom: 3rem; }
+.bio-close, .bio-nav button {
+  appearance: none; background: none; border: 0; padding: 0; cursor: pointer;
+  font: 400 0.9375rem/normal var(--font); letter-spacing: 0; color: var(--link); /* nav style */
+}
+.bio-close .acc-icon { margin-left: 0.5em; transform: rotate(45deg); } /* the plus, turned into an x */
+.bio-photo {
+  position: relative; display: grid; place-items: center; width: 160px; aspect-ratio: 1; overflow: hidden; margin-bottom: 1rem;
+  background: var(--line); color: var(--muted); font: 200 3rem/1 var(--font); letter-spacing: -0.03em;
+}
+.bio-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.bio-role { margin: 0; font-size: 1.25rem; line-height: 1.3; color: var(--muted); }
+.bio-text { margin: 1rem 0 2.5rem; max-width: 36em; letter-spacing: -0.01em; } /* paragraph style */
+/* ---------- News ---------- */
+/* Markup:
+   <div class="news">
+     <a class="news-item" href="…">
+       <time class="label">October 21, 2026</time>
+       <h3 class="news-title">Headline</h3>
+       <svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg>
+     </a>
+   </div> */
+.news { display: grid; gap: 1px; } /* rows sit 1px apart, no rules */
+.news-item {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.75rem 2rem; align-items: center;
+  background: var(--row-bg); color: var(--ink); font-weight: 200; padding: 2.5rem 100px;
+}
+.news-item time { grid-column: 1; color: inherit; }
+.news-title { grid-column: 1; max-width: 36em; text-wrap: pretty; } /* H3 type */
+.news-item .ar { grid-column: 2; grid-row: 1 / span 2; width: 0.9rem; height: 0.9rem; margin: 0; color: var(--link); stroke-width: 3; }
+/* Hover (or keyboard focus): the panel inverts, like the project cards */
+.news-item:hover, .news-item:focus-visible { background: var(--ink); color: var(--row-bg); }
+.news-item:focus-visible { outline-offset: 3px; border-radius: 0; }
+
+
+/* ---------- Carousel ---------- */
+/* Markup:
+   <div class="carousel">
+     <button class="carousel-btn" data-dir="-1" aria-label="Previous"><svg class="ar l">…</svg></button>
+     <div class="carousel-track" tabindex="0">…cards…</div>
+     <button class="carousel-btn" data-dir="1" aria-label="Next"><svg class="ar r">…</svg></button>
+   </div>
+   Three cards per view (two at 1024px and below, one on phones). The buttons sit in the 100px side
+   columns, so the cards line up with inset content above; on phones they move under the track.
+   The track scrolls and snaps on its own too (trackpad, swipe, keyboard). */
+.carousel { --per-view: 3; --carousel-gap: var(--gutter); display: grid; grid-template-columns: 100px minmax(0, 1fr) 100px; align-items: center; }
+.carousel-track {
+  display: grid; grid-auto-flow: column; gap: var(--carousel-gap);
+  grid-auto-columns: calc((100% - (var(--per-view) - 1) * var(--carousel-gap)) / var(--per-view));
+  overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none;
+  padding-block: 6px; /* room for the cards' hover lift */
+}
+.carousel-track::-webkit-scrollbar { display: none; }
+.carousel-track > * { scroll-snap-align: start; }
+.carousel-track:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.carousel-btn {
+  justify-self: center; display: grid; place-items: center; width: 48px; height: 48px;
+  appearance: none; border: 0; padding: 0; cursor: pointer;
+  background: color-mix(in srgb, var(--row-bg) 80%, transparent); color: var(--link);
+  -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+}
+.carousel-btn .ar { width: 0.8rem; height: 0.8rem; margin: 0; stroke-width: 3; }
+.carousel-btn:hover:not(:disabled), .carousel-btn:focus-visible { background: var(--ink); color: var(--row-bg); }
+.carousel-btn:disabled { opacity: 0.35; cursor: default; }
+/* News cards in a carousel: date on top, headline, arrow at the bottom */
+.carousel .news-item { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; align-items: start; gap: 1rem; padding: 2rem; min-height: 22rem; } /* headline row stretches; "Read more" stays at the bottom */
+.carousel .news-item time::after { content: ""; display: block; width: 30px; height: 3px; margin-top: 0.75rem; background: currentColor; } /* short rule under the date; turns white with the hover */
+.carousel .news-item .ar { grid-column: 1; grid-row: 3; }
+/* "Read more" line at the bottom of a card, label style in red, arrow after the text */
+.news-more { align-self: end; color: var(--link); font: 400 0.9375rem/normal var(--font); letter-spacing: 0; }
+.news-item .news-more .ar { width: 0.6em; height: 0.6em; margin: 0 0 0 0.35em; stroke-width: 4; } /* the .ar size, not the big row arrow */
+
+/* ---------- Split (content beside an image) ---------- */
+/* Markup:
+   <div class="split">            (add .flip to put the image on the left)
+     <div class="split-body">…</div>
+     <div class="split-media"><div class="split-img"><span class="label">Image placeholder</span></div></div>  (or an <img> in .split-img)
+   </div>
+   One white panel split into two columns with no visible seam. Content sits in the
+   middle of its column; the image is inset at 80% of its column, like the main video on project pages. */
+.split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: var(--row-bg); }
+.split > * { display: grid; place-items: center; }
+.split.flip .split-media { order: -1; }
+/* one left-aligned column, centered in the panel */
+.split-body { grid-template-columns: minmax(0, 30em); gap: 1.5rem; align-content: center; justify-content: center; justify-items: start; padding: 64px; }
+.split-body > * { margin: 0; }
+.split-body > .label:first-child { margin-bottom: -0.75rem; } /* eyebrow sits close above its headline */
+.split-body p:not(.h2) { max-width: 30em; letter-spacing: -0.01em; } /* paragraph style */
+.split-media { aspect-ratio: 1; }
+.split-img {
+  position: relative; overflow: hidden; width: 80%; height: 80%;
+  display: grid; place-items: center; background: var(--line);
+}
+.split-img .label { color: var(--muted); }
+.split-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+/* ---------- Pinned top bar ---------- */
+/* Markup (before .wrap, so nothing on the page can paint over it):
+   <div class="topbar pinbar"><span class="label">Name</span><nav>…</nav></div>
+   Clear over the hero; frosted once you scroll; dark text on a light tint past the hero.
+   A light gray rule runs under it and between the links. Its sides line up with the hero copy
+   and the .split images: one gutter plus 5% of the row (gutter + 5% of (width - 2 gutters)). */
+.pinbar {
+  position: fixed; inset: 0 0 auto; z-index: 10;
+  min-height: 60px; align-items: stretch; padding: 0 calc(5% + 0.9 * var(--gutter));
+  border-bottom: 1px solid var(--nav-line); color: #fff;
+  --nav-line: rgb(255 255 255 / 0.2); /* faint white over the hero video */
+}
+.pinbar .label { color: inherit; align-self: center; }
+.pinbar nav { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 0; } /* every link as wide as the longest one */
+.pinbar nav a { display: flex; align-items: center; justify-content: center; padding: 0 1.25rem; color: inherit; } /* text in the bar's color, not red: the line marks the active link */
+.pinbar nav a + a { border-left: 1px solid var(--nav-line); }
+/* Active link: a 4px red line sitting on the bar's bottom rule, faded in and out (gray on hover) */
+.pinbar nav a { position: relative; }
+.pinbar nav a::before, .pinbar nav a::after { content: ""; position: absolute; inset: auto 0 0; height: 4px; opacity: 0; pointer-events: none; }
+.pinbar nav a::before { background: var(--nav-line); } /* hover line, in the bottom rule's gray */
+.pinbar nav a::after { background: var(--link); }      /* active line, red, drawn on top of the hover line */
+.pinbar nav a:hover::before, .pinbar nav a[aria-current]::after { opacity: 1; }
+/* Menu button: shown at 1024px and below, where it replaces the links */
+.menu-toggle {
+  display: none; align-self: center; align-items: center; gap: 0.6rem;
+  appearance: none; background: none; border: 0; padding: 0.5rem 0; cursor: pointer; color: inherit;
+  font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; /* label style */
+}
+.menu-toggle svg { width: 20px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.5; overflow: visible; }
+
+/* Menu sheet: a .bio dialog holding the section links, one per row with a rule under each */
+.bio-inner > nav { align-self: stretch; } /* the menu's links run the full width of the sheet */
+.menu-links { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.menu-links a {
+  display: flex; justify-content: space-between; align-items: center; padding: 1.1rem 0; border-bottom: 1px solid var(--line);
+  color: var(--ink); font: 200 clamp(2rem, calc(3.5vw + 6px), 2.625rem)/1.15 var(--font); letter-spacing: -0.03em; /* h2 style */
+}
+.menu-links a:hover, .menu-links a:focus-visible { color: var(--link); }
+.menu-links .ar { width: 0.45em; height: 0.45em; stroke-width: 3; color: var(--link); }
+
+.pinbar.scrolled { background: rgb(0 0 0 / 0.2); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+.pinbar.on-light { background: color-mix(in srgb, var(--bg) 72%, transparent); color: var(--ink); --nav-line: var(--line); }
+/* Slid up out of view while scrolling down; it comes back when someone tabs into it */
+.pinbar.tucked:not(:focus-within) { transform: translateY(-100%); }
+
+
+/* ---------- Hero (full-screen, video behind) ---------- */
+/* Markup (first thing inside .wrap):
+   <header class="hero">
+     <video class="hero-video" src="…" autoplay muted loop playsinline aria-hidden="true"></video>
+     <div class="hero-body">
+       <h1>Headline</h1>
+       <div class="hero-side"><p>Paragraph</p><a class="button" href="…">Button</a></div>
+     </div>
+   </header>
+   Runs edge to edge (it cancels the page gutter) and fills the screen. Text is always white:
+   the video is darkened toward the bottom so it reads in light and dark mode. */
+.hero {
+  position: relative; isolation: isolate; overflow: hidden;
+  display: grid; gap: 0;
+  min-height: 100vh; min-height: 100svh;
+  margin-top: calc(-1 * var(--gutter));
+  margin-inline: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px))) calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)));
+  padding: 100px max(var(--gutter), env(safe-area-inset-right, 0px)) var(--gutter) max(var(--gutter), env(safe-area-inset-left, 0px)); /* top clears the pinned bar */
+  background: #000; color: #fff;
+}
+.hero-video { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
+.hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to bottom, rgb(0 0 0 / 0.35), rgb(0 0 0 / 0.1) 35%, rgb(0 0 0 / 0.65)); } /* light in the middle, darker behind the nav and the copy */
+.hero .label { color: inherit; }
+/* Inset to line up with the images in .split sections (inset 10% of a half-width panel = 5% of the row).
+   The same inset sits below it: % padding is measured from the width, so all three sides match. */
+.hero-body { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 2rem var(--gutter); align-items: end; align-self: end; padding: 0 5% 5%; }
+.hero h1 { text-align: left; font-size: clamp(3rem, 7vw, 7rem); max-width: 11em; }
+.hero-side { display: grid; gap: 1.5rem; justify-items: start; }
+.hero-side p { margin: 0; max-width: 26em; letter-spacing: -0.01em; } /* paragraph style */
+
+.button {
+  display: inline-flex; align-items: center; padding: 1rem 1.4rem; border: 0; cursor: pointer;
+  background: var(--link); color: #fff;
+  font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; /* label style */
+}
+.button:hover, .button:focus-visible { background: var(--ink); color: var(--row-bg); }
+.hero .button:hover, .hero .button:focus-visible { background: #fff; color: #0c0f11; } /* stays visible over the video */
+
+/* ---------- Contact ---------- */
+/* Markup:
+   <div class="contact">
+     <div class="contact-info">
+       <p class="h2">First line <span>second line</span></p>
+       <dl class="contact-list"><div><dt class="label">Label</dt><dd><a href="mailto:…">…</a></dd></div>…</dl>
+     </div>
+     <form class="contact-form">
+       <label class="field"><span class="label">Name</span><input name="name" required></label>
+       …<button class="button" type="submit">Submit</button>
+     </form>
+   </div> */
+.contact { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3rem var(--gutter); background: var(--row-bg); padding: 100px; }
+.contact-info { display: grid; gap: 2.5rem; align-content: start; }
+.contact-info .h2 span { display: block; color: var(--muted); } /* second line in gray */
+.contact-head { display: grid; gap: 0.75rem; } /* eyebrow sits close above its headline, like .split */
+.contact-head > * { margin: 0; }
+.contact-list { display: grid; gap: 2.25rem; margin: 0; }
+.contact-list dd { margin: 0.35rem 0 0; }
+.contact-list a { font-weight: 300; } /* text-link weight */
+.contact-list address { font-style: normal; }
+.contact-form { display: grid; gap: 1.25rem; align-content: start; }
+.field { display: grid; gap: 0.5rem; }
+.field input, .field textarea, .field select {
+  width: 100%; padding: 0.9rem 1rem; border: 1px solid var(--line); border-radius: 0;
+  background: var(--bg); color: var(--ink); font: 200 1rem/1.4 var(--font); letter-spacing: -0.01em;
+}
+.field textarea { min-height: 9rem; resize: vertical; }
+/* Dropdown: wrap the <select> in <span class="select"> for the chevron */
+.select { position: relative; display: block; }
+.field select { appearance: none; -webkit-appearance: none; padding-right: 2.75rem; cursor: pointer; }
+.field select:has(option[value=""]:checked) { color: var(--muted); } /* placeholder choice reads like a placeholder */
+.field select option { color: var(--ink); }
+.select::after { /* line chevron, like .ar */
+  content: ""; position: absolute; right: 1.1rem; top: 50%; width: 0.45rem; height: 0.45rem; pointer-events: none;
+  border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: translateY(-70%) rotate(45deg);
+}
+.field input::placeholder, .field textarea::placeholder { color: var(--muted); }
+.field input:focus-visible, .field textarea:focus-visible, .field select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.field input:user-invalid, .field textarea:user-invalid, .field select:user-invalid { border-color: var(--link); } /* only after someone has tried */
+.contact-form .button { justify-self: start; margin-top: 0.5rem; }
+.form-note { margin: 0; font-size: 1rem; color: var(--muted); }
+
+.cta { color: var(--link); font: 400 0.9375rem/normal var(--font); letter-spacing: 0; } /* nav style */
+
+.bio-nav { display: flex; justify-content: space-between; gap: 1rem; padding-top: 1.25rem; margin-top: auto; border-top: 1px solid var(--line); } /* sits at the bottom of the sheet */
+
+@media (max-width: 1024px) {
+  /* Too narrow for the links: they move into the slide-in menu behind the Menu button */
+  .pinbar nav { display: none; }
+  .pinbar { flex-wrap: nowrap; }
+  .pinbar .label { flex: 1 1 auto; min-width: 0; padding-block: 0.75rem; } /* a long name wraps in place, beside the button */
+  .menu-toggle { display: inline-flex; flex: none; }
+  .carousel { --per-view: 2; }
+  .team-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+
+/* ---------- Phones ---------- */
+@media (max-width: 760px) {
+  .pipeline { padding: 0 20px 20px; }
+  .pl-row { grid-template-columns: minmax(0, 1fr); }
+  .pl-head { display: none; }
+  .pl-head + .pl-item { border-top: 0; }
+  .pl-stage { grid-column: auto; display: grid; margin-top: 0.75rem; }
+  .team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* Phones: too narrow for the tabs in one row, so they stack as a list, one rule between each */
+  .tabs { display: grid; grid-auto-flow: row; min-height: 0; }
+  .tab { min-height: 48px; padding: 0; }
+  .tab + .tab { border-top: 1px solid var(--line); }
+  .person { padding: 12px 12px 1.25rem; }
+  .bio-inner { padding: var(--gutter) var(--gutter) 2rem; }
+  .news-item { padding: 1.75rem 20px; }
+  h3, .h3 { font-size: 1.25rem; }
+  .carousel { --per-view: 1; grid-template-columns: minmax(0, 1fr) auto auto; gap: 1rem 4px; }
+  .carousel-track { grid-column: 1 / -1; grid-row: 1; }
+  .carousel-btn { grid-row: 2; }
+  .carousel-btn[data-dir="-1"] { grid-column: 2; } /* both buttons under the track, on the right */
+  .carousel-btn[data-dir="1"] { grid-column: 3; }
+  .carousel .news-item { padding: 1.5rem; min-height: 17rem; }
+  .split { grid-template-columns: minmax(0, 1fr); }
+  .split-body { padding: 40px 20px; }
+  .split .split-media { order: -1; } /* image first on both, so the stack reads the same */
+  .hero-body { grid-template-columns: minmax(0, 1fr); padding: 0 10% 10%; } /* split images are full-width panels here */
+  .pinbar { padding-inline: calc(10% + 0.8 * var(--gutter)); }
+  .contact { grid-template-columns: minmax(0, 1fr); padding: 40px 20px; }
+  .about, .detail-body { grid-template-columns: minmax(0, 1fr); }
+  .gallery { grid-template-columns: minmax(0, 1fr); }
+  .strip { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .strip .media:first-child { grid-column: 1 / -1; } /* lead video spans the row */
+  .piece { padding: 20px; }
+}
+
+
+/* ---------- Motion (skipped for reduced-motion users) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .piece { transition: transform 0.25s ease, background-color 0.3s ease, color 0.3s ease; }
+  .piece:hover { transform: translateY(-3px); }
+  .news-item { transition: transform 0.25s ease, background-color 0.3s ease, color 0.3s ease; }
+  .news-item:hover { transform: translateY(-3px); }
+
+  /* Chevrons nudge in their own direction on hover */
+  .ar { transition: transform 0.25s ease; }
+  a:hover .ar.r, a:focus-visible .ar.r, button:hover .ar.r, button:focus-visible .ar.r { transform: translateX(0.3em); }
+  a:hover .ar.l, a:focus-visible .ar.l, button:hover .ar.l, button:focus-visible .ar.l { transform: translateX(-0.3em); }
+  a:hover .ar.u, a:focus-visible .ar.u { transform: translateY(-0.3em); }
+
+  .acc-icon .v { transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .accordion { transition: background-color 0.2s ease; }
+  .media video, .media img { transition: opacity 0.8s ease; }
+
+  /* Page entrance: slides up into place */
+  .page-in { animation: page-in 1s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  @keyframes page-in { from { opacity: 0; transform: translateY(200px); } to { opacity: 1; transform: none; } }
+
+  /* Homepage headline: each line starts oversized and low, then settles; the second overlaps the first */
+  header { overflow-x: clip; }
+  #home.page-in header h1 .h1-part { transform-origin: 50% 100%; animation: h1-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  #home.page-in header h1 .h1-part + .h1-part { animation-delay: 0.6s; }
+  @keyframes h1-in { from { opacity: 0; transform: translateY(120px) scale(1.6); } 40% { opacity: 1; } to { opacity: 1; transform: none; } }
+
+  /* Text slides up as it scrolls into view: the page script adds .text-reveal, then .revealed on screen */
+  .text-reveal { opacity: 0; translate: 0 40px; transition: opacity 0.8s ease, translate 0.8s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .text-reveal.revealed { opacity: 1; translate: 0 0; }
+
+  /* Cards slide up as they scroll into view (translate, so the hover lift still works) */
+  .piece.will-reveal { opacity: 0; translate: 0 80px; transition: opacity 0.9s ease, translate 0.9s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.25s ease, background-color 0.3s ease, color 0.3s ease; }
+  .piece.will-reveal.revealed { opacity: 1; translate: 0 0; }
+
+  /* Pipeline: slots fill left to right, one after another, once the table is on screen */
+  .pipeline.will-fill .pl-slot::after { transform: scaleX(0); transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--i, 0) * 0.35s + var(--row, 0) * 0.2s); }
+  .pipeline.will-fill.filled .pl-slot::after { transform: scaleX(var(--fill, 0)); }
+
+  /* Team cards: the ink panel slides in, then "Read Bio" follows it */
+  .person { transition: color 0.3s ease; }
+  .person::before { transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .person-more { transition: opacity 0.3s ease 0.1s, translate 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s; }
+  .tab { transition: color 0.2s ease, border-color 0.2s ease; }
+  .tab::before, .tab::after { transition: opacity 0.4s ease; }
+  .button { transition: background-color 0.25s ease, color 0.25s ease; }
+
+  .pinbar nav a::before, .pinbar nav a::after { transition: opacity 0.4s ease; }
+  .pinbar { transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1), background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, -webkit-backdrop-filter 0.3s ease, backdrop-filter 0.3s ease; }}
