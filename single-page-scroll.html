@@ -23,8 +23,20 @@
   /* About: a white band on the side inset. Two columns: the section label on the left; on the right a long
      paragraph in the H2 style with an accordion under it */
   #about { padding-block: 180px; }
+  /* Hero: headline 5px under the framework size, and the copy centered top to bottom in the section. The hero pads
+     100px at the top (to clear the bar) and one gutter at the bottom; the negative top margin evens that out so
+     the copy sits on the true middle of the screen, not the middle of the padded area */
+  .hero h1 { font-size: clamp(calc(3rem - 5px), calc(7vw - 5px), calc(7rem - 5px)); }
+  .hero-body { align-self: center; padding-bottom: 0; margin-top: calc(var(--gutter) - 100px); }
+  /* One column: the paragraph sits under the headline. Its row is 0 tall (the paragraph hangs out of it), so the
+     block is only as tall as the headline and the headline stays centered where it was */
+  .hero-body { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 0; row-gap: 0; align-items: start; }
+  .hero-side { margin-top: 2rem; }
+  /* Hero → About parallax: the hero drifts down and dims as About scrolls up over it, so About sits on top */
+  #about { position: relative; z-index: 1; }
+  #hero[data-st-01] { will-change: transform; }
   #about > * { padding-inline: var(--inset-x); }
-  .about-cols { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 7fr); /* 30/70 */ gap: 1.5rem calc(2 * var(--gutter)); align-items: start; }
+  .about-cols { display: grid; grid-template-columns: calc(30% - 2 * var(--gutter)) minmax(0, 1fr); /* 30/70: the paragraph column starts 30% in and fills the other 70% */ gap: 1.5rem calc(2 * var(--gutter)); align-items: start; }
   .about-cols .section-head { margin: 0; padding-top: 0.6em; } /* the label sits level with the top of the paragraph's first line */
   .about-main { display: grid; gap: 3rem; }
   .about-main > .h2 { margin: 0; text-wrap: pretty; }
@@ -138,6 +150,14 @@
   @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
   /* lands below the pinned bar (the script measures it) with a little room above the label */
   .wrap > section { scroll-margin-top: calc(var(--pinbar-h, 60px) + var(--gutter)); }
+
+  /* Text Reveal 01 (About): GSAP SplitText cuts the text into lines, each rises from under a clipping mask.
+     Hidden until the script runs, so it never flashes in its final state. */
+  [data-reveal-01] { visibility: hidden; }
+  [data-reveal-01] > * { margin-bottom: -0.18em; }
+  [data-reveal-01] .word-mask, [data-reveal-01] .char-mask { vertical-align: top; }
+  [data-reveal-01] .line-mask, [data-reveal-01] .word-mask, [data-reveal-01] .char-mask { overflow: clip; overflow-clip-margin: 0.06em; }
+  [data-reveal-01] .line-mask > *, [data-reveal-01] .word-mask > *, [data-reveal-01] .char-mask > * { padding-bottom: 0.18em; will-change: transform; }
 </style>
 
 <div class="topbar pinbar" id="pinbar">
@@ -154,7 +174,7 @@
 </div>
 
 <div class="wrap page-in">
-  <header class="hero" id="hero">
+  <header class="hero" id="hero" data-st-01="parallax" data-st-opacity="0.5">
     <video class="hero-video" id="hero-video" src="work/Rezera_Campaign_Video_R2.mp4" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
     <div class="hero-body">
       <h1>Main headline<br> goes here.</h1>
@@ -168,10 +188,10 @@
   <section id="about" aria-labelledby="about-title">
     <div class="about-cols">
       <div class="section-head">
-        <h2 id="about-title" class="label">About</h2>
+        <h2 id="about-title" class="label" data-reveal-01="lines" data-scroll>About</h2>
       </div>
       <div class="about-main">
-        <p class="h2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <p class="h2" data-reveal-01="lines" data-scroll data-delay="0.1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
         <details class="accordion">
           <summary>Our approach<svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path class="v" d="M8 1V15"/></svg></summary>
           <div class="detail-body about-text">
@@ -317,7 +337,11 @@
     document.documentElement.style.setProperty('--pinbar-h', h + 'px');
     pinbar.classList.toggle('scrolled', scrollY > 0);
     // light style only while the bar sits over a light section; over the hero and the dark bands it stays dark
-    const overDark = darkBands.some(el => { const r = el.getBoundingClientRect(); return r.top < h && r.bottom > h; });
+    // (measured without any transform, so the hero's parallax drift doesn't count: About covers it there)
+    const overDark = darkBands.some(el => {
+      const r = el.getBoundingClientRect(), t = getComputedStyle(el).transform, dy = t && t !== 'none' ? new DOMMatrixReadOnly(t).m42 : 0;
+      return r.top - dy < h && r.bottom - dy > h;
+    });
     pinbar.classList.toggle('on-light', !overDark);
   }
   addEventListener('scroll', updatePinbar, { passive: true });
@@ -605,7 +629,7 @@
   // Text slides up into place as it scrolls into view. Every visible block of text below the hero gets it
   // (the hero has its own entrance); blocks that arrive together rise one after another.
   if ('IntersectionObserver' in window && motionOK()) {
-    const skip = '#hero, .pinbar, dialog, option, .form-note, .person-photo, .split-img, details:not([open]) > :not(summary), .contact-form'; // image boxes, closed accordion text and the form stay put
+    const skip = '#hero, [data-reveal-01], .pinbar, dialog, option, .form-note, .person-photo, .split-img, details:not([open]) > :not(summary), .contact-form'; // image boxes, closed accordion text and the form stay put
     const blocks = new Set();
     const walker = document.createTreeWalker(document.querySelector('.wrap'), NodeFilter.SHOW_TEXT,
       { acceptNode: n => n.textContent.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT });
@@ -628,4 +652,234 @@
     }, { rootMargin: '0px 0px -8% 0px' });
     textBlocks.forEach(el => { el.classList.add('text-reveal'); textObserver.observe(el); });
   }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+<script>
+  // Text Reveal 01: opt in with data-reveal-01="lines" | "words" | "chars"; add data-scroll (or data-scroll="scrub")
+  // to play on scroll. Per-element overrides: data-duration, data-stagger, data-delay, data-ease, data-once, data-manual.
+  // Run again with a container as the scope for injected content: textReveal01(container, delay).
+  function textReveal01(scope = document, delay = 0, { ignoreManual = false } = {}) {
+    const CONFIG = {
+      lines: { duration: 1, stagger: 0.06, ease: "expo.out" },
+      words: { duration: 1, stagger: 0.03, ease: "expo.out" },
+      chars: { duration: 0.6, stagger: 0.01, ease: "expo.out" },
+      scrollStart: "top 72%",
+      scrubStart: "top 80%",
+      scrubEnd: "top 20%",
+      once: true,
+      markers: false,
+    };
+
+    const allSplitEls = scope.querySelectorAll("[data-reveal-01]");
+    const autoEls = ignoreManual
+      ? [...allSplitEls]
+      : [...allSplitEls].filter((el) => !el.hasAttribute("data-manual"));
+
+    gsap.set(autoEls, { visibility: "visible" });
+
+    allSplitEls.forEach((el) => {
+      const splitType = el.getAttribute("data-reveal-01");
+      const c = CONFIG[splitType];
+      if (!c) return;
+
+      let type, mask, linesClass, wordsClass, charsClass;
+      switch (splitType) {
+        case "lines": type = "lines"; mask = "lines"; linesClass = "line"; break;
+        case "words": type = "words, lines"; mask = "words"; wordsClass = "word"; linesClass = "line"; break;
+        case "chars": type = "chars, words, lines"; mask = "chars"; charsClass = "char"; wordsClass = "word"; linesClass = "line"; break;
+        default: return;
+      }
+
+      if (!ignoreManual && el.hasAttribute("data-manual")) {
+        SplitText.create(el, {
+          type, mask, autoSplit: true,
+          ...(linesClass && { linesClass }), ...(wordsClass && { wordsClass }), ...(charsClass && { charsClass }),
+        });
+        return;
+      }
+
+      const scrollMode = el.getAttribute("data-scroll");
+      const useScroll = el.hasAttribute("data-scroll");
+      const useScrub = scrollMode === "scrub";
+
+      SplitText.create(el, {
+        type, mask, autoSplit: true,
+        ...(linesClass && { linesClass }), ...(wordsClass && { wordsClass }), ...(charsClass && { charsClass }),
+        onSplit(instance) {
+          const durationValue = parseFloat(el.dataset.duration);
+          const staggerValue = parseFloat(el.dataset.stagger);
+          const delayValue = parseFloat(el.dataset.delay);
+          const duration = Number.isNaN(durationValue) ? c.duration : durationValue;
+          const stagger = Number.isNaN(staggerValue) ? c.stagger : staggerValue;
+          const elDelay = Number.isNaN(delayValue) ? 0 : delayValue;
+          const ease = el.dataset.ease || c.ease;
+
+          const targets = instance[splitType];
+          const once = el.hasAttribute("data-once") ? el.getAttribute("data-once") !== "false" : CONFIG.once;
+
+          const tween = {
+            yPercent: 110, duration, stagger,
+            delay: useScroll ? elDelay : elDelay + delay,
+            immediateRender: true, ease,
+          };
+
+          if (useScrub) {
+            tween.scrollTrigger = {
+              trigger: el, start: CONFIG.scrubStart, end: CONFIG.scrubEnd, scrub: true, markers: CONFIG.markers,
+              ...(once && { onLeave: (self) => self.kill(false) }),
+            };
+          } else if (useScroll) {
+            const start = scrollMode || CONFIG.scrollStart;
+            tween.scrollTrigger = {
+              trigger: el, start: `clamp(${start})`, markers: CONFIG.markers,
+              ...(once ? { once: true } : { toggleActions: "play none none reverse" }),
+            };
+          }
+
+          return gsap.from(targets, tween);
+        },
+      });
+    });
+  }
+
+  // Section Transition 01: data-st-01="parallax" moves a section down while the next one scrolls up over it,
+  // "pin" holds it in place, "reveal" uncovers it from behind the section before. data-st-y sets the distance,
+  // data-st-opacity (0–1) fades in an overlay, data-st-overlay sets its color. Phones (768px and under) get "pin"
+  // instead of "parallax" (mobile strategy "simplify").
+  function sectionTransition01(scopeOrConfig = document, maybeConfig = {}) {
+    const DEFAULT_CONFIG = {
+      parallaxY: 400,
+      revealY: 0,
+      overlayColor: "black",
+      mobile: { breakpoint: 768, strategy: "simplify" },
+    };
+
+    const isScope = (value) => value instanceof Element || value instanceof Document;
+    const getConfig = (overrides = {}) => ({ ...DEFAULT_CONFIG, ...overrides, mobile: { ...DEFAULT_CONFIG.mobile, ...(overrides.mobile || {}) } });
+    const getYValue = (section, fallback) => {
+      const yValue = parseFloat(section.dataset.stY || String(fallback));
+      return Number.isNaN(yValue) ? fallback : yValue;
+    };
+    const getOpacityValue = (section) => {
+      const opacityValue = parseFloat(section.dataset.stOpacity || "");
+      if (Number.isNaN(opacityValue)) return null;
+      return Math.max(0, Math.min(1, opacityValue));
+    };
+    const getOverlayColor = (section, fallback) => section.dataset.stOverlay || fallback;
+    const getOverlayElement = (section, color) => {
+      let overlay = section.querySelector("[data-st-overlay-el]");
+      if (!overlay) {
+        overlay = document.createElement("div");
+        overlay.setAttribute("data-st-overlay-el", "");
+        overlay.setAttribute("aria-hidden", "true");
+        section.append(overlay);
+      }
+      if (getComputedStyle(section).position === "static") section.style.position = "relative";
+      section.style.isolation = "isolate";
+      Object.assign(overlay.style, { position: "absolute", inset: "0", zIndex: "2", pointerEvents: "none", background: color, opacity: "0", willChange: "opacity" });
+      return overlay;
+    };
+    const resetOverlay = (section) => {
+      const existingOverlay = section.querySelector("[data-st-overlay-el]");
+      if (existingOverlay) gsap.set(existingOverlay, { opacity: 0 });
+    };
+    const getConfiguredYValue = (section, mode, config) => {
+      if (mode === "reveal") return getYValue(section, config.revealY);
+      if (mode === "parallax") return getYValue(section, config.parallaxY);
+      return 0;
+    };
+    const isMobileViewport = (config) => window.matchMedia(`(max-width: ${config.mobile.breakpoint}px)`).matches;
+    const getMobileStrategy = (config) => {
+      const allowed = new Set(["same", "disable", "simplify"]);
+      return allowed.has(config.mobile.strategy) ? config.mobile.strategy : DEFAULT_CONFIG.mobile.strategy;
+    };
+    const hasYMotion = (mode, y) => mode === "parallax" || (mode === "reveal" && y !== 0);
+    const resolveTransition = (mode, y, strategy, isMobile) => {
+      if (!isMobile || strategy === "same" || !hasYMotion(mode, y)) return { mode, y };
+      if (strategy === "disable") return { mode: "none", y: 0 };
+      if (mode === "parallax") return { mode: "pin", y: 0 };
+      return { mode, y: 0 };
+    };
+
+    const scope = isScope(scopeOrConfig) ? scopeOrConfig : document;
+    const config = getConfig(isScope(scopeOrConfig) ? maybeConfig : scopeOrConfig);
+    const mobileStrategy = getMobileStrategy(config);
+    const isMobile = isMobileViewport(config);
+
+    scope.querySelectorAll("[data-st-01]").forEach((section) => {
+      const configuredMode = section.getAttribute("data-st-01") || "parallax";
+      const configuredY = getConfiguredYValue(section, configuredMode, config);
+      const opacity = getOpacityValue(section);
+      const { mode, y } = resolveTransition(configuredMode, configuredY, mobileStrategy, isMobile);
+
+      if (mode === "none") { resetOverlay(section); return; }
+
+      if (mode === "reveal") {
+        const previousSection = section.previousElementSibling;
+        if (!previousSection) return;
+        gsap.set(previousSection, { zIndex: 1 });
+        gsap.set(section, { position: "sticky", bottom: 0, zIndex: 0 });
+        if (opacity === null) resetOverlay(section);
+        if (y === 0 && opacity === null) return;
+        const timeline = gsap.timeline({
+          scrollTrigger: { trigger: previousSection, start: "bottom bottom", end: () => `+=${section.offsetHeight}`, scrub: true },
+        });
+        if (y !== 0) timeline.fromTo(section, { y }, { y: 0, ease: "none", force3D: true }, 0);
+        if (opacity !== null) {
+          const overlay = getOverlayElement(section, getOverlayColor(section, config.overlayColor));
+          gsap.set(overlay, { opacity });
+          timeline.to(overlay, { opacity: 0, ease: "none" }, 0);
+        }
+        return;
+      }
+
+      const nextSection = section.nextElementSibling;
+      if (!nextSection) return;
+
+      if (mode === "pin") {
+        ScrollTrigger.create({ trigger: nextSection, start: "top bottom", end: "top top", pin: section, pinSpacing: false });
+        if (configuredMode === "parallax" && opacity !== null) {
+          const overlay = getOverlayElement(section, getOverlayColor(section, config.overlayColor));
+          gsap.timeline({ scrollTrigger: { trigger: nextSection, start: "top bottom", end: "top top", scrub: true } })
+            .to(overlay, { opacity, ease: "none" }, 0);
+          return;
+        }
+        resetOverlay(section);
+        return;
+      }
+
+      const scrollTrigger = { trigger: nextSection, start: "top bottom", end: "top top", scrub: true };
+      const tween = { y, ease: "none", force3D: true };
+      if (opacity === null) {
+        resetOverlay(section);
+        gsap.to(section, { ...tween, scrollTrigger });
+        return;
+      }
+      const overlay = getOverlayElement(section, getOverlayColor(section, config.overlayColor));
+      gsap.timeline({ scrollTrigger }).to(section, tween, 0).to(overlay, { opacity, ease: "none" }, 0);
+    });
+  }
+
+  // First run once Geist has loaded, so the lines are cut where they really break. If GSAP didn't load, or the
+  // visitor prefers reduced motion, the text simply shows.
+  (async () => {
+    const showAll = () => document.querySelectorAll('[data-reveal-01]').forEach(el => { el.style.visibility = 'visible'; });
+    if (!window.gsap || !window.SplitText || !window.ScrollTrigger || !matchMedia('(prefers-reduced-motion: no-preference)').matches) return showAll();
+    gsap.registerPlugin(SplitText, ScrollTrigger);
+    // The page scrolls smoothly for nav links; ScrollTrigger jumps the scroll to measure, so smooth scrolling is
+    // switched off while it measures and back on after, or the trigger positions come out wrong
+    ScrollTrigger.addEventListener('refreshInit', () => { document.documentElement.style.scrollBehavior = 'auto'; });
+    ScrollTrigger.addEventListener('refresh', () => { document.documentElement.style.scrollBehavior = ''; });
+    await document.fonts.ready;
+    // ...and once the page's slide-up entrance has landed, or every scroll position is measured 200px off
+    const wrap = document.querySelector('.wrap');
+    await Promise.all(wrap.getAnimations().map(a => a.finished.catch(() => {})));
+    // the finished entrance still holds an identity transform on .wrap, which would trap the hero's pin (phones)
+    // inside it; dropping the class ends the animation where it already stands
+    wrap.classList.remove('page-in');
+    textReveal01();
+    sectionTransition01();
+  })();
 </script>
