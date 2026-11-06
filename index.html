@@ -3,7 +3,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap">
 <style>
   /* Layout: big name block, then a 2-col grid of projects, each led by a looping video. */
   :root {
@@ -18,8 +18,8 @@
     --acc-bg-hover: #e7e7e7;
     --row-bg: #ffffff;
     --row-glass: rgb(255 255 255 / 0.3); /* project rows: translucent white over the blurred video */
-    --font: "Geist", "Helvetica Neue", Arial, sans-serif; /* uppercase labels and nav only */
-    --font-serif: "Geist", "Helvetica Neue", Arial, sans-serif; /* all other text (was Roboto Serif; now Geist like the rest) */
+    --font: "Sora", "Helvetica Neue", Arial, sans-serif; /* uppercase labels and nav only */
+    --font-serif: "Sora", "Helvetica Neue", Arial, sans-serif; /* all other text (was Roboto Serif, then Geist; now Sora like the rest) */
     --gutter: 24px; /* one value for page margins and every column/row gutter */
   }
   @media (max-width: 1024px) {
@@ -38,13 +38,13 @@
     color-scheme: dark;
   }
 
-  * { box-sizing: border-box; letter-spacing: 0.02em; } /* text at its natural spacing; uppercase labels set their own */
+  * { box-sizing: border-box; letter-spacing: 0; } /* text at its natural spacing; uppercase labels set their own */
   [hidden] { display: none !important; } /* keeps the inactive page hidden even though #detail sets display: grid */
   body {
     margin: 0; /* the gutter is the whole page margin */
     background: var(--bg);
     color: var(--ink);
-    font: 200 1.125rem/1.5 var(--font-serif); /* 18px body text, extra light; also the paragraph style */
+    font: 200 1rem/1.5 var(--font-serif); /* 16px body text, extra light; also the paragraph and accordion value style */
     padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
     padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
   }
@@ -53,9 +53,14 @@
     position: fixed; inset: 0; z-index: -1; pointer-events: none;
     width: 100%; height: 100%; object-fit: cover; display: block;
   }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .bg-video { display: none; } }
-  :root[data-theme="dark"] .bg-video { display: none; }
-  body:has(> #home[hidden]) .bg-video { display: none; } /* homepage only, not on project pages */
+  /* Blur layer over the video: softens it into a hazy wash behind the content */
+  .bg-blur {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) :is(.bg-video, .bg-blur) { display: none; } }
+  :root[data-theme="dark"] :is(.bg-video, .bg-blur) { display: none; }
+  body:has(> #home[hidden]) :is(.bg-video, .bg-blur) { display: none; } /* homepage only, not on project pages */
   .wrap { padding-block: var(--gutter); display: grid; gap: 4.5rem; }
 
   a { color: var(--link); font-weight: 300; text-decoration: none; }
@@ -63,19 +68,20 @@
 
   .label {
     font: 400 0.78125rem/1.3 var(--font); /* 12.5px */
-    letter-spacing: 0.05em;
+    letter-spacing: 0.03em;
     text-transform: uppercase;
     color: var(--ink);
   }
 
   /* Header */
   header { display: grid; gap: 1.75rem; }
-  /* Homepage headline section fills the first screen, split into two rows: 55% on top (nav),
-     45% below holding the headline */
+  /* Homepage headline section fills the first screen: the nav on top, then one stage
+     where the orbiting cards weave between the two headline lines */
   #home > header {
     --hero-h: calc(100vh - var(--gutter)); /* the page's top padding plus this = one full screen */
     --hero-h: calc(100svh - var(--gutter));
-    grid-template-rows: calc(var(--hero-h) * 0.55) minmax(calc(var(--hero-h) * 0.45), auto);
+    grid-template-rows: auto 1fr;
+    min-height: var(--hero-h);
     gap: 0;
     /* Section runs edge to edge so the gray band reaches both sides of the window */
     margin-left: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px)));
@@ -87,22 +93,30 @@
     padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
     padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
   }
+  .hero-stage { position: relative; display: grid; place-items: center; isolation: isolate; }
   #home > header h1 {
     display: flex; flex-direction: column; justify-content: center; align-items: center;
     padding: var(--gutter);
   }
   #home > header h1 br { display: none; } /* each line is already its own row here */
-  /* Orbiting cards in the hero's top row: portfolio stills circling one vertical axis at the center.
+  /* Staggered headline: first line sits off to the left, second off to the right */
+  #home > header h1 .h1-part { --shift: -0.6em; transform: translateX(var(--shift)); }
+  #home > header h1 .h1-part ~ .h1-part { --shift: 2.1em; } /* three steps right, plus half the gap reduction so "Shine" stays put */
+  /* Woven into the orbit: the first line passes in front of the cards, the second sits behind them,
+     split open so the cards travel through the gap between "that" and "Shine" */
+  #home > header h1 .h1-part { position: relative; z-index: 2; }
+  #home > header h1 .h1-part ~ .h1-part { z-index: 0; display: inline-flex; gap: 0.4em; }
+  #home > header h1 .h1-part span { color: inherit; } /* the split words keep the headline color */
+  /* Orbiting cards woven into the headline: portfolio stills circling one vertical axis at the center of the stage.
      Cards swing to the front (crisp) and round to the back (smaller, faded, frosted);
      the script sets each card's position every frame and its --far value (0 front, 1 back). */
-  #home > header .topbar { grid-row: 1; grid-column: 1; position: relative; z-index: 2; }
-  #home > header h1 { grid-row: 2; grid-column: 1; }
+  #home > header .topbar { position: relative; z-index: 2; }
   .hero-cards {
-    grid-row: 1; grid-column: 1; position: relative; z-index: 1;
+    position: absolute; inset: 0; z-index: 1; /* between the two headline lines */
     overflow: hidden; pointer-events: none;
     perspective: 1400px;
   }
-  .hero-orbit { position: absolute; left: 50%; top: 50%; transform-style: preserve-3d; }
+  .hero-orbit { position: absolute; left: 50%; top: 40%; transform-style: preserve-3d; transform: scale3d(0.8, 0.8, 0.8); } /* whole ring at 80% size; set above the stage center so the tilted ring sits centered on screen */
   .hero-card {
     --ws: 1; /* size multiplier, larger on phones */
     --far: 0;
@@ -110,7 +124,7 @@
     --ar: 1256 / 720; --hf: 0.2866; /* card shape, and half its height as a share of its width */
     width: calc(var(--w) * var(--ws)); aspect-ratio: var(--ar);
     margin: calc(var(--w) * var(--ws) * var(--hf) * -1) 0 0 calc(var(--w) * var(--ws) * -0.5); /* centered on its point */
-    border-radius: 6px; overflow: hidden;
+    overflow: hidden;
     opacity: calc(1 - var(--far) * 0.45);
   }
   .hero-card img { display: block; width: 100%; height: 100%; object-fit: contain; transition: filter 0.6s ease; } /* every image shares the card's 1256:720 shape, so it shows whole */
@@ -118,10 +132,10 @@
   .hero-card.far img { filter: blur(2px) saturate(0.8); }
   .topbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem 2rem; padding-bottom: 0.9rem; }
   .topbar nav { display: flex; gap: 1.5rem; }
-  .topbar nav a { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; } /* label style, in red */
+  .topbar nav a { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; } /* label style, in red */
   h1 {
-    font: 200 clamp(2.1875rem, calc(11vw - 5px), 8.1875rem)/1 var(--font-serif); /* 35px to 131px; low floor so "Crafting Brands" fits a 375px phone in this wider serif */
-    letter-spacing: 0.01em;
+    font: 200 clamp(2.1875rem, calc(11vw - 5px), 8.1875rem)/1.12 var(--font-serif); /* 35px to 131px; low floor so "Crafting Brands" fits a 375px phone */
+    letter-spacing: -0.02em;
     margin: 0;
     text-wrap: balance;
   }
@@ -130,7 +144,7 @@
   h1 .h1-part { color: inherit; display: inline-block; }
   header h1 { text-align: center; } /* homepage name only; project titles stay left-aligned */
 
-  h2, .h2 { font: 200 clamp(2.3125rem, calc(3.5vw + 11px), 2.9375rem)/1.12 var(--font-serif); /* 37px to 47px */ letter-spacing: 0.01em; margin: 0; text-wrap: balance; }
+  h2, .h2 { font: 200 clamp(2.1875rem, calc(3.5vw + 9px), 2.8125rem)/1.12 var(--font-serif); /* 35px to 45px */ letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
   h3, .h3 { font-family: var(--font-serif); font-weight: 200; } /* no H3 on this page yet; ready if one is added */
   .section-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem 2rem; margin-bottom: 1.75rem; }
 
@@ -138,7 +152,7 @@
   .work { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gutter); }
   .strip { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--gutter); }
   .strip .media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-  .piece { background: var(--row-bg); padding: 100px; display: grid; grid-template-rows: auto 1fr; }
+  .piece { background: var(--row-bg); padding: 100px 100px 60px; /* 60px at the bottom */ display: grid; grid-template-rows: auto 1fr; }
   /* Frosted glass: translucent white with the background video blurred behind it (hover stays solid) */
   .piece {
     background: var(--row-glass);
@@ -166,15 +180,14 @@
   .media .ready { opacity: 1; }
   .media:has(> .ready) { background: transparent; } /* drop the loading gray so it can't peek out at the edges */
 
-  .piece-body { padding: 1.25rem 0 0; display: grid; gap: 0.85rem; align-content: start; }
-  .spec { width: 100%; border-collapse: collapse; font: 200 1rem/1.4 var(--font-serif); }
+  .piece-body { padding: 2.5rem 0 0; display: grid; gap: 0.85rem; align-content: start; } /* 40px between the thumbnails and the project name */
+  .spec { width: 100%; border-collapse: collapse; } /* values use the body style */
   .spec a { font-weight: 300; }
-  .spec th { text-align: left; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink); width: 34%; padding: 0.3rem 0; vertical-align: baseline; } /* label style */
+  .spec th { text-align: left; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; color: var(--ink); width: 34%; padding: 0.3rem 0; vertical-align: baseline; } /* label style */
   .spec td { padding: 0.3rem 0; vertical-align: baseline; }
   /* Homepage cards: each label sits above its value in one column */
   .piece .spec, .piece .spec tbody, .piece .spec tr, .piece .spec th, .piece .spec td { display: block; width: auto; padding: 0; }
   .piece .spec tbody { display: grid; gap: 0.6rem; }
-  .piece h2 + .spec { margin-top: -0.6rem; } /* role sits close under the name (card gap is 0.85rem) */
 
   /* About */
   .about { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 2rem var(--gutter); padding-top: 2.5rem; }
@@ -182,10 +195,10 @@
   .about-text { display: grid; gap: 1rem; padding-right: 100px; } /* right edge lines up with the last thumbnail in each project row (rows have 100px padding) */
   .about-text p { margin: 0; }
   .about-text a { font-weight: inherit; } /* same weight as the bio text */
-  .about-text .h2 { margin-bottom: 0.5rem; } /* a little extra room under the lead sentence */
-  .timeline-label { margin-top: 2.5rem; } /* clear break between the bio and the timeline */
+  .about-text .h2 { margin-bottom: 2rem; text-wrap: pretty; } /* 3rem (48px) between the lead sentence and the bio (with the 1rem gap); lines run the full width like the paragraphs (no balancing) */
+  .timeline-label { margin-top: 2rem; } /* 3rem (48px) between the bio and Experience (with the 1rem gap) */
   .timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
-  .timeline li { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: 1rem; font-size: 1.125rem; }
+  .timeline li { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: 1rem; } /* job titles use the body style */
   .timeline time { font: 300 1rem/1.65 var(--font); text-transform: uppercase; color: var(--ink); font-variant-numeric: tabular-nums; }
 
   /* Contact */
@@ -197,7 +210,7 @@
   .ar.r { margin-left: 0.35em; }
   .ar.l { margin-right: 0.35em; }
   .ar.u { margin-left: 0.35em; }
-  footer .to-top { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; } /* matches the top navigation */
+  footer .to-top { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; } /* matches the top navigation */
 
   /* Clickable cards */
   .piece { position: relative; }
@@ -211,8 +224,8 @@
   #detail { padding-block: var(--gutter); display: grid; gap: 2.5rem; }
   .detail-inner { width: 100%; }
   .detail-head { display: grid; gap: 1.5rem; }
-  .back { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; }
-  .detail-title { font: 200 clamp(2.6875rem, calc(11vw - 5px), 8.1875rem)/1 var(--font-serif); /* 43px to 131px */ letter-spacing: 0.01em; margin: 0; text-wrap: balance; }
+  .back { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; }
+  .detail-title { font: 200 clamp(2.6875rem, calc(11vw - 5px), 8.1875rem)/1.12 var(--font-serif); /* 43px to 131px */ letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
   .detail-tagline { font-size: 1.5rem; line-height: 1.3; margin: 0; color: var(--ink); max-width: 30em; }
   .bleed {
     position: relative;
@@ -229,7 +242,7 @@
     list-style: none; cursor: pointer;
     display: flex; justify-content: space-between; align-items: center; gap: 1rem;
     padding: 0.9rem 1.1rem;
-    font: 200 1.125rem/1.3 var(--font-serif); color: var(--ink);
+    font: 500 1.125rem/1.3 var(--font-serif); color: var(--ink);
   }
   .accordion summary::-webkit-details-marker { display: none; }
   .accordion summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
@@ -268,12 +281,12 @@
     /* Page transition: each page slides up into place */
     .page-in { animation: page-in 1s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
     @keyframes page-in { from { opacity: 0; transform: translateY(200px); } to { opacity: 1; transform: none; } }
-    /* Homepage headline: starts oversized and low, then settles into place */
-    header { overflow-x: clip; } /* keeps the oversized start from widening the page */
-    /* Two steps: "that Shine" starts halfway through "Crafting Brands", so they overlap */
-    #home.page-in header h1 .h1-part { transform-origin: 50% 100%; animation: h1-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
-    #home.page-in header h1 .h1-part + .h1-part { animation-delay: 0.6s; }
-    @keyframes h1-in { from { opacity: 0; transform: translateY(120px) scale(1.6); } 40% { opacity: 1; } to { opacity: 1; transform: none; } }
+    /* Homepage headline slides in: "Crafting Brands" from the left, then "that Shine" from the right */
+    header { overflow-x: clip; } /* keeps the off-screen start from widening the page */
+    #home.page-in header h1 .h1-part { animation: h1-in-left 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
+    #home.page-in header h1 .h1-part ~ .h1-part { animation-name: h1-in-right; animation-delay: 0.5s; } /* ~ not +, since a <br> sits between the lines */
+    @keyframes h1-in-left { from { opacity: 0; transform: translateX(calc(var(--shift) - 20vw)); } 30% { opacity: 1; } to { opacity: 1; transform: translateX(var(--shift)); } }
+    @keyframes h1-in-right { from { opacity: 0; transform: translateX(calc(var(--shift) + 20vw)); } 30% { opacity: 1; } to { opacity: 1; transform: translateX(var(--shift)); } }
     /* Homepage rows slide up as they scroll into view (uses translate, so the hover lift still works) */
     .piece.will-reveal { opacity: 0; translate: 0 80px; transition: opacity 0.9s ease, translate 0.9s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.25s ease, background-color 0.3s ease, color 0.3s ease; }
     .piece.will-reveal.revealed { opacity: 1; translate: 0 0; }
@@ -286,6 +299,7 @@
 </style>
 
 <video class="bg-video" src="work/colorflow-animation.mp4?v=4" autoplay muted loop playsinline aria-hidden="true"></video>
+<div class="bg-blur" aria-hidden="true"></div>
 
 <div class="wrap" id="home">
   <header>
@@ -297,21 +311,23 @@
         <a href="#contact">Contact</a>
       </nav>
     </div>
-    <div class="hero-cards" aria-hidden="true">
-      <div class="hero-orbit">
-        <div class="hero-card" style="--w:15vw" data-y="-0.08"><img src="work/coherus-5.jpg" alt=""></div>
-        <div class="hero-card" style="--w:12vw" data-y="0.16"><img src="work/santa-ana-bio-2.jpg" alt=""></div>
-        <div class="hero-card" style="--w:14vw" data-y="-0.2"><img src="work/kailera-4.png" alt=""></div>
-        <div class="hero-card" style="--w:11.92vw; --ar: 16 / 10; --hf: 0.3125" data-y="0.06"><img src="work/rezera-web1.jpg" alt=""></div><!-- 16:10 image: card trimmed at the sides, same height as a 13vw card -->
-        <div class="hero-card" style="--w:16vw" data-y="-0.04"><img src="work/kardigan-3-v2.png" alt=""></div>
-        <div class="hero-card" style="--w:12vw" data-y="0.18"><img src="work/santa-ana-bio-4.jpg" alt=""></div>
-        <div class="hero-card" style="--w:14vw" data-y="-0.16"><img src="work/kailera-3.svg" alt=""></div>
-        <div class="hero-card" style="--w:11vw" data-y="0.1"><img src="work/rezolute-3.png" alt=""></div>
-        <div class="hero-card" style="--w:13vw" data-y="-0.22"><img src="work/kardigan-5-v2.svg" alt=""></div>
-        <div class="hero-card" style="--w:15vw" data-y="0.14"><img src="work/santa-ana-bio-3.jpg" alt=""></div>
+    <div class="hero-stage">
+      <div class="hero-cards" aria-hidden="true">
+        <div class="hero-orbit">
+          <div class="hero-card" style="--w:15vw" data-y="-0.08"><img src="work/coherus-5.jpg" alt=""></div>
+          <div class="hero-card" style="--w:12vw" data-y="0.16"><img src="work/santa-ana-bio-2.jpg" alt=""></div>
+          <div class="hero-card" style="--w:14vw" data-y="-0.2"><img src="work/kailera-4.png" alt=""></div>
+          <div class="hero-card" style="--w:11.92vw; --ar: 16 / 10; --hf: 0.3125" data-y="0.06"><img src="work/rezera-web1.jpg" alt=""></div><!-- 16:10 image: card trimmed at the sides, same height as a 13vw card -->
+          <div class="hero-card" style="--w:16vw" data-y="-0.04"><img src="work/kardigan-3-v2.png" alt=""></div>
+          <div class="hero-card" style="--w:12vw" data-y="0.18"><img src="work/santa-ana-bio-4.jpg" alt=""></div>
+          <div class="hero-card" style="--w:14vw" data-y="-0.16"><img src="work/kailera-3.svg" alt=""></div>
+          <div class="hero-card" style="--w:11vw" data-y="0.1"><img src="work/rezolute-3.png" alt=""></div>
+          <div class="hero-card" style="--w:13vw" data-y="-0.22"><img src="work/kardigan-5-v2.svg" alt=""></div>
+          <div class="hero-card" style="--w:15vw" data-y="0.14"><img src="work/santa-ana-bio-3.jpg" alt=""></div>
+        </div>
       </div>
+      <h1><span class="h1-part">Crafting Brands</span><br> <span class="h1-part"><span>that</span> <span>Shine</span></span></h1>
     </div>
-    <h1><span class="h1-part">Crafting Brands</span><br> <span class="h1-part">that Shine</span></h1>
   </header>
 
   <section id="work" aria-labelledby="work-title">
@@ -338,9 +354,6 @@
         </div>
         <div class="piece-body">
           <h2>Rezera</h2>
-          <table class="spec">
-            <tr><td>Art direction, design</td></tr>
-          </table>
         </div>
       </article>
 
@@ -359,9 +372,6 @@
         </div>
         <div class="piece-body">
           <h2>Celcuity</h2>
-          <table class="spec">
-            <tr><td>Art direction, motion</td></tr>
-          </table>
         </div>
       </article>
 
@@ -382,9 +392,6 @@
         </div>
         <div class="piece-body">
           <h2>Kardigan</h2>
-          <table class="spec">
-            <tr><td>Art direction, design</td></tr>
-          </table>
         </div>
       </article>
 
@@ -401,9 +408,6 @@
         </div>
         <div class="piece-body">
           <h2>Santa Ana Bio</h2>
-          <table class="spec">
-            <tr><td>Art direction, design</td></tr>
-          </table>
         </div>
       </article>
 
@@ -424,9 +428,6 @@
         </div>
         <div class="piece-body">
           <h2>Coherus Oncology</h2>
-          <table class="spec">
-            <tr><td>Art direction, design</td></tr>
-          </table>
         </div>
       </article>
 
@@ -445,9 +446,6 @@
         </div>
         <div class="piece-body">
           <h2>Kailera Therapeutics</h2>
-          <table class="spec">
-            <tr><td>Art direction, design</td></tr>
-          </table>
         </div>
       </article>
 
@@ -464,9 +462,6 @@
         </div>
         <div class="piece-body">
           <h2>Rezolute</h2>
-          <table class="spec">
-            <tr><td>Art direction, design</td></tr>
-          </table>
         </div>
       </article>
 
@@ -544,12 +539,12 @@
     const lap = 40000; // ms for one full turn
     function place(t) {
       const visible = cards.filter(c => c.offsetParent);
-      const r = Math.min(box.clientWidth * (box.clientWidth < 760 ? 0.34 : 0.27), 420); // a tight ring keeps the cards close together (a little wider on phones, where cards are larger)
+      const r = Math.min(box.clientWidth * (box.clientWidth < 760 ? 0.46 : 0.45), 710); // ring radius; cards keep their own size
       const h = box.clientHeight;
       visible.forEach((c, i) => {
         const a = (i / visible.length) * Math.PI * 2 + (t / lap) * Math.PI * 2;
         const x = Math.sin(a) * r, z = Math.cos(a) * r * 0.8;
-        const y = parseFloat(c.dataset.y) * h + Math.sin(t / 1600 + i) * 8;
+        const y = parseFloat(c.dataset.y) * h * 1.3 + Math.cos(a) * r * 0.3 + Math.sin(t / 1600 + i) * 8; // taller: wider height spread, and the ring tilts so cards dip low at the front and rise at the back
         const far = (1 - Math.cos(a)) / 2;
         c.style.transform = `translate3d(${x}px, ${y}px, ${z}px) rotateY(${Math.sin(a) * 28}deg) rotateZ(${Math.sin(a + i) * 4}deg)`;
         c.style.setProperty('--far', far.toFixed(3));
