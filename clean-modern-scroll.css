@@ -13,17 +13,16 @@
      <meta name="viewport" content="width=device-width, initial-scale=1">
 
    TYPE SCALE (all Geist)
-     H1 / display   200, clamp(48px, 11vw, 136px), line-height 1, -0.05em
-     H2 / .h2       200, clamp(32px, 3.5vw + 6px, 42px), line-height 1.15, -0.03em
-     H3 / .h3       200, 22px (20px on phones), line-height 1.3, -0.02em (also the News card title)
-     Body           200, 18px, line-height 1.5, 0
-     Paragraph      body, but -0.01em (bio and project text)
-     Small text     200, 16px, line-height 1.4 (titles, codes, form fields)
-     Label          400, 12.5px, line-height 1.3, +0.05em, UPPERCASE, black
-     Nav link       400, 15px, line-height normal, 0, Title Case, red (also tabs, CTAs, "Read More")
+     H1 / display   200, clamp(48px, 11vw, 136px), line-height 1, -0.04em
+     H2 / .h2       200, clamp(32px, 3.5vw + 6px, 42px), line-height 1.15, -0.02em
+     H3 / .h3       200, 22px (20px on phones), line-height 1.3, -0.01em (also the News card title)
+     Body           300, 18px, line-height 1.5, +0.01em (also bio, project and hero text, at 80% opacity)
+     Small text     300, 16px, line-height 1.4 (titles, codes, form fields)
+     Label          400, 12.5px, line-height 1.3, +0.06em, UPPERCASE, black
+     Nav link       400, 15px, line-height normal, +0.01em, Title Case, red (also tabs, CTAs, "Read More")
      Text link      300, red
      Program name   300, 20px, red (pipeline)
-     Accordion head 200, 18px
+     Accordion head 400, 18px
      Timeline year  200, 16px, line-height 1.65, tabular numbers
 
    COLORS (light / dark)
@@ -121,13 +120,13 @@
 
 
 /* ---------- Base ---------- */
-* { box-sizing: border-box; letter-spacing: 0; }
+* { box-sizing: border-box; letter-spacing: 0.01em; }
 [hidden] { display: none !important; }
 body {
   margin: 0; /* the gutter is the whole page margin */
   background: var(--bg);
   color: var(--ink);
-  font: 200 1.125rem/1.5 var(--font); /* 18px body text */
+  font: 300 1.125rem/1.5 var(--font); /* 18px body text */
   padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
   padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
 }
@@ -140,34 +139,34 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 /* ---------- Type ---------- */
 .label {
   font: 400 0.78125rem/1.3 var(--font); /* 12.5px */
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink);
 }
 
 h1 {
   font: 200 clamp(3rem, 11vw, 8.5rem)/1 var(--font);
-  letter-spacing: -0.05em;
+  letter-spacing: -0.04em;
   margin: 0;
   text-wrap: balance;
 }
 h1 span { color: var(--accent); }
-h1 * { letter-spacing: inherit; } /* anything inside an H1 keeps its -5% */
+h1 * { letter-spacing: inherit; } /* anything inside an H1 keeps its -4% */
 h1 .h1-part { color: inherit; display: inline-block; } /* one animated line of the headline */
 header h1 { text-align: center; } /* homepage headline only */
 
-h2, .h2 { font: 200 clamp(2rem, calc(3.5vw + 6px), 2.625rem)/1.15 var(--font); letter-spacing: -0.03em; margin: 0; text-wrap: balance; }
-h3, .h3 { font: 200 1.375rem/1.3 var(--font); letter-spacing: -0.02em; margin: 0; text-wrap: balance; } /* between H2 and body; also the News card title */
+h2, .h2 { font: 200 clamp(2rem, calc(3.5vw + 6px), 2.625rem)/1.15 var(--font); letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
+h3, .h3 { font: 200 1.375rem/1.3 var(--font); letter-spacing: -0.01em; margin: 0; text-wrap: balance; } /* between H2 and body; also the News card title */
 
-/* Paragraph style: slightly tighter than body text (-1%) */
-.about-text p:not(.h2), .detail-body p, .about-text p:not(.h2) *, .detail-body p * { letter-spacing: -0.01em; }
+/* Body copy: the text color at 80% (dark sections and the hero follow their own text color); links inside keep theirs */
+.hero-side p, .split-body p:not(.h2), .about-text p:not(.h2), .detail-body p, .pl-panel p, .bio-text { color: color-mix(in srgb, currentColor 80%, transparent); }
 
 
 /* ---------- Header and navigation ---------- */
 header { display: grid; gap: 1.75rem; }
 .topbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem 2rem; padding-bottom: 0.9rem; }
 .topbar nav { display: flex; gap: 1.5rem; }
-.topbar nav a { color: var(--link); text-decoration: none; font: 400 0.9375rem/normal var(--font); letter-spacing: 0; } /* label style, in red */
+.topbar nav a { color: var(--link); text-decoration: none; font: 400 0.9375rem/normal var(--font); letter-spacing: 0.01em; } /* label style, in red */
 
 .section-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem 2rem; margin-bottom: 1.75rem; }
 
@@ -217,8 +216,8 @@ header { display: grid; gap: 1.75rem; }
 
 
 /* ---------- Spec table (label / value) ---------- */
-.spec { width: 100%; border-collapse: collapse; font: 200 1rem/1.4 var(--font); }
-.spec th { text-align: left; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink); width: 34%; padding: 0.3rem 0; vertical-align: baseline; } /* label style */
+.spec { width: 100%; border-collapse: collapse; font: 300 1rem/1.4 var(--font); }
+.spec th { text-align: left; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); width: 34%; padding: 0.3rem 0; vertical-align: baseline; } /* label style */
 .spec td { padding: 0.3rem 0; vertical-align: baseline; }
 /* Inside cards: each label sits above its value */
 .piece .spec { color: inherit; }
@@ -246,15 +245,15 @@ header { display: grid; gap: 1.75rem; }
 
 /* ---------- Footer ---------- */
 footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem var(--gutter); padding-top: 2.5rem; }
-footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/normal var(--font); letter-spacing: 0; } /* matches the nav */
+footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/normal var(--font); letter-spacing: 0.01em; } /* matches the nav */
 
 
 /* ---------- Project detail page ---------- */
 #detail { padding-block: var(--gutter); display: grid; gap: 2.5rem; }
 .detail-inner { width: 100%; }
 .detail-head { display: grid; gap: 1.5rem; }
-.back { color: var(--link); text-decoration: none; font: 400 0.9375rem/normal var(--font); letter-spacing: 0; }
-.detail-title { font: 200 clamp(3rem, 11vw, 8.5rem)/1 var(--font); letter-spacing: -0.05em; margin: 0; text-wrap: balance; }
+.back { color: var(--link); text-decoration: none; font: 400 0.9375rem/normal var(--font); letter-spacing: 0.01em; }
+.detail-title { font: 200 clamp(3rem, 11vw, 8.5rem)/1 var(--font); letter-spacing: -0.04em; margin: 0; text-wrap: balance; }
 .detail-tagline { font-size: 1.5rem; line-height: 1.3; margin: 0; color: var(--muted); max-width: 30em; }
 
 /* Main video panel: video at 80%, centered on black, rounded corners */
@@ -288,7 +287,7 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/
   list-style: none; cursor: pointer;
   display: flex; justify-content: space-between; align-items: center; gap: 1rem;
   padding: 0.9rem 1.1rem;
-  font: 200 1.125rem/1.3 var(--font); color: var(--ink);
+  font: 400 1.125rem/1.3 var(--font); color: var(--ink);
 }
 .accordion summary::-webkit-details-marker { display: none; }
 .accordion summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
@@ -324,14 +323,14 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/
 .pl-item summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .pl-head { padding: 100px 0 1rem; align-items: start; } /* labels share a top line, even when a stage name wraps */
 .pl-head .pl-stages { align-items: start; }
-.pl-head > *, .pl-stages > * { font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink); } /* label style */
+.pl-head > *, .pl-stages > * { font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); } /* label style */
 .pl-stages, .pl-bar { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
 .pl-program { font: 300 1.25rem/1.3 var(--font); color: var(--link); } /* red, like every other link */
 .pl-program .acc-icon { width: 0.6em; height: 0.6em; margin-left: 0.5em; vertical-align: 0.05em; }
 .pl-item[open]:not(.closing) .acc-icon .v { transform: scaleY(0); } /* plus becomes minus */
-.pl-program small { display: block; font: 200 1rem/1.4 var(--font); color: var(--muted); }
+.pl-program small { display: block; font: 300 1rem/1.4 var(--font); color: var(--muted); }
 .pl-panel { padding: 0 0 2rem; }
-.pl-panel p { margin: 0; max-width: 36em; font-size: 1.125rem; line-height: 1.5; letter-spacing: -0.01em; } /* paragraph style */
+.pl-panel p { margin: 0; max-width: 36em; font-size: 1.125rem; line-height: 1.5; } /* body style */
 .pl-indication { font-size: 1.125rem; line-height: 1.4; }
 .pl-slot { position: relative; height: 12px; background: var(--line); overflow: hidden; }
 .pl-slot::after { content: ""; position: absolute; inset: 0; background: var(--ink); transform-origin: 0 50%; transform: scaleX(var(--fill, 0)); }
@@ -348,7 +347,7 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/
 .tabs { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; min-height: 60px; } /* equal columns, sized to the longest tab */
 .tab {
   appearance: none; background: none; border: 0; display: flex; align-items: center; justify-content: center; padding: 0 1.25rem; cursor: pointer;
-  font: 400 0.9375rem/normal var(--font); letter-spacing: 0; color: var(--ink); /* nav style, in ink: the line marks the selected tab */
+  font: 400 0.9375rem/normal var(--font); letter-spacing: 0.01em; color: var(--ink); /* nav style, in ink: the line marks the selected tab */
 }
 .tab { border-left: 1px solid var(--line); } /* a rule on both sides of every tab, labels centered */
 .tab:last-child { border-right: 1px solid var(--line); }
@@ -390,12 +389,12 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/
 .person-photo {
   position: relative; display: grid; place-items: center; aspect-ratio: 3 / 4; overflow: hidden;
   margin: calc(-1 * var(--gutter)) calc(-1 * var(--gutter)) 1rem; /* flush with the card's top and sides */
-  background: var(--line); color: var(--muted); font: 200 clamp(2rem, 4vw, 3.5rem)/1 var(--font); letter-spacing: -0.03em;
+  background: var(--line); color: var(--muted); font: 200 clamp(2rem, 4vw, 3.5rem)/1 var(--font); letter-spacing: -0.02em;
 }
 .person-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.person-name { margin-bottom: 0.2rem; font-size: 1.25rem; } /* .h3 type at a fixed 20px, a step down for the narrower cards */
-.person-role { font: 200 1rem/1.4 var(--font); color: var(--muted); }
-.person-more { margin-top: 0.75rem; font: 400 0.9375rem/normal var(--font); letter-spacing: 0; color: var(--link); opacity: 0; translate: -0.75em 0; }
+.person-name { margin-bottom: 0.2rem; font-size: 1.25rem; font-weight: 300; } /* .h3 type at a fixed 20px and weight 300, a step down for the narrower cards */
+.person-role { font: 300 1rem/1.4 var(--font); color: var(--muted); }
+.person-more { margin-top: 0.75rem; font: 400 0.9375rem/normal var(--font); letter-spacing: 0.01em; color: var(--link); opacity: 0; translate: -0.75em 0; }
 .person:hover .person-more, .person:focus-visible .person-more { opacity: 1; translate: 0 0; }
 @media (hover: none) { .person-more { opacity: 1; translate: 0 0; } } /* touch screens have no hover to reveal it */
 
@@ -419,16 +418,16 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .bio-top { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding-bottom: 3rem; }
 .bio-close, .bio-nav button {
   appearance: none; background: none; border: 0; padding: 0; cursor: pointer;
-  font: 400 0.9375rem/normal var(--font); letter-spacing: 0; color: var(--link); /* nav style */
+  font: 400 0.9375rem/normal var(--font); letter-spacing: 0.01em; color: var(--link); /* nav style */
 }
 .bio-close .acc-icon { margin-left: 0.5em; transform: rotate(45deg); } /* the plus, turned into an x */
 .bio-photo {
   position: relative; display: grid; place-items: center; width: 160px; aspect-ratio: 1; overflow: hidden; margin-bottom: 1rem;
-  background: var(--line); color: var(--muted); font: 200 3rem/1 var(--font); letter-spacing: -0.03em;
+  background: var(--line); color: var(--muted); font: 200 3rem/1 var(--font); letter-spacing: -0.02em;
 }
 .bio-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .bio-role { margin: 0; font-size: 1.25rem; line-height: 1.3; color: var(--muted); }
-.bio-text { margin: 1rem 0 2.5rem; max-width: 36em; letter-spacing: -0.01em; } /* paragraph style */
+.bio-text { margin: 1rem 0 2.5rem; max-width: 36em; } /* body style */
 /* ---------- News ---------- */
 /* Markup:
    <div class="news">
@@ -485,7 +484,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .carousel .news-item time::after { content: ""; display: block; width: 30px; height: 3px; margin-top: 0.75rem; background: currentColor; } /* short rule under the date; turns white with the hover */
 .carousel .news-item .ar { grid-column: 1; grid-row: 3; }
 /* "Read more" line at the bottom of a card, label style in red, arrow after the text */
-.news-more { align-self: end; color: var(--link); font: 400 0.9375rem/normal var(--font); letter-spacing: 0; }
+.news-more { align-self: end; color: var(--link); font: 400 0.9375rem/normal var(--font); letter-spacing: 0.01em; }
 .news-item .news-more .ar { width: 0.6em; height: 0.6em; margin: 0 0 0 0.35em; stroke-width: 4; } /* the .ar size, not the big row arrow */
 
 /* ---------- Split (content beside an image) ---------- */
@@ -503,7 +502,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .split-body { grid-template-columns: minmax(0, 30em); gap: 1.5rem; align-content: center; justify-content: center; justify-items: start; padding: 64px; }
 .split-body > * { margin: 0; }
 .split-body > .label:first-child { margin-bottom: -0.75rem; } /* eyebrow sits close above its headline */
-.split-body p:not(.h2) { max-width: 30em; letter-spacing: -0.01em; } /* paragraph style */
+.split-body p:not(.h2) { max-width: 30em; } /* body style */
 .split-media { aspect-ratio: 1; }
 .split-img {
   position: relative; overflow: hidden; width: 80%; height: 80%;
@@ -538,7 +537,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .menu-toggle {
   display: none; align-self: center; align-items: center; gap: 0.6rem;
   appearance: none; background: none; border: 0; padding: 0.5rem 0; cursor: pointer; color: inherit;
-  font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; /* label style */
+  font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.06em; text-transform: uppercase; /* label style */
 }
 .menu-toggle svg { width: 20px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.5; overflow: visible; }
 
@@ -547,7 +546,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .menu-links { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
 .menu-links a {
   display: flex; justify-content: space-between; align-items: center; padding: 1.1rem 0; border-bottom: 1px solid var(--line);
-  color: var(--ink); font: 200 clamp(2rem, calc(3.5vw + 6px), 2.625rem)/1.15 var(--font); letter-spacing: -0.03em; /* h2 style */
+  color: var(--ink); font: 200 clamp(2rem, calc(3.5vw + 6px), 2.625rem)/1.15 var(--font); letter-spacing: -0.02em; /* h2 style */
 }
 .menu-links a:hover, .menu-links a:focus-visible { color: var(--link); }
 .menu-links .ar { width: 0.45em; height: 0.45em; stroke-width: 3; color: var(--link); }
@@ -586,12 +585,12 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .hero-body { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 2rem var(--gutter); align-items: end; align-self: end; padding: 0 5% 5%; }
 .hero h1 { text-align: left; font-size: clamp(3rem, 7vw, 7rem); max-width: 11em; }
 .hero-side { display: grid; gap: 1.5rem; justify-items: start; }
-.hero-side p { margin: 0; max-width: 26em; letter-spacing: -0.01em; } /* paragraph style */
+.hero-side p { margin: 0; max-width: 26em; } /* body style */
 
 .button {
   display: inline-flex; align-items: center; padding: 1rem 1.4rem; border: 0; cursor: pointer;
   background: var(--link); color: #fff;
-  font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.05em; text-transform: uppercase; /* label style */
+  font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.06em; text-transform: uppercase; /* label style */
 }
 .button:hover, .button:focus-visible { background: var(--ink); color: var(--row-bg); }
 .hero .button:hover, .hero .button:focus-visible { background: #fff; color: #0c0f11; } /* stays visible over the video */
@@ -621,7 +620,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .field { display: grid; gap: 0.5rem; }
 .field input, .field textarea, .field select {
   width: 100%; padding: 0.9rem 1rem; border: 1px solid var(--line); border-radius: 0;
-  background: var(--bg); color: var(--ink); font: 200 1rem/1.4 var(--font); letter-spacing: -0.01em;
+  background: var(--bg); color: var(--ink); font: 300 1rem/1.4 var(--font); letter-spacing: 0;
 }
 .field textarea { min-height: 9rem; resize: vertical; }
 /* Dropdown: wrap the <select> in <span class="select"> for the chevron */
@@ -639,7 +638,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .contact-form .button { justify-self: start; margin-top: 0.5rem; }
 .form-note { margin: 0; font-size: 1rem; color: var(--muted); }
 
-.cta { color: var(--link); font: 400 0.9375rem/normal var(--font); letter-spacing: 0; } /* nav style */
+.cta { color: var(--link); font: 400 0.9375rem/normal var(--font); letter-spacing: 0.01em; } /* nav style */
 
 .bio-nav { display: flex; justify-content: space-between; gap: 1rem; padding-top: 1.25rem; margin-top: auto; border-top: 1px solid var(--line); } /* sits at the bottom of the sheet */
 
