@@ -569,15 +569,46 @@
     `<li><a href="${a.getAttribute('href')}">${a.textContent}<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></a></li>`).join('');
   menuToggle.addEventListener('click', () => openSheet(menu));
   wireSheet(menu);
+  // Nav glide: an ease-out scroll to the section (fast at first, settling softly), with the page dipping
+  // to 75% opacity early in the move and fading back in as it lands. Any wheel, touch or key stops it.
+  let glide = 0;
+  function glideTo(hash) {
+    const target = document.querySelector(hash);
+    if (!target) return;
+    history.pushState(null, '', hash);
+    const wrap = document.querySelector('.wrap');
+    const from = scrollY;
+    const to = Math.min(Math.max(0, target.getBoundingClientRect().top + scrollY - (parseFloat(getComputedStyle(target).scrollMarginTop) || 0)),
+      document.documentElement.scrollHeight - innerHeight);
+    const land = () => { target.setAttribute('tabindex', '-1'); target.focus({ preventScroll: true }); };
+    cancelAnimationFrame(glide);
+    if (!motionOK() || Math.abs(to - from) < 2) { scrollTo({ top: to, behavior: 'instant' }); land(); return; }
+    const duration = Math.min(1600, Math.max(800, Math.abs(to - from) * 0.45));
+    const easeOut = t => 1 - Math.pow(1 - t, 4); // ease-out quart
+    const start = performance.now();
+    const stop = () => { cancelAnimationFrame(glide); wrap.style.opacity = ''; ['wheel', 'touchstart', 'keydown'].forEach(ev => removeEventListener(ev, stop)); };
+    ['wheel', 'touchstart', 'keydown'].forEach(ev => addEventListener(ev, stop, { passive: true }));
+    const step = now => {
+      const t = Math.min(1, (now - start) / duration);
+      scrollTo({ top: from + (to - from) * easeOut(t), behavior: 'instant' });
+      wrap.style.opacity = 1 - 0.25 * Math.sin(Math.PI * Math.sqrt(t)); // dips most a quarter of the way in, back to 1 on landing
+      if (t < 1) glide = requestAnimationFrame(step); else { stop(); land(); }
+    };
+    glide = requestAnimationFrame(step);
+  }
+  pinbar.querySelector('nav').addEventListener('click', e => {
+    const link = e.target.closest('a[href^="#"]');
+    if (!link || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    e.preventDefault();
+    glideTo(link.getAttribute('href'));
+  });
+
   // A link slides the menu out, then glides down to its section
   menu.addEventListener('click', e => {
     const link = e.target.closest('.menu-links a');
     if (!link) return;
     e.preventDefault();
-    closeSheet(menu, () => {
-      history.pushState(null, '', link.getAttribute('href'));
-      document.querySelector(link.getAttribute('href')).scrollIntoView({ behavior: motionOK() ? 'smooth' : 'auto' });
-    });
+    closeSheet(menu, () => glideTo(link.getAttribute('href')));
   });
   // Widening past the breakpoint brings the bar's links back, so the menu closes
   matchMedia('(min-width: 1025px)').addEventListener('change', e => { if (e.matches && menu.open) { menu.close(); setExpanded(menu, false); } });
