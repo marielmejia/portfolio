@@ -79,7 +79,10 @@
   #home > header {
     --hero-h: calc(100vh - var(--gutter)); /* the page's top padding plus this = one full screen */
     --hero-h: calc(100svh - var(--gutter));
-    grid-template-rows: auto 1fr;
+    /* Two rows: the reel fills the top two thirds of the screen (the nav sits over it),
+       the headline the bottom third */
+    --screen: 100vh; --screen: 100svh;
+    grid-template-rows: calc(var(--screen) * 2 / 3 - var(--gutter)) minmax(calc(var(--screen) / 3), auto);
     min-height: var(--hero-h);
     gap: 0;
     /* Section runs edge to edge so the gray band reaches both sides of the window */
@@ -100,38 +103,33 @@
   #home > header h1 {
     display: flex; flex-direction: column; justify-content: center; align-items: center;
     padding: var(--gutter);
-    font: 200 clamp(2.5rem, calc(3.5vw + 14px), 3.125rem)/1.12 var(--font-serif); letter-spacing: -0.02em; /* H2 style (40px to 50px) */
   }
   #home > header h1 br { display: none; } /* each line is already its own row here */
   /* Staggered headline: first line sits off to the left, second off to the right */
   #home > header h1 .h1-part { --shift: -0.6em; transform: translateX(var(--shift)); }
   #home > header h1 .h1-part ~ .h1-part { --shift: 2.1em; } /* three steps right, plus half the gap reduction so "Shine" stays put */
-  /* Woven into the orbit: the first line passes in front of the cards, the second sits behind them,
-     split open so the cards travel through the gap between "that" and "Shine" */
-  #home > header h1 .h1-part { position: relative; z-index: 2; }
-  #home > header h1 .h1-part ~ .h1-part { z-index: 0; display: inline-flex; gap: 0.4em; }
+  #home > header h1 .h1-part ~ .h1-part { display: inline-flex; gap: 0.4em; } /* "that" and "Shine" set slightly apart */
   #home > header h1 .h1-part span { color: inherit; } /* the split words keep the headline color */
-  /* Sun: portfolio stills set edge to edge in a ring around the center of the stage, bottoms facing in,
-     turning slowly in a flat circle; the headline sits at its core. The script places each card every frame. */
-  #home > header .topbar { position: relative; z-index: 2; }
-  .hero-cards {
-    position: absolute; inset: 0; z-index: 1; /* between the two headline lines */
-    overflow: hidden; pointer-events: none;
+  /* Reel: the portfolio pieces play across the top two thirds of the screen, one after another,
+     each cutting in with a slow push; the whole reel fades in from transparent on load */
+  #home > header .topbar, .hero-stage { position: relative; z-index: 1; }
+  .hero-reel {
+    position: absolute; top: calc(-1 * var(--gutter)); left: 0; right: 0; /* from the very top of the screen */
+    height: calc(var(--screen) * 2 / 3); /* down to the end of the top row */
+    z-index: 0; overflow: hidden; pointer-events: none; background: var(--ink);
   }
-  .hero-orbit { position: absolute; left: 50%; top: 50%; transform: scale(0.672); } /* whole sun at 67.2% size, centered in the hero both ways */
-  .hero-card {
-    --w: 20vw; /* the script sizes every card the same to fit the stage */
-    position: absolute; left: 0; top: 0;
-    width: var(--w); aspect-ratio: 1256 / 720;
-    margin: calc(var(--w) * -0.2866) 0 0 calc(var(--w) * -0.5); /* centered on its point */
-    overflow: hidden;
+  .hero-reel > * {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+    opacity: 0; transition: opacity 0.5s ease;
   }
-  .hero-card :is(img, video) { display: block; width: 100%; height: 100%; object-fit: cover; } /* fills the card; the 16:10 stills lose a sliver top and bottom */
+  .hero-reel > .on { opacity: 1; }
+  .hero-reel::after { content: ""; position: absolute; inset: 0; background: rgb(12 15 17 / 0.35); } /* darkens the footage so the name in the top bar reads */
+  #home > header .topbar .label { color: #fff; } /* light type over the reel */
   .topbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem 2rem; padding-bottom: 0.9rem; }
   .topbar nav { display: flex; gap: 1.5rem; }
   .topbar nav a { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; } /* label style, in red */
   h1 {
-    font: 200 clamp(2.1875rem, calc(11vw - 5px), 8.1875rem)/1.12 var(--font-serif); /* 35px to 131px; low floor so "Crafting Brands" fits a 375px phone */
+    font: 200 clamp(1.875rem, calc(11vw - 10px), 7.375rem)/1.12 var(--font-serif); /* 30px to 118px; low floor so "Crafting Brands" fits a 375px phone */
     letter-spacing: -0.02em;
     margin: 0;
     text-wrap: balance;
@@ -151,6 +149,7 @@
      the small ones fill the space around it. Which thumbnail and where it sits varies by row. */
   .strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-flow: dense; gap: var(--gutter); }
   .strip .media.big { grid-column: var(--col, 1) / span 2; grid-row: 1 / span 2; aspect-ratio: auto; } /* pinned to the top so the small ones flow around it */
+  .strip.pair { grid-template-columns: repeat(2, minmax(0, 1fr)); } /* a row with just two thumbnails, side by side at feature size */
   .strip .media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
   .piece { background: var(--row-bg); padding: 25px; display: grid; grid-template-rows: auto 1fr; } /* thumbnails fill the row inside a 25px frame */
   .piece { background: transparent; } /* rows sit on the container's white; hover still turns them dark */
@@ -221,7 +220,7 @@
   .detail-inner { width: 100%; }
   .detail-head { display: grid; gap: 1.5rem; }
   .back { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; }
-  .detail-title { font: 200 clamp(2.6875rem, calc(11vw - 5px), 8.1875rem)/1.12 var(--font-serif); /* 43px to 131px */ letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
+  /* .detail-title uses the shared H1 style (30px to 118px) */
   .detail-tagline { font-size: 1.5rem; line-height: 1.3; margin: 0; color: var(--ink); max-width: 30em; }
   .bleed {
     position: relative;
@@ -281,6 +280,9 @@
     /* Homepage rows slide up as they scroll into view (uses translate, so the hover lift still works) */
     .piece.will-reveal { opacity: 0; translate: 0 80px; transition: opacity 0.9s ease, translate 0.9s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.25s ease, background-color 0.3s ease, color 0.3s ease; }
     .piece.will-reveal.revealed { opacity: 1; translate: 0 0; }
+    /* Hero reel fades in from transparent as the page opens */
+    .hero-reel { animation: reel-in 1.6s ease 0.2s both; }
+    @keyframes reel-in { from { opacity: 0; } to { opacity: 1; } }
     .piece.will-reveal + .piece-name { opacity: 0; transition: opacity 0.9s ease 0.2s; } /* each name fades in with its row */
     .piece.will-reveal.revealed + .piece-name { opacity: 1; }
     .accordion { transition: background-color 0.2s ease; }
@@ -304,19 +306,17 @@
         <a href="#contact">Contact</a>
       </nav>
     </div>
+    <div class="hero-reel" aria-hidden="true">
+      <video src="work/rezera.mp4" muted loop playsinline preload="auto"></video>
+      <img src="work/celcuity-mobile.jpg" alt="">
+      <video src="work/kardigan-4.mp4" muted loop playsinline preload="auto"></video>
+      <img src="work/santa-ana-bio-2.jpg" alt="">
+      <video src="work/kailera-5.mp4" muted loop playsinline preload="auto"></video>
+      <img src="work/celcuity-web1.jpg" alt="">
+      <video src="work/rezera-colors.mp4" muted loop playsinline preload="auto"></video>
+      <img src="work/kardigan-5-v2.svg" alt="">
+    </div>
     <div class="hero-stage">
-      <div class="hero-cards" aria-hidden="true">
-        <div class="hero-orbit">
-          <div class="hero-card"><video src="work/rezera.mp4" autoplay muted loop playsinline aria-hidden="true"></video></div>
-          <div class="hero-card"><img src="work/celcuity-mobile.jpg" alt=""></div>
-          <div class="hero-card"><video src="work/kardigan-4.mp4" autoplay muted loop playsinline aria-hidden="true"></video></div>
-          <div class="hero-card"><img src="work/santa-ana-bio-2.jpg" alt=""></div>
-          <div class="hero-card"><video src="work/kailera.mp4" autoplay muted loop playsinline aria-hidden="true"></video></div>
-          <div class="hero-card"><img src="work/celcuity-web1.jpg" alt=""></div>
-          <div class="hero-card"><video src="work/rezera-colors.mp4" autoplay muted loop playsinline aria-hidden="true"></video></div>
-          <div class="hero-card"><img src="work/kardigan-5-v2.svg" alt=""></div>
-        </div>
-      </div>
       <h1><span class="h1-part">Crafting Brands</span><br> <span class="h1-part"><span>that</span> <span>Shine</span></span></h1>
     </div>
   </header>
@@ -326,17 +326,10 @@
 
       <article class="piece">
         <a class="stretched" href="#rezera" aria-label="View the Rezera project"></a>
-        <div class="strip">
+        <div class="strip pair">
+          <div class="media"><img src="work/rezera-web1.jpg" alt="Rezera image 1" loading="lazy"></div>
           <div class="media">
-            <video muted loop playsinline preload="none" aria-label="Rezera video 1" data-src="work/rezera.mp4"></video>
-          </div>
-          <div class="media big" style="--col: 1">
             <video muted loop playsinline preload="none" aria-label="Rezera video 2" data-src="work/rezera-colors.mp4"></video>
-          </div>
-          <div class="media"><img src="work/rezera-web1.jpg" alt="Rezera image 3" loading="lazy"></div>
-          <div class="media"><img src="work/rezera-web2.png" alt="Rezera image 4" loading="lazy"></div>
-          <div class="media">
-            <video muted loop playsinline preload="none" aria-label="Rezera video 5" data-src="work/rezera-5.mp4"></video>
           </div>
         </div>
       </article>
@@ -378,14 +371,11 @@
 
       <article class="piece">
         <a class="stretched" href="#santa-ana-bio" aria-label="View the Santa Ana Bio project"></a>
-        <div class="strip">
+        <div class="strip pair">
           <div class="media">
             <video muted loop playsinline preload="none" aria-label="Santa Ana Bio video 1" data-src="work/santa-ana-bio.mp4"></video>
           </div>
-          <div class="media"><img src="work/santa-ana-bio-2.jpg" alt="Santa Ana Bio image 2" loading="lazy"></div>
-          <div class="media big" style="--col: 1"><img src="work/santa-ana-bio-3.jpg" alt="Santa Ana Bio image 3" loading="lazy"></div>
-          <div class="media"><img src="work/santa-ana-bio-4.jpg" alt="Santa Ana Bio image 4" loading="lazy"></div>
-          <div class="media"><img src="work/santa-ana-bio-5.png" alt="Santa Ana Bio image 5" loading="lazy"></div>
+          <div class="media"><img src="work/santa-ana-bio-3.jpg" alt="Santa Ana Bio image 2" loading="lazy"></div>
         </div>
       </article>
       <p class="piece-name">Santa Ana Bio</p>
@@ -426,14 +416,11 @@
 
       <article class="piece">
         <a class="stretched" href="#rezolute" aria-label="View the Rezolute project"></a>
-        <div class="strip">
-          <div class="media big" style="--col: 1">
+        <div class="strip pair">
+          <div class="media">
             <video muted loop playsinline preload="none" aria-label="Rezolute video 1" data-src="work/rezolute.mp4"></video>
           </div>
-          <div class="media"><img src="work/rezolute-2.png" alt="Rezolute image 2" loading="lazy"></div>
-          <div class="media"><img src="work/rezolute-3.png" alt="Rezolute image 3" loading="lazy"></div>
-          <div class="media"><img src="work/rezolute-4.jpg" alt="Rezolute image 4" loading="lazy"></div>
-          <div class="media"><img src="work/rezolute-5.jpg" alt="Rezolute image 5" loading="lazy"></div>
+          <div class="media"><img src="work/rezolute-3.png" alt="Rezolute image 2" loading="lazy"></div>
         </div>
       </article>
       <p class="piece-name">Rezolute</p>
@@ -497,92 +484,40 @@
 </main>
 
 <script>
-  // Background and sun videos hold still for visitors who prefer reduced motion
+  // Background video holds still for visitors who prefer reduced motion
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    document.querySelectorAll('.bg-video, .hero-card video').forEach(v => { v.removeAttribute('autoplay'); v.pause(); });
+    document.querySelectorAll('.bg-video').forEach(v => { v.removeAttribute('autoplay'); v.pause(); });
   }
 
-  // Hero sun: equal cards spaced evenly around a circle, each turned sideways so its bottom edge faces
-  // the center, with a gap between neighbors. The ring turns at a steady size and spacing. Flat, no depth.
-  // On load, the cards trace the letter "d": they stream down a vertical line at the circle's right edge,
-  // turned 90° and centered on that line, then flow on around the circle into place, one continuous motion.
+  // Hero reel: each piece plays full screen in turn, a few seconds apiece, looping through all of them.
+  // Videos restart as they come up; the reel holds on the first piece for reduced-motion visitors.
   (() => {
-    const box = document.querySelector('.hero-cards');
-    const cards = [...box.querySelectorAll('.hero-card')];
+    const shots = [...document.querySelectorAll('.hero-reel > *')];
     const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const lap = 15000; // ms for one full turn
-    const shape = 720 / 1256; // card height as a share of its width
-    // Intro: the whole chain of cards slides along one path, the stem then the bowl of a "d".
-    // Path position is measured in radians around the circle; below 0 means still on the stem above it.
-    const introStart = performance.now() + 400, introLength = 2800;
-    const easeOut = q => 1 - Math.pow(1 - q, 3); // eases to a stop, so the hand-off to the steady turn is seamless
-    function place(t) {
-      const visible = cards.filter(c => c.offsetParent);
-      const n = visible.length;
-      // Reference ring: cards at 70% of the largest size that fits, set edge to edge
-      const w0 = Math.min(box.clientHeight * 0.41, box.clientWidth * 0.39) * 0.7;
-      const reach = ((w0 / 2) / Math.tan(Math.PI / 6) + w0 * shape) * 1.69; // ring span set from the original six-card ring, plus 30% twice over; stays the same whatever the card count
-      // Cards sized so each fills the same share of its slot as six cards did (about 78% of the inner chord),
-      // whatever the count: more cards means smaller cards within the same ring
-      const slot = 2 * Math.tan(Math.PI / n), fill = 0.776;
-      const w = fill * slot * reach / (1 + fill * slot * shape);
-      visible.forEach(c => c.style.setProperty('--w', w + 'px'));
-      const r = reach - (w * shape) / 2; // card centers, so their outer edges sit on the ring's reach
-      const scale = 0.672; // the sun is drawn at 67.2%; matches the scale on .hero-orbit
-      // The ring (set up so it can be an oval; currently a circle). Cards are spaced by distance along its edge,
-      // so they stay evenly apart all the way round; positions below are measured as distance along the path.
-      const rx = r * 0.9, ry = r * 0.9; // a true circle, 10% smaller than the card ring it was built from; cards keep their size
-      const steps = 360, lengths = [0];
-      for (let j = 1; j <= steps; j++) {
-        const u0 = ((j - 1) / steps) * Math.PI * 2, u1 = (j / steps) * Math.PI * 2;
-        lengths.push(lengths[j - 1] + Math.hypot(rx * (Math.cos(u1) - Math.cos(u0)), ry * (Math.sin(u1) - Math.sin(u0))));
-      }
-      const around = lengths[steps]; // full distance round the oval
-      const angleAt = d => { // oval angle for a distance along the edge
-        d = ((d % around) + around) % around;
-        let j = 1; while (lengths[j] < d) j++;
-        return ((j - 1 + (d - lengths[j - 1]) / (lengths[j] - lengths[j - 1])) / steps) * Math.PI * 2;
-      };
-      // How far the chain still has to travel: at the start every card is on the stem above the stage,
-      // and this shrinks to 0 as the chain flows down and around into the ring
-      const k = still ? 1 : Math.min(1, Math.max(0, (t - introStart) / introLength));
-      const aboveStage = box.querySelector('.hero-orbit').offsetTop / scale + w; // stem length that sits above the top of the stage
-      const behind = k >= 1 ? 0 : ((introStart / lap) * around + around * (n - 1) / n + aboveStage) * (1 - easeOut(k));
-      const travelled = (t / lap) * around;
-      visible.forEach((c, i) => {
-        const d = travelled + (i / n) * around - behind; // this card's distance along the path
-        let x, y, spin;
-        if (d < 0) {
-          // On the stem: straight down the vertical line at the oval's right edge, turned 90°
-          x = rx; y = d; spin = Math.PI / 2;
-        } else {
-          // On the bowl: around the oval, bottom edge facing the center (turned to the oval's outward direction)
-          const u = angleAt(d);
-          x = Math.cos(u) * rx; y = Math.sin(u) * ry;
-          spin = Math.atan2(rx * Math.sin(u), ry * Math.cos(u)) + Math.PI / 2;
-        }
-        c.style.transform = `translate(${x}px, ${y}px) rotate(${spin}rad)`;
-      });
+    const hold = 2600; // ms on each piece
+    let i = 0;
+    function show(n) {
+      shots.forEach((el, k) => el.classList.toggle('on', k === n));
+      const v = shots[n];
+      if (v.tagName === 'VIDEO' && !still) { v.currentTime = 0; v.play().catch(() => {}); }
     }
-    function tick(t) {
-      if (!document.hidden && !document.getElementById('home').hidden && scrollY < box.closest('header').offsetHeight) place(t); // skip once the hero is covered
-      requestAnimationFrame(tick);
-    }
-    place(performance.now());
-    if (!still) requestAnimationFrame(tick);
-    addEventListener('resize', () => place(performance.now()));
+    show(0);
+    if (!still) setInterval(() => {
+      if (document.hidden || document.getElementById('home').hidden || scrollY > innerHeight) return; // pause the cuts while out of view
+      const prev = shots[i];
+      i = (i + 1) % shots.length;
+      show(i);
+      if (prev.tagName === 'VIDEO') setTimeout(() => prev.pause(), 600); // after the crossfade
+    }, hold);
   })();
 
-  // Pinned hero fades out as the project rows slide up over it; the headline stays put
-  // while the sun rises with the scroll
+  // Pinned hero fades out as the project rows slide up over it
   (() => {
     const hero = document.querySelector('#home > header');
-    const sun = hero.querySelector('.hero-orbit');
-    const lines = hero.querySelectorAll('h1 .h1-part'); // faded line by line so each keeps its place in front of or behind the cards
+    const lines = hero.querySelectorAll('h1 .h1-part');
     let queued = false;
     function fade() {
       queued = false;
-      sun.style.translate = `0 ${-Math.max(0, scrollY)}px`;
       const p = Math.min(1, Math.max(0, scrollY / (hero.offsetHeight * 0.9)));
       hero.style.opacity = (1 - p).toFixed(3);
       // The headline fades twice as fast as the rest of the hero (its own opacity offsets the hero's)
