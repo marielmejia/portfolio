@@ -92,14 +92,13 @@
     padding: 100px max(var(--gutter), env(safe-area-inset-right, 0px)) 180px max(var(--gutter), env(safe-area-inset-left, 0px));
     background: #0c0f11;
   }
-  #news .section-label, #news .news-intro .h2 { color: #fff; }
-  #news .news-intro .section-head { margin-bottom: 0.75rem; }
-  #news .news-intro .h2 { margin: 0 0 2.5rem; }
-  /* Two columns above phone width: the label and headline in the left third, the cards stacked in the right two
+  #news .section-label { color: #fff; }
+  #news .news-intro .section-head { margin-bottom: 2.5rem; } /* space above the cards when they stack under it (phones) */
+  /* Two columns above phone width: the section label in the left third, the cards stacked in the right two
      thirds (in from the right edge by the side inset) */
   @media (min-width: 761px) {
     #news { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); align-items: start; }
-    #news .news-intro .h2 { margin-bottom: 0; }
+    #news .news-intro .section-head { margin-bottom: 0; }
     #news .news-stack { padding-right: var(--inset-x); }
   }
   /* Cards, one under another: date with a short rule under it, headline, "Read More" */
@@ -140,6 +139,7 @@
   /* Cards: no fill, white text, a rule underneath; the hover goes solid white with dark text */
   #news .news-item { --row-bg: #0c0f11; --ink: #ffffff; }
   #news .news-item { background: transparent; border-bottom: 1px solid rgb(255 255 255 / 0.2); } /* no fill, a faint white rule under each card */
+  #news .news-item:first-child { border-top: 1px solid rgb(255 255 255 / 0.2); } /* and one over the first, so the list is ruled top and bottom */
   #news .news-item:hover, #news .news-item:focus-visible { background: var(--ink); }
   /* Inset by the panels' own inner padding (the side inset, 20px on phones): the Pipeline and News labels and headlines
      line up with the text inside the chart and the news rows, and everything in Team sits on that same inset */
@@ -259,7 +259,6 @@
       <div class="section-head">
         <h2 id="news-title" class="section-label">News</h2>
       </div>
-      <p class="h2">Press Releases</p>
     </div>
     <div class="news-stack" id="news-list" role="region" aria-label="Press releases"></div>
   </section>
