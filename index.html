@@ -13,7 +13,7 @@
     --muted: #7a7976;
     --line: #e7e7e7;
     --accent: var(--muted); /* was green; now the label gray */
-    --link: #FF3434;
+    --link: #FF8138; /* warm orange */
     --acc-bg: rgb(231 231 231 / 0.5); /* #e7e7e7 at 50% */
     --acc-bg-hover: #e7e7e7;
     --row-bg: #ffffff;
@@ -127,10 +127,10 @@
   #home > header .topbar .label { color: #fff; } /* light type over the reel */
   .topbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem 2rem; padding-bottom: 0.9rem; }
   .topbar nav { display: flex; gap: 1.5rem; }
-  .topbar nav a { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; } /* label style, in red */
+  .topbar nav a { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; } /* label style, in the link color */
   h1 {
-    font: 200 clamp(1.875rem, calc(11vw - 10px), 7.375rem)/1.12 var(--font-serif); /* 30px to 118px; low floor so "Crafting Brands" fits a 375px phone */
-    letter-spacing: -0.02em;
+    font: 300 clamp(1.875rem, calc(11vw - 10px), 7.375rem)/1.12 var(--font-serif); /* 30px to 118px; low floor so "Crafting Brands" fits a 375px phone */
+    letter-spacing: -0.04em;
     margin: 0;
     text-wrap: balance;
   }
@@ -139,7 +139,7 @@
   h1 .h1-part { color: inherit; display: inline-block; }
   header h1 { text-align: center; } /* homepage name only; project titles stay left-aligned */
 
-  h2, .h2 { font: 200 clamp(2.5rem, calc(3.5vw + 14px), 3.125rem)/1.12 var(--font-serif); /* 40px to 50px */ letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
+  h2, .h2 { font: 300 clamp(2.5rem, calc(3.5vw + 14px), 3.125rem)/1.12 var(--font-serif); /* 40px to 50px */ letter-spacing: -0.03em; margin: 0; text-wrap: balance; }
   h3, .h3 { font-family: var(--font-serif); font-weight: 200; } /* no H3 on this page yet; ready if one is added */
   .section-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem 2rem; margin-bottom: 1.75rem; }
 
@@ -218,7 +218,14 @@
   /* Project detail view */
   #detail { padding-block: var(--gutter); display: grid; gap: 2.5rem; }
   .detail-inner { width: 100%; }
-  .detail-head { display: grid; gap: 1.5rem; }
+  .detail-head { display: grid; gap: 1.5rem; align-content: start; }
+  /* Two columns: the project's text on the left third, its work on the right two thirds.
+     The text column stays in view while the work scrolls past. */
+  .detail-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: var(--gutter); align-items: start; }
+  .detail-columns .detail-head { position: sticky; top: var(--gutter); container-type: inline-size; }
+  .detail-columns .detail-title { font-size: min(7.375rem, 18cqi); } /* the H1, capped so long names fit the narrow column */
+  .detail-columns .detail-body { grid-template-columns: minmax(0, 1fr); } /* description above the details, one column */
+  .detail-work { display: grid; gap: var(--gutter); }
   .back { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; }
   /* .detail-title uses the shared H1 style (30px to 118px) */
   .detail-tagline { font-size: 1.5rem; line-height: 1.3; margin: 0; color: var(--ink); max-width: 30em; }
@@ -232,7 +239,7 @@
   .bleed #d-video { top: 10%; left: 10%; width: 80%; height: 80%; transform: none; border-radius: 20px; }
   /* Project Details accordion: plus turns into minus when open */
   .accordion { background: var(--acc-bg); overflow: hidden; } /* clips the body while its height animates */
-  .accordion:hover { background: var(--acc-bg-hover); }
+  .accordion:not([open]):hover { background: var(--acc-bg-hover); } /* darker only on hover while closed; open, it keeps the light gray */
   .accordion summary {
     list-style: none; cursor: pointer;
     display: flex; justify-content: space-between; align-items: center; gap: 1rem;
@@ -248,8 +255,8 @@
   .detail-body { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 2rem var(--gutter); align-items: start; }
   .detail-body p { margin: 0; max-width: 36em; } /* uses the body style */
   .gallery .media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-  .bleed + .gallery { margin-top: calc(var(--gutter) - 2.5rem); } /* page gap is 2.5rem; this leaves one gutter */
   .gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gutter); }
+  .gallery .media:nth-child(1), .gallery .media:nth-child(4) { grid-column: 1 / -1; } /* full, pair, full: after the main video, one wide piece, two side by side, one wide */
   .next {
     display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem 2rem;
     padding-top: 1.25rem;
@@ -259,6 +266,8 @@
 
   @media (max-width: 760px) {
     .about, .detail-body { grid-template-columns: minmax(0, 1fr); }
+    .detail-columns { grid-template-columns: minmax(0, 1fr); } /* phones: text above the work */
+    .detail-columns .detail-head { position: static; }
     .gallery { grid-template-columns: minmax(0, 1fr); }
     .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .strip .media.big { grid-column: 1 / -1; grid-row: 1; aspect-ratio: 1256 / 720; } /* phones: feature full width on top, small ones two by two */
@@ -454,29 +463,33 @@
 </div>
 
 <main id="detail" hidden>
-  <div class="detail-inner detail-head">
-    <div class="topbar">
-      <a class="back" href="#work"><svg class="ar l" viewBox="0 0 16 16" aria-hidden="true"><path d="M11 2L5 8L11 14"/></svg>All Work</a>
-      <span class="label">MARIEL MEJIA / ART DIRECTOR AND DESIGNER</span>
+  <div class="topbar">
+    <a class="back" href="#work"><svg class="ar l" viewBox="0 0 16 16" aria-hidden="true"><path d="M11 2L5 8L11 14"/></svg>All Work</a>
+    <span class="label">MARIEL MEJIA / ART DIRECTOR AND DESIGNER</span>
+  </div>
+  <div class="detail-columns">
+    <div class="detail-inner detail-head">
+      <h1 class="detail-title" id="d-title"></h1>
+      <p class="detail-tagline" id="d-tagline"></p>
+      <details class="accordion" id="d-details">
+        <summary>Project Details<svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path class="v" d="M8 1V15"/></svg></summary>
+        <div class="detail-body">
+          <p id="d-text"></p>
+          <table class="spec" id="d-spec"></table>
+        </div>
+      </details>
     </div>
-    <h1 class="detail-title" id="d-title"></h1>
-    <p class="detail-tagline" id="d-tagline"></p>
-    <details class="accordion" id="d-details">
-      <summary>Project Details<svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path class="v" d="M8 1V15"/></svg></summary>
-      <div class="detail-body">
-        <p id="d-text"></p>
-        <table class="spec" id="d-spec"></table>
+    <div class="detail-work">
+      <div class="bleed">
+        <video id="d-video" autoplay muted loop playsinline preload="auto"></video>
       </div>
-    </details>
-  </div>
-  <div class="bleed">
-    <video id="d-video" autoplay muted loop playsinline preload="auto"></video>
-  </div>
-  <div class="detail-inner gallery" id="d-gallery">
-    <div class="media"><video muted loop playsinline preload="auto"></video></div>
-    <div class="media"><video muted loop playsinline preload="auto"></video></div>
-    <div class="media"><video muted loop playsinline preload="auto"></video></div>
-    <div class="media"><video muted loop playsinline preload="auto"></video></div>
+      <div class="detail-inner gallery" id="d-gallery">
+        <div class="media"><video muted loop playsinline preload="auto"></video></div>
+        <div class="media"><video muted loop playsinline preload="auto"></video></div>
+        <div class="media"><video muted loop playsinline preload="auto"></video></div>
+        <div class="media"><video muted loop playsinline preload="auto"></video></div>
+      </div>
+    </div>
   </div>
   <div class="detail-inner">
     <a class="next" id="d-next" href="#"></a>
