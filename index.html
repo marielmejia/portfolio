@@ -17,7 +17,6 @@
     --acc-bg: rgb(231 231 231 / 0.5); /* #e7e7e7 at 50% */
     --acc-bg-hover: #e7e7e7;
     --row-bg: #ffffff;
-    --row-glass: rgb(255 255 255 / 0.3); /* project rows: translucent white over the blurred video */
     --font: "Sora", "Helvetica Neue", Arial, sans-serif; /* uppercase labels and nav only */
     --font-serif: "Sora", "Helvetica Neue", Arial, sans-serif; /* all other text (was Roboto Serif, then Geist; now Sora like the rest) */
     --gutter: 24px; /* one value for page margins and every column/row gutter */
@@ -28,13 +27,13 @@
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --bg: #131715; --paper: #1a1f1c; --ink: #e6ebe7; --muted: #9aa59f; --line: #333b37; --accent: var(--muted);
-      --acc-bg: rgb(255 255 255 / 0.04); --acc-bg-hover: rgb(255 255 255 / 0.08); --row-bg: #1a1f1c; --row-glass: var(--row-bg);
+      --acc-bg: rgb(255 255 255 / 0.04); --acc-bg-hover: rgb(255 255 255 / 0.08); --row-bg: #1a1f1c;
       color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
     --bg: #131715; --paper: #1a1f1c; --ink: #e6ebe7; --muted: #9aa59f; --line: #333b37; --accent: var(--muted);
-    --acc-bg: rgb(255 255 255 / 0.04); --acc-bg-hover: rgb(255 255 255 / 0.08); --row-bg: #1a1f1c; --row-glass: var(--row-bg);
+    --acc-bg: rgb(255 255 255 / 0.04); --acc-bg-hover: rgb(255 255 255 / 0.08); --row-bg: #1a1f1c;
     color-scheme: dark;
   }
 
@@ -86,7 +85,11 @@
     /* Section runs edge to edge so the gray band reaches both sides of the window */
     margin-left: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px)));
     margin-right: calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)));
+    /* Parallax: the hero stays pinned while the rest of the page slides up over it;
+       the script fades it out as it gets covered */
+    position: sticky; top: var(--gutter); z-index: 0;
   }
+  #home > :not(header) { position: relative; z-index: 1; } /* everything after the hero slides over it */
   /* The nav keeps its usual inset from the window edges */
   #home > header .topbar {
     align-self: start;
@@ -97,6 +100,7 @@
   #home > header h1 {
     display: flex; flex-direction: column; justify-content: center; align-items: center;
     padding: var(--gutter);
+    font: 200 clamp(2.5rem, calc(3.5vw + 14px), 3.125rem)/1.12 var(--font-serif); letter-spacing: -0.02em; /* H2 style (40px to 50px) */
   }
   #home > header h1 br { display: none; } /* each line is already its own row here */
   /* Staggered headline: first line sits off to the left, second off to the right */
@@ -107,29 +111,22 @@
   #home > header h1 .h1-part { position: relative; z-index: 2; }
   #home > header h1 .h1-part ~ .h1-part { z-index: 0; display: inline-flex; gap: 0.4em; }
   #home > header h1 .h1-part span { color: inherit; } /* the split words keep the headline color */
-  /* Orbiting cards woven into the headline: portfolio stills circling one vertical axis at the center of the stage.
-     Cards swing to the front (crisp) and round to the back (smaller, faded, frosted);
-     the script sets each card's position every frame and its --far value (0 front, 1 back). */
+  /* Sun: portfolio stills set edge to edge in a ring around the center of the stage, bottoms facing in,
+     turning slowly in a flat circle; the headline sits at its core. The script places each card every frame. */
   #home > header .topbar { position: relative; z-index: 2; }
   .hero-cards {
     position: absolute; inset: 0; z-index: 1; /* between the two headline lines */
     overflow: hidden; pointer-events: none;
-    perspective: 1400px;
   }
-  .hero-orbit { position: absolute; left: 50%; top: 40%; transform-style: preserve-3d; transform: scale3d(0.8, 0.8, 0.8); } /* whole ring at 80% size; set above the stage center so the tilted ring sits centered on screen */
+  .hero-orbit { position: absolute; left: 50%; top: 50%; transform: scale(0.672); } /* whole sun at 67.2% size, centered in the hero both ways */
   .hero-card {
-    --ws: 1; /* size multiplier, larger on phones */
-    --far: 0;
+    --w: 20vw; /* the script sizes every card the same to fit the stage */
     position: absolute; left: 0; top: 0;
-    --ar: 1256 / 720; --hf: 0.2866; /* card shape, and half its height as a share of its width */
-    width: calc(var(--w) * var(--ws)); aspect-ratio: var(--ar);
-    margin: calc(var(--w) * var(--ws) * var(--hf) * -1) 0 0 calc(var(--w) * var(--ws) * -0.5); /* centered on its point */
+    width: var(--w); aspect-ratio: 1256 / 720;
+    margin: calc(var(--w) * -0.2866) 0 0 calc(var(--w) * -0.5); /* centered on its point */
     overflow: hidden;
-    opacity: calc(1 - var(--far) * 0.45);
   }
-  .hero-card img { display: block; width: 100%; height: 100%; object-fit: contain; transition: filter 0.6s ease; } /* every image shares the card's 1256:720 shape, so it shows whole */
-  .hero-card::after { content: ""; position: absolute; inset: 0; background: rgb(255 255 255 / calc(var(--far) * 0.45)); } /* frosted */
-  .hero-card.far img { filter: blur(2px) saturate(0.8); }
+  .hero-card :is(img, video) { display: block; width: 100%; height: 100%; object-fit: cover; } /* fills the card; the 16:10 stills lose a sliver top and bottom */
   .topbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem 2rem; padding-bottom: 0.9rem; }
   .topbar nav { display: flex; gap: 1.5rem; }
   .topbar nav a { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; } /* label style, in red */
@@ -144,20 +141,20 @@
   h1 .h1-part { color: inherit; display: inline-block; }
   header h1 { text-align: center; } /* homepage name only; project titles stay left-aligned */
 
-  h2, .h2 { font: 200 clamp(2.1875rem, calc(3.5vw + 9px), 2.8125rem)/1.12 var(--font-serif); /* 35px to 45px */ letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
+  h2, .h2 { font: 200 clamp(2.5rem, calc(3.5vw + 14px), 3.125rem)/1.12 var(--font-serif); /* 40px to 50px */ letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
   h3, .h3 { font-family: var(--font-serif); font-weight: 200; } /* no H3 on this page yet; ready if one is added */
   .section-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem 2rem; margin-bottom: 1.75rem; }
 
   /* Work grid */
-  .work { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gutter); }
-  .strip { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--gutter); }
+  .work { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; background: var(--row-bg); } /* one white container holding all the rows, flush */
+  /* Each row: four columns, with one feature thumbnail spanning two columns and two rows;
+     the small ones fill the space around it. Which thumbnail and where it sits varies by row. */
+  .strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-flow: dense; gap: var(--gutter); }
+  .strip .media.big { grid-column: var(--col, 1) / span 2; grid-row: 1 / span 2; aspect-ratio: auto; } /* pinned to the top so the small ones flow around it */
   .strip .media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-  .piece { background: var(--row-bg); padding: 100px 100px 60px; /* 60px at the bottom */ display: grid; grid-template-rows: auto 1fr; }
-  /* Frosted glass: translucent white with the background video blurred behind it (hover stays solid) */
-  .piece {
-    background: var(--row-glass);
-    -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px);
-  }
+  .piece { background: var(--row-bg); padding: 25px; display: grid; grid-template-rows: auto 1fr; } /* thumbnails fill the row inside a 25px frame */
+  .piece { background: transparent; } /* rows sit on the container's white; hover still turns them dark */
+  .piece-name { margin: 0; padding: 15px 25px 40px; font: 500 1.125rem/1.3 var(--font-serif); color: var(--ink); } /* project name below each row (outside its hover area), lined up with the thumbnails, in the "Project Details" style; 40px above it (with the row's 25px) and 40px below */
   .media {
     aspect-ratio: 1256 / 720; /* picture area of the videos, without their black side strips */
     max-width: 100%;
@@ -180,7 +177,6 @@
   .media .ready { opacity: 1; }
   .media:has(> .ready) { background: transparent; } /* drop the loading gray so it can't peek out at the edges */
 
-  .piece-body { padding: 2.5rem 0 0; display: grid; gap: 0.85rem; align-content: start; } /* 40px between the thumbnails and the project name */
   .spec { width: 100%; border-collapse: collapse; } /* values use the body style */
   .spec a { font-weight: 300; }
   .spec th { text-align: left; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; color: var(--ink); width: 34%; padding: 0.3rem 0; vertical-align: baseline; } /* label style */
@@ -192,7 +188,7 @@
   /* About */
   .about { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 2rem var(--gutter); padding-top: 2.5rem; }
   .about-side { display: grid; gap: 1rem; align-content: start; }
-  .about-text { display: grid; gap: 1rem; padding-right: 100px; } /* right edge lines up with the last thumbnail in each project row (rows have 100px padding) */
+  .about-text { display: grid; gap: 1rem; padding-right: 25px; } /* right edge lines up with the last thumbnail in each project row (rows have 25px padding) */
   .about-text p { margin: 0; }
   .about-text a { font-weight: inherit; } /* same weight as the bio text */
   .about-text .h2 { margin-bottom: 2rem; text-wrap: pretty; } /* 3rem (48px) between the lead sentence and the bio (with the 1rem gap); lines run the full width like the paragraphs (no balancing) */
@@ -263,18 +259,13 @@
   .next .ar { width: 0.5em; height: 0.5em; stroke-width: 3; }
 
   @media (max-width: 760px) {
-    .hero-card { --ws: 1.9; }
-    .hero-card:nth-child(n+7) { display: none; } /* six cards on phones */
     .about, .detail-body { grid-template-columns: minmax(0, 1fr); }
     .gallery { grid-template-columns: minmax(0, 1fr); }
-    .strip { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .piece { padding: 20px; } /* 100px would leave almost no room on a phone */
-    .about-text { padding-right: 20px; } /* matches the rows' phone padding */
-    .strip .media:first-child { grid-column: 1 / -1; }
+    .strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .strip .media.big { grid-column: 1 / -1; grid-row: 1; aspect-ratio: 1256 / 720; } /* phones: feature full width on top, small ones two by two */
   }
   @media (prefers-reduced-motion: no-preference) {
     .piece { transition: transform 0.25s ease, background-color 0.3s ease, color 0.3s ease; }
-    .piece:hover { transform: translateY(-3px); }
     /* Arrows slide in their own direction on hover */
     .ar { transition: transform 0.25s ease; }
     .acc-icon .v { transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1); }
@@ -283,13 +274,15 @@
     @keyframes page-in { from { opacity: 0; transform: translateY(200px); } to { opacity: 1; transform: none; } }
     /* Homepage headline slides in: "Crafting Brands" from the left, then "that Shine" from the right */
     header { overflow-x: clip; } /* keeps the off-screen start from widening the page */
-    #home.page-in header h1 .h1-part { animation: h1-in-left 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
+    #home.page-in header h1 .h1-part { animation: h1-in-left 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s backwards; /* backwards: once done, the lines' own styles take over so the scroll fade can apply */ }
     #home.page-in header h1 .h1-part ~ .h1-part { animation-name: h1-in-right; animation-delay: 0.5s; } /* ~ not +, since a <br> sits between the lines */
     @keyframes h1-in-left { from { opacity: 0; transform: translateX(calc(var(--shift) - 20vw)); } 30% { opacity: 1; } to { opacity: 1; transform: translateX(var(--shift)); } }
     @keyframes h1-in-right { from { opacity: 0; transform: translateX(calc(var(--shift) + 20vw)); } 30% { opacity: 1; } to { opacity: 1; transform: translateX(var(--shift)); } }
     /* Homepage rows slide up as they scroll into view (uses translate, so the hover lift still works) */
     .piece.will-reveal { opacity: 0; translate: 0 80px; transition: opacity 0.9s ease, translate 0.9s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.25s ease, background-color 0.3s ease, color 0.3s ease; }
     .piece.will-reveal.revealed { opacity: 1; translate: 0 0; }
+    .piece.will-reveal + .piece-name { opacity: 0; transition: opacity 0.9s ease 0.2s; } /* each name fades in with its row */
+    .piece.will-reveal.revealed + .piece-name { opacity: 1; }
     .accordion { transition: background-color 0.2s ease; }
     a:hover .ar.r, a:focus-visible .ar.r { transform: translateX(0.3em); }
     a:hover .ar.l, a:focus-visible .ar.l { transform: translateX(-0.3em); }
@@ -314,27 +307,21 @@
     <div class="hero-stage">
       <div class="hero-cards" aria-hidden="true">
         <div class="hero-orbit">
-          <div class="hero-card" style="--w:15vw" data-y="-0.08"><img src="work/coherus-5.jpg" alt=""></div>
-          <div class="hero-card" style="--w:12vw" data-y="0.16"><img src="work/santa-ana-bio-2.jpg" alt=""></div>
-          <div class="hero-card" style="--w:14vw" data-y="-0.2"><img src="work/kailera-4.png" alt=""></div>
-          <div class="hero-card" style="--w:11.92vw; --ar: 16 / 10; --hf: 0.3125" data-y="0.06"><img src="work/rezera-web1.jpg" alt=""></div><!-- 16:10 image: card trimmed at the sides, same height as a 13vw card -->
-          <div class="hero-card" style="--w:16vw" data-y="-0.04"><img src="work/kardigan-3-v2.png" alt=""></div>
-          <div class="hero-card" style="--w:12vw" data-y="0.18"><img src="work/santa-ana-bio-4.jpg" alt=""></div>
-          <div class="hero-card" style="--w:14vw" data-y="-0.16"><img src="work/kailera-3.svg" alt=""></div>
-          <div class="hero-card" style="--w:11vw" data-y="0.1"><img src="work/rezolute-3.png" alt=""></div>
-          <div class="hero-card" style="--w:13vw" data-y="-0.22"><img src="work/kardigan-5-v2.svg" alt=""></div>
-          <div class="hero-card" style="--w:15vw" data-y="0.14"><img src="work/santa-ana-bio-3.jpg" alt=""></div>
+          <div class="hero-card"><video src="work/rezera.mp4" autoplay muted loop playsinline aria-hidden="true"></video></div>
+          <div class="hero-card"><img src="work/celcuity-mobile.jpg" alt=""></div>
+          <div class="hero-card"><video src="work/kardigan-4.mp4" autoplay muted loop playsinline aria-hidden="true"></video></div>
+          <div class="hero-card"><img src="work/santa-ana-bio-2.jpg" alt=""></div>
+          <div class="hero-card"><video src="work/kailera.mp4" autoplay muted loop playsinline aria-hidden="true"></video></div>
+          <div class="hero-card"><img src="work/celcuity-web1.jpg" alt=""></div>
+          <div class="hero-card"><video src="work/rezera-colors.mp4" autoplay muted loop playsinline aria-hidden="true"></video></div>
+          <div class="hero-card"><img src="work/kardigan-5-v2.svg" alt=""></div>
         </div>
       </div>
       <h1><span class="h1-part">Crafting Brands</span><br> <span class="h1-part"><span>that</span> <span>Shine</span></span></h1>
     </div>
   </header>
 
-  <section id="work" aria-labelledby="work-title">
-    <div class="section-head">
-      <h2 id="work-title" class="label">Selected work</h2>
-      <span class="label">7 Projects</span>
-    </div>
+  <section id="work" aria-label="Selected work">
     <div class="work">
 
       <article class="piece">
@@ -343,7 +330,7 @@
           <div class="media">
             <video muted loop playsinline preload="none" aria-label="Rezera video 1" data-src="work/rezera.mp4"></video>
           </div>
-          <div class="media">
+          <div class="media big" style="--col: 1">
             <video muted loop playsinline preload="none" aria-label="Rezera video 2" data-src="work/rezera-colors.mp4"></video>
           </div>
           <div class="media"><img src="work/rezera-web1.jpg" alt="Rezera image 3" loading="lazy"></div>
@@ -352,15 +339,13 @@
             <video muted loop playsinline preload="none" aria-label="Rezera video 5" data-src="work/rezera-5.mp4"></video>
           </div>
         </div>
-        <div class="piece-body">
-          <h2>Rezera</h2>
-        </div>
       </article>
+      <p class="piece-name">Rezera</p>
 
       <article class="piece">
         <a class="stretched" href="#celcuity" aria-label="View the Celcuity project"></a>
         <div class="strip">
-          <div class="media">
+          <div class="media big" style="--col: 3">
             <video muted loop playsinline preload="none" aria-label="Celcuity video 1" data-src="work/celcuity.mp4"></video>
           </div>
           <div class="media">
@@ -370,10 +355,8 @@
           <div class="media"><img src="work/celcuity-web-all.jpg" alt="Celcuity image 4" loading="lazy"></div>
           <div class="media"><img src="work/celcuity-web1.jpg" alt="Celcuity image 5" loading="lazy"></div>
         </div>
-        <div class="piece-body">
-          <h2>Celcuity</h2>
-        </div>
       </article>
+      <p class="piece-name">Celcuity</p>
 
       <article class="piece">
         <a class="stretched" href="#kardigan" aria-label="View the Kardigan project"></a>
@@ -385,15 +368,13 @@
             <video muted loop playsinline preload="none" aria-label="Kardigan video 2" data-src="work/kardigan-2-v2.mp4"></video>
           </div>
           <div class="media"><img src="work/kardigan-3-v2.png" alt="Kardigan image 3" loading="lazy"></div>
-          <div class="media">
+          <div class="media big" style="--col: 2">
             <video muted loop playsinline preload="none" aria-label="Kardigan video 4" data-src="work/kardigan-4.mp4"></video>
           </div>
           <div class="media"><img src="work/kardigan-5-v2.svg" alt="Kardigan image 5" loading="lazy"></div>
         </div>
-        <div class="piece-body">
-          <h2>Kardigan</h2>
-        </div>
       </article>
+      <p class="piece-name">Kardigan</p>
 
       <article class="piece">
         <a class="stretched" href="#santa-ana-bio" aria-label="View the Santa Ana Bio project"></a>
@@ -402,14 +383,12 @@
             <video muted loop playsinline preload="none" aria-label="Santa Ana Bio video 1" data-src="work/santa-ana-bio.mp4"></video>
           </div>
           <div class="media"><img src="work/santa-ana-bio-2.jpg" alt="Santa Ana Bio image 2" loading="lazy"></div>
-          <div class="media"><img src="work/santa-ana-bio-3.jpg" alt="Santa Ana Bio image 3" loading="lazy"></div>
+          <div class="media big" style="--col: 1"><img src="work/santa-ana-bio-3.jpg" alt="Santa Ana Bio image 3" loading="lazy"></div>
           <div class="media"><img src="work/santa-ana-bio-4.jpg" alt="Santa Ana Bio image 4" loading="lazy"></div>
           <div class="media"><img src="work/santa-ana-bio-5.png" alt="Santa Ana Bio image 5" loading="lazy"></div>
         </div>
-        <div class="piece-body">
-          <h2>Santa Ana Bio</h2>
-        </div>
       </article>
+      <p class="piece-name">Santa Ana Bio</p>
 
       <article class="piece">
         <a class="stretched" href="#coherus" aria-label="View the Coherus Oncology project"></a>
@@ -424,12 +403,10 @@
           <div class="media">
             <video muted loop playsinline preload="none" aria-label="Coherus Oncology video 4" data-src="work/coherus-4.mp4"></video>
           </div>
-          <div class="media"><img src="work/coherus-5.jpg" alt="Coherus Oncology image 5" loading="lazy"></div>
-        </div>
-        <div class="piece-body">
-          <h2>Coherus Oncology</h2>
+          <div class="media big" style="--col: 3"><img src="work/coherus-5.jpg" alt="Coherus Oncology image 5" loading="lazy"></div>
         </div>
       </article>
+      <p class="piece-name">Coherus Oncology</p>
 
       <article class="piece">
         <a class="stretched" href="#kailera" aria-label="View the Kailera Therapeutics project"></a>
@@ -437,22 +414,20 @@
           <div class="media">
             <video muted loop playsinline preload="none" aria-label="Kailera Therapeutics video 1" data-src="work/kailera.mp4"></video>
           </div>
-          <div class="media"><img src="work/kailera-3.svg" alt="Kailera Therapeutics image 2" loading="lazy"></div>
+          <div class="media big" style="--col: 2"><img src="work/kailera-3.svg" alt="Kailera Therapeutics image 2" loading="lazy"></div>
           <div class="media"><img src="work/kailera-2.jpg" alt="Kailera Therapeutics image 3" loading="lazy"></div>
           <div class="media"><img src="work/kailera-4.png" alt="Kailera Therapeutics image 4" loading="lazy"></div>
           <div class="media">
             <video muted loop playsinline preload="none" aria-label="Kailera Therapeutics video 5" data-src="work/kailera-5.mp4"></video>
           </div>
         </div>
-        <div class="piece-body">
-          <h2>Kailera Therapeutics</h2>
-        </div>
       </article>
+      <p class="piece-name">Kailera Therapeutics</p>
 
       <article class="piece">
         <a class="stretched" href="#rezolute" aria-label="View the Rezolute project"></a>
         <div class="strip">
-          <div class="media">
+          <div class="media big" style="--col: 1">
             <video muted loop playsinline preload="none" aria-label="Rezolute video 1" data-src="work/rezolute.mp4"></video>
           </div>
           <div class="media"><img src="work/rezolute-2.png" alt="Rezolute image 2" loading="lazy"></div>
@@ -460,10 +435,8 @@
           <div class="media"><img src="work/rezolute-4.jpg" alt="Rezolute image 4" loading="lazy"></div>
           <div class="media"><img src="work/rezolute-5.jpg" alt="Rezolute image 5" loading="lazy"></div>
         </div>
-        <div class="piece-body">
-          <h2>Rezolute</h2>
-        </div>
       </article>
+      <p class="piece-name">Rezolute</p>
 
     </div>
   </section>
@@ -524,40 +497,101 @@
 </main>
 
 <script>
-  // Background video holds still for visitors who prefer reduced motion
+  // Background and sun videos hold still for visitors who prefer reduced motion
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    const bg = document.querySelector('.bg-video');
-    bg.removeAttribute('autoplay'); bg.pause();
+    document.querySelectorAll('.bg-video, .hero-card video').forEach(v => { v.removeAttribute('autoplay'); v.pause(); });
   }
 
-  // Hero cards orbit one vertical axis at the center of the top row. Each card keeps facing
-  // the viewer, turns slightly as it travels, and frosts over as it swings to the back.
+  // Hero sun: equal cards spaced evenly around a circle, each turned sideways so its bottom edge faces
+  // the center, with a gap between neighbors. The ring turns at a steady size and spacing. Flat, no depth.
+  // On load, the cards trace the letter "d": they stream down a vertical line at the circle's right edge,
+  // turned 90° and centered on that line, then flow on around the circle into place, one continuous motion.
   (() => {
     const box = document.querySelector('.hero-cards');
     const cards = [...box.querySelectorAll('.hero-card')];
     const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const lap = 40000; // ms for one full turn
+    const lap = 15000; // ms for one full turn
+    const shape = 720 / 1256; // card height as a share of its width
+    // Intro: the whole chain of cards slides along one path, the stem then the bowl of a "d".
+    // Path position is measured in radians around the circle; below 0 means still on the stem above it.
+    const introStart = performance.now() + 400, introLength = 2800;
+    const easeOut = q => 1 - Math.pow(1 - q, 3); // eases to a stop, so the hand-off to the steady turn is seamless
     function place(t) {
       const visible = cards.filter(c => c.offsetParent);
-      const r = Math.min(box.clientWidth * (box.clientWidth < 760 ? 0.46 : 0.45), 710); // ring radius; cards keep their own size
-      const h = box.clientHeight;
+      const n = visible.length;
+      // Reference ring: cards at 70% of the largest size that fits, set edge to edge
+      const w0 = Math.min(box.clientHeight * 0.41, box.clientWidth * 0.39) * 0.7;
+      const reach = ((w0 / 2) / Math.tan(Math.PI / 6) + w0 * shape) * 1.69; // ring span set from the original six-card ring, plus 30% twice over; stays the same whatever the card count
+      // Cards sized so each fills the same share of its slot as six cards did (about 78% of the inner chord),
+      // whatever the count: more cards means smaller cards within the same ring
+      const slot = 2 * Math.tan(Math.PI / n), fill = 0.776;
+      const w = fill * slot * reach / (1 + fill * slot * shape);
+      visible.forEach(c => c.style.setProperty('--w', w + 'px'));
+      const r = reach - (w * shape) / 2; // card centers, so their outer edges sit on the ring's reach
+      const scale = 0.672; // the sun is drawn at 67.2%; matches the scale on .hero-orbit
+      // The ring (set up so it can be an oval; currently a circle). Cards are spaced by distance along its edge,
+      // so they stay evenly apart all the way round; positions below are measured as distance along the path.
+      const rx = r * 0.9, ry = r * 0.9; // a true circle, 10% smaller than the card ring it was built from; cards keep their size
+      const steps = 360, lengths = [0];
+      for (let j = 1; j <= steps; j++) {
+        const u0 = ((j - 1) / steps) * Math.PI * 2, u1 = (j / steps) * Math.PI * 2;
+        lengths.push(lengths[j - 1] + Math.hypot(rx * (Math.cos(u1) - Math.cos(u0)), ry * (Math.sin(u1) - Math.sin(u0))));
+      }
+      const around = lengths[steps]; // full distance round the oval
+      const angleAt = d => { // oval angle for a distance along the edge
+        d = ((d % around) + around) % around;
+        let j = 1; while (lengths[j] < d) j++;
+        return ((j - 1 + (d - lengths[j - 1]) / (lengths[j] - lengths[j - 1])) / steps) * Math.PI * 2;
+      };
+      // How far the chain still has to travel: at the start every card is on the stem above the stage,
+      // and this shrinks to 0 as the chain flows down and around into the ring
+      const k = still ? 1 : Math.min(1, Math.max(0, (t - introStart) / introLength));
+      const aboveStage = box.querySelector('.hero-orbit').offsetTop / scale + w; // stem length that sits above the top of the stage
+      const behind = k >= 1 ? 0 : ((introStart / lap) * around + around * (n - 1) / n + aboveStage) * (1 - easeOut(k));
+      const travelled = (t / lap) * around;
       visible.forEach((c, i) => {
-        const a = (i / visible.length) * Math.PI * 2 + (t / lap) * Math.PI * 2;
-        const x = Math.sin(a) * r, z = Math.cos(a) * r * 0.8;
-        const y = parseFloat(c.dataset.y) * h * 1.3 + Math.cos(a) * r * 0.3 + Math.sin(t / 1600 + i) * 8; // taller: wider height spread, and the ring tilts so cards dip low at the front and rise at the back
-        const far = (1 - Math.cos(a)) / 2;
-        c.style.transform = `translate3d(${x}px, ${y}px, ${z}px) rotateY(${Math.sin(a) * 28}deg) rotateZ(${Math.sin(a + i) * 4}deg)`;
-        c.style.setProperty('--far', far.toFixed(3));
-        c.classList.toggle('far', far > 0.6);
+        const d = travelled + (i / n) * around - behind; // this card's distance along the path
+        let x, y, spin;
+        if (d < 0) {
+          // On the stem: straight down the vertical line at the oval's right edge, turned 90°
+          x = rx; y = d; spin = Math.PI / 2;
+        } else {
+          // On the bowl: around the oval, bottom edge facing the center (turned to the oval's outward direction)
+          const u = angleAt(d);
+          x = Math.cos(u) * rx; y = Math.sin(u) * ry;
+          spin = Math.atan2(rx * Math.sin(u), ry * Math.cos(u)) + Math.PI / 2;
+        }
+        c.style.transform = `translate(${x}px, ${y}px) rotate(${spin}rad)`;
       });
     }
     function tick(t) {
-      if (!document.hidden && !document.getElementById('home').hidden) place(t);
+      if (!document.hidden && !document.getElementById('home').hidden && scrollY < box.closest('header').offsetHeight) place(t); // skip once the hero is covered
       requestAnimationFrame(tick);
     }
-    place(0);
+    place(performance.now());
     if (!still) requestAnimationFrame(tick);
     addEventListener('resize', () => place(performance.now()));
+  })();
+
+  // Pinned hero fades out as the project rows slide up over it; the headline stays put
+  // while the sun rises with the scroll
+  (() => {
+    const hero = document.querySelector('#home > header');
+    const sun = hero.querySelector('.hero-orbit');
+    const lines = hero.querySelectorAll('h1 .h1-part'); // faded line by line so each keeps its place in front of or behind the cards
+    let queued = false;
+    function fade() {
+      queued = false;
+      sun.style.translate = `0 ${-Math.max(0, scrollY)}px`;
+      const p = Math.min(1, Math.max(0, scrollY / (hero.offsetHeight * 0.9)));
+      hero.style.opacity = (1 - p).toFixed(3);
+      // The headline fades twice as fast as the rest of the hero (its own opacity offsets the hero's)
+      const o = p >= 1 ? '0' : (Math.max(0, 1 - 2 * p) / (1 - p)).toFixed(3);
+      lines.forEach(l => l.style.opacity = o);
+      hero.style.visibility = p >= 1 ? 'hidden' : '';
+    }
+    addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(fade); } }, { passive: true });
+    fade();
   })();
   // Project detail pages, opened by #rezera / #celcuity
   const projects = {
