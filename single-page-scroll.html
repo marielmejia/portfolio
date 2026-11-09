@@ -92,7 +92,21 @@
     padding: 100px max(var(--gutter), env(safe-area-inset-right, 0px)) 180px max(var(--gutter), env(safe-area-inset-left, 0px));
     background: #0c0f11;
   }
-  #news > .section-head .section-label, #news > .h2 { color: #fff; }
+  #news .section-label, #news .news-intro .h2 { color: #fff; }
+  #news .news-intro .section-head { margin-bottom: 0.75rem; }
+  #news .news-intro .h2 { margin: 0 0 2.5rem; }
+  /* Two columns above phone width: the label and headline in the left third, the cards stacked in the right two
+     thirds (in from the right edge by the side inset) */
+  @media (min-width: 761px) {
+    #news { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); align-items: start; }
+    #news .news-intro .h2 { margin-bottom: 0; }
+    #news .news-stack { padding-right: var(--inset-x); }
+  }
+  /* Cards, one under another: date with a short rule under it, headline, "Read More" */
+  #news .news-stack { display: grid; gap: 0; }
+  #news .news-stack .news-item { grid-template-columns: minmax(0, 1fr); align-items: start; gap: 1rem; padding: 2rem; }
+  #news .news-stack .news-item time::after { content: ""; display: block; width: 30px; height: 3px; margin-top: 0.75rem; background: currentColor; }
+  @media (max-width: 760px) { #news .news-stack .news-item { padding: 1.5rem; } }
   /* Contact in reverse: the framework's colors flipped for this section only. The panel takes the ink color,
      text goes white, fields go dark; red links and the button stay red. */
   #contact {
@@ -123,28 +137,24 @@
     background: url("work/colorFlow.png") 50% 0 / cover no-repeat;
     transform: translateY(var(--parallax, 0px)); will-change: transform;
   }
-  /* Buttons frosted like the cards, with white chevrons; solid white with a dark chevron on hover */
-  #news .carousel-btn { background: rgb(255 255 255 / 0.15); color: #fff; }
-  #news .carousel-btn:hover:not(:disabled), #news .carousel-btn:focus-visible { background: #fff; color: #0c0f11; }
-  /* Cards: white frosted at 8% over the black, white text; the hover goes solid white with dark text */
+  /* Cards: no fill, white text, a rule underneath; the hover goes solid white with dark text */
   #news .news-item { --row-bg: #0c0f11; --ink: #ffffff; }
-  #news .news-item { background: rgb(255 255 255 / 0.08); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+  #news .news-item { background: transparent; border-bottom: 1px solid rgb(255 255 255 / 0.2); } /* no fill, a faint white rule under each card */
   #news .news-item:hover, #news .news-item:focus-visible { background: var(--ink); }
   /* Inset by the panels' own inner padding (the side inset, 20px on phones): the Pipeline and News labels and headlines
      line up with the text inside the chart and the news rows, and everything in Team sits on that same inset */
   #pipeline-section > .section-head, #pipeline-section > .h2,
-  #news > .section-head, #news > .h2,
+  #news .news-intro,
   #team > * { --inset: var(--inset-x); padding-inline: var(--inset); }
-  /* The same side inset inside the Pipeline chart and in the News carousel's arrow columns */
+  /* The same side inset inside the Pipeline chart */
   #pipeline-section .pipeline { background: transparent; } /* the chart sits on the page background, no white panel */
   @media (min-width: 761px) {
     #pipeline-section .pipeline { padding-inline: var(--inset-x); }
-    #news .carousel { grid-template-columns: var(--inset-x) minmax(0, 1fr) var(--inset-x); }
   }
   #pipeline-section > .h2 { max-width: calc(22em + 2 * var(--inset)); } /* padding counts inside max-width */
   @media (max-width: 760px) {
     #pipeline-section > .section-head, #pipeline-section > .h2,
-    #news > .section-head, #news > .h2,
+    #news .news-intro,
     #team > * { --inset: 20px; }
   }
   /* Nav links glide down to their section (the script does the glide; no CSS smooth scrolling, which throws off the scroll effects' measurements) */
@@ -245,15 +255,13 @@
   </section>
 
   <section id="news" aria-labelledby="news-title">
-    <div class="section-head">
-      <h2 id="news-title" class="section-label">News</h2>
+    <div class="news-intro">
+      <div class="section-head">
+        <h2 id="news-title" class="section-label">News</h2>
+      </div>
+      <p class="h2">Press Releases</p>
     </div>
-    <p class="h2" style="margin-bottom: 2.5rem;">Press Releases</p>
-    <div class="carousel" id="news-carousel">
-      <button class="carousel-btn" type="button" data-dir="-1" aria-label="Previous press releases" aria-controls="news-list"><svg class="ar l" viewBox="0 0 16 16" aria-hidden="true"><path d="M11 2L5 8L11 14"/></svg></button>
-      <div class="carousel-track" id="news-list" role="region" aria-label="Press releases" tabindex="0"></div>
-      <button class="carousel-btn" type="button" data-dir="1" aria-label="Next press releases" aria-controls="news-list"><svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></button>
-    </div>
+    <div class="news-stack" id="news-list" role="region" aria-label="Press releases"></div>
   </section>
 
   <section id="contact" aria-labelledby="contact-title">
@@ -297,29 +305,30 @@
   </footer>
 </div>
 
-<dialog class="bio" id="bio" aria-labelledby="bio-name">
+<dialog class="bio" id="bio" aria-labelledby="bio-name" tabindex="-1" autofocus>
   <div class="bio-inner">
-    <div class="bio-top">
-      <span class="label" id="bio-count"></span>
-      <button class="bio-close" type="button">Close<svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path d="M8 1V15"/></svg></button>
-    </div>
     <span class="bio-photo" id="bio-photo"></span>
-    <h2 id="bio-name"></h2>
-    <p class="bio-role" id="bio-role"></p>
-    <p class="bio-text" id="bio-text"></p>
-    <div class="bio-nav">
-      <button type="button" id="bio-prev"><svg class="ar l" viewBox="0 0 16 16" aria-hidden="true"><path d="M11 2L5 8L11 14"/></svg>Previous</button>
-      <button type="button" id="bio-next">Next<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></button>
+    <div class="bio-info">
+      <div class="bio-top">
+        <h2 id="bio-name"></h2>
+        <button class="bio-close" type="button" aria-label="Close"><svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path d="M8 1V15"/></svg></button>
+      </div>
+      <p class="bio-role" id="bio-role"></p>
+      <p class="bio-text" id="bio-text"></p>
+      <div class="bio-nav">
+        <button type="button" id="bio-prev"><svg class="ar l" viewBox="0 0 16 16" aria-hidden="true"><path d="M11 2L5 8L11 14"/></svg>Previous</button>
+        <button type="button" id="bio-next">Next<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></button>
+      </div>
     </div>
   </div>
 </dialog>
 
 <!-- Menu at 1024px and below: the same slide-in sheet as the bios; its links are copied from the bar's nav -->
-<dialog class="bio" id="menu" aria-label="Menu">
+<dialog class="bio" id="menu" aria-label="Menu" tabindex="-1" autofocus>
   <div class="bio-inner">
     <div class="bio-top">
       <span class="label">Menu</span>
-      <button class="bio-close" type="button">Close<svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path d="M8 1V15"/></svg></button>
+      <button class="bio-close" type="button" aria-label="Close"><svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path d="M8 1V15"/></svg></button>
     </div>
     <nav aria-label="Sections"><ul class="menu-links" id="menu-links"></ul></nav>
   </div>
@@ -343,9 +352,12 @@
     document.documentElement.style.setProperty('--pinbar-h', h + 'px');
     pinbar.classList.toggle('scrolled', scrollY > 0);
     // light style only while the bar sits over a light section; over the hero and the dark bands it stays dark
-    // (measured without any transform, so the hero's parallax drift doesn't count: About covers it there)
+    // (measured without any transform, so the hero's parallax drift doesn't count: About covers it there, and
+    // neither does the page's slide-up entrance, which would otherwise show the light bar over the hero on load)
+    const shift = el => { const t = getComputedStyle(el).transform; return t && t !== 'none' ? new DOMMatrixReadOnly(t).m42 : 0; };
+    const entrance = shift(document.querySelector('.wrap'));
     const overDark = darkBands.some(el => {
-      const r = el.getBoundingClientRect(), t = getComputedStyle(el).transform, dy = t && t !== 'none' ? new DOMMatrixReadOnly(t).m42 : 0;
+      const r = el.getBoundingClientRect(), dy = shift(el) + entrance;
       return r.top - dy < h && r.bottom - dy > h;
     });
     pinbar.classList.toggle('on-light', !overDark);
@@ -359,6 +371,7 @@
   addEventListener('scroll', updatePinbar, { passive: true });
   addEventListener('resize', updatePinbar);
   updatePinbar();
+  document.querySelector('.wrap').addEventListener('animationend', updatePinbar); // re-check once the entrance lands
 
   // Contact background parallax: the image layer drifts against the scroll, from +15% of the section's height
   // as it enters the bottom of the screen to -15% as it leaves the top
@@ -468,32 +481,32 @@
   // Team: one tab per group; add a photo path to show a picture instead of initials
   const team = {
     'Leadership': [
-      { name: 'Peter Emtage, Ph.D.', role: 'Chief Executive Officer', bio: 'Peter leads Santa Ana Bio and is also a Venture Partner at Versant Ventures. Peter brings more than 25 years of drug development across autoimmunity, inflammation, oncology and infectious disease, including roles as Global Head of Cell Therapy Research at Kite Pharma and Chief Scientific Officer at Cell Design Labs. Peter holds a Ph.D. from McMaster University.' },
-      { name: 'Newman Yeilding, M.D.', role: 'Chief Medical Officer', bio: 'Newman has 30 years of experience bringing therapies for autoimmune and inflammatory diseases into the clinic. Over 19 years at Janssen, Newman led a global organization and guided STELARA® from early development to market leadership, and most recently advised Protagonist Therapeutics. Newman earned an M.D. at the University of Alabama at Birmingham.' },
-      { name: 'Neil Abdollahian, M.S., M.B.A.', role: 'Chief Business Officer', bio: 'Neil brings 25 years in corporate strategy and business development, from licensing and M&A to raising capital. Neil was previously Chief Business Officer at Boundless Bio and at Cidara Therapeutics, and holds an M.B.A. from Pepperdine University.' },
-      { name: 'Yun Bai, Ph.D.', role: 'Executive Vice President, CMC', bio: 'Yun leads CMC, including development, manufacturing and CDMO oversight, drawing on more than 23 years in biologics. Before Santa Ana Bio, Yun was Vice President and Head of CMC and Global Supply Chain at 89bio, after roles at Eli Lilly, Ambrx and Mapp Biopharmaceutical. Yun holds a Ph.D. in Chemical Engineering from Iowa State University.' },
-      { name: 'Zack McNealy, M.B.A.', role: 'Chief Financial Officer', bio: 'Zack has more than 15 years of financial leadership in biotech, including CFO roles at Ventus Therapeutics, Chinook Therapeutics and Inception Sciences Canada. Earlier roles include Versant Ventures, Biotie Therapies and Johnson & Johnson. Zack holds an M.B.A. from the Wharton School.' },
-      { name: 'Name Surname', role: 'Chief Scientific Officer', bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.' },
-      { name: 'Name Surname', role: 'Senior Vice President, Clinical Development', bio: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.' },
-      { name: 'Name Surname', role: 'Vice President, People', bio: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.' }
+      { name: 'Peter Emtage, Ph.D.', role: 'President', bio: 'Peter leads Santa Ana Bio and is also a Venture Partner at Versant Ventures. Peter brings more than 25 years of drug development across autoimmunity, inflammation, oncology and infectious disease, including roles as Global Head of Cell Therapy Research at Kite Pharma and Chief Scientific Officer at Cell Design Labs. Peter holds a Ph.D. from McMaster University.' },
+      { name: 'Newman Yeilding, M.D.', role: 'Medical Lead', bio: 'Newman has 30 years of experience bringing therapies for autoimmune and inflammatory diseases into the clinic. Over 19 years at Janssen, Newman led a global organization and guided STELARA® from early development to market leadership, and most recently advised Protagonist Therapeutics. Newman earned an M.D. at the University of Alabama at Birmingham.' },
+      { name: 'Neil Abdollahian, M.S., M.B.A.', role: 'Partner', bio: 'Neil brings 25 years in corporate strategy and business development, from licensing and M&A to raising capital. Neil was previously Chief Business Officer at Boundless Bio and at Cidara Therapeutics, and holds an M.B.A. from Pepperdine University.' },
+      { name: 'Yun Bai, Ph.D.', role: 'Advisor', bio: 'Yun leads CMC, including development, manufacturing and CDMO oversight, drawing on more than 23 years in biologics. Before Santa Ana Bio, Yun was Vice President and Head of CMC and Global Supply Chain at 89bio, after roles at Eli Lilly, Ambrx and Mapp Biopharmaceutical. Yun holds a Ph.D. in Chemical Engineering from Iowa State University.' },
+      { name: 'Zack McNealy, M.B.A.', role: 'Finance Lead', bio: 'Zack has more than 15 years of financial leadership in biotech, including CFO roles at Ventus Therapeutics, Chinook Therapeutics and Inception Sciences Canada. Earlier roles include Versant Ventures, Biotie Therapies and Johnson & Johnson. Zack holds an M.B.A. from the Wharton School.' },
+      { name: 'Name Surname', role: 'Science Lead', bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.' },
+      { name: 'Name Surname', role: 'Clinical Lead', bio: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.' },
+      { name: 'Name Surname', role: 'People Lead', bio: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.' }
     ],
     'Board of Directors': [
-      { name: 'Michael W. Bonney', role: 'Board Chair', bio: 'Mike has more than 30 years in biotech and pharma. As CEO of Cubist Pharmaceuticals from 2003 to 2014, Mike grew the company into a leading antibiotics business that Merck acquired in 2015. Mike also chairs Autolus Therapeutics and sits on the board of Alnylam Pharmaceuticals.' },
-      { name: 'Jerel Davis, Ph.D.', role: 'Board Director', bio: 'Jerel is a Managing Director at Versant Ventures in Vancouver and has helped launch and back companies including Repare, Akero and Chinook since joining in 2011. Before Versant, Jerel was an Associate Principal at McKinsey & Company, advising healthcare companies.' },
-      { name: 'Brendan Bulik-Sullivan, Ph.D.', role: 'Board Director', bio: 'Brendan is a general partner at GV focused on life sciences. Brendan’s background is in statistics and machine learning for genetics, with research at Gritstone Oncology and the Broad Institute, and a Ph.D. in statistical genetics from Vrije Universiteit Amsterdam.' },
-      { name: 'Shinichiro Fuse, Ph.D.', role: 'Board Director', bio: 'Shin is a Partner and Managing Director at TPG Life Sciences Innovation, co-leading its venture investments. Shin was previously a Managing Director at MPM Capital and Director of Business Development at bluebird bio.' },
-      { name: 'Christine Borowski, Ph.D.', role: 'Board Director', bio: 'Christine is a Principal at Access Biotechnology. Before investing, Christine was Chief Editor of Nature Medicine, and holds a Ph.D. in Immunology from Harvard University.' },
-      { name: 'Joshua Kennedy-Smith, Ph.D.', role: 'Board Observer', bio: 'Josh is a partner and research analyst at RTW Investments, specializing in the chemistry of small and large molecules for immunology and inflammation. Josh was previously Principal Scientist at Schrödinger, began as a medicinal chemist at Roche and holds a Ph.D. in Chemistry from UC Berkeley.' },
-      { name: 'Mittie Doyle, M.D., FACR', role: 'Board Director', bio: 'Dr. Doyle is Chief Medical Officer of Aro Biotherapeutics, with more than 20 years in industry and academia. Earlier roles include Vice President and Global Therapeutic Area Head, Immunology at CSL Behring, and a board seat at DICE Therapeutics before its acquisition by Eli Lilly. Dr. Doyle earned an M.D. from Yale.' },
-      { name: 'Vineeta Agarwala, M.D., Ph.D.', role: 'Board Observer', bio: 'Vineeta is a General Partner at Andreessen Horowitz, leading investments for the a16z Bio + Health fund. Vineeta previously worked at McKinsey, the Broad Institute, Flatiron Health and GV, holds M.D. and Ph.D. degrees from Harvard Medical School and MIT, and sees patients at Stanford.' },
-      { name: 'Marcelo Bigal, M.D., Ph.D.', role: 'Board Director', bio: 'Marcelo is President and CEO of Ventus Therapeutics. As CMO and CSO at Teva Pharmaceuticals, Marcelo led the teams behind Ajovy for migraine and Austedo for Huntington’s disease, and has published more than 330 peer-reviewed papers in neurology.' },
-      { name: 'Peter Emtage, Ph.D.', role: 'Board Director, Founder and CEO', bio: 'Peter leads Santa Ana Bio and is also a Venture Partner at Versant Ventures. Peter brings more than 25 years of drug development across autoimmunity, inflammation, oncology and infectious disease, including roles at Kite Pharma and Cell Design Labs.' }
+      { name: 'Michael W. Bonney', role: 'Chair', bio: 'Mike has more than 30 years in biotech and pharma. As CEO of Cubist Pharmaceuticals from 2003 to 2014, Mike grew the company into a leading antibiotics business that Merck acquired in 2015. Mike also chairs Autolus Therapeutics and sits on the board of Alnylam Pharmaceuticals.' },
+      { name: 'Jerel Davis, Ph.D.', role: 'Director', bio: 'Jerel is a Managing Director at Versant Ventures in Vancouver and has helped launch and back companies including Repare, Akero and Chinook since joining in 2011. Before Versant, Jerel was an Associate Principal at McKinsey & Company, advising healthcare companies.' },
+      { name: 'Brendan Bulik-Sullivan, Ph.D.', role: 'Director', bio: 'Brendan is a general partner at GV focused on life sciences. Brendan’s background is in statistics and machine learning for genetics, with research at Gritstone Oncology and the Broad Institute, and a Ph.D. in statistical genetics from Vrije Universiteit Amsterdam.' },
+      { name: 'Shinichiro Fuse, Ph.D.', role: 'Director', bio: 'Shin is a Partner and Managing Director at TPG Life Sciences Innovation, co-leading its venture investments. Shin was previously a Managing Director at MPM Capital and Director of Business Development at bluebird bio.' },
+      { name: 'Christine Borowski, Ph.D.', role: 'Director', bio: 'Christine is a Principal at Access Biotechnology. Before investing, Christine was Chief Editor of Nature Medicine, and holds a Ph.D. in Immunology from Harvard University.' },
+      { name: 'Joshua Kennedy-Smith, Ph.D.', role: 'Observer', bio: 'Josh is a partner and research analyst at RTW Investments, specializing in the chemistry of small and large molecules for immunology and inflammation. Josh was previously Principal Scientist at Schrödinger, began as a medicinal chemist at Roche and holds a Ph.D. in Chemistry from UC Berkeley.' },
+      { name: 'Mittie Doyle, M.D., FACR', role: 'Director', bio: 'Dr. Doyle is Chief Medical Officer of Aro Biotherapeutics, with more than 20 years in industry and academia. Earlier roles include Vice President and Global Therapeutic Area Head, Immunology at CSL Behring, and a board seat at DICE Therapeutics before its acquisition by Eli Lilly. Dr. Doyle earned an M.D. from Yale.' },
+      { name: 'Vineeta Agarwala, M.D., Ph.D.', role: 'Observer', bio: 'Vineeta is a General Partner at Andreessen Horowitz, leading investments for the a16z Bio + Health fund. Vineeta previously worked at McKinsey, the Broad Institute, Flatiron Health and GV, holds M.D. and Ph.D. degrees from Harvard Medical School and MIT, and sees patients at Stanford.' },
+      { name: 'Marcelo Bigal, M.D., Ph.D.', role: 'Director', bio: 'Marcelo is President and CEO of Ventus Therapeutics. As CMO and CSO at Teva Pharmaceuticals, Marcelo led the teams behind Ajovy for migraine and Austedo for Huntington’s disease, and has published more than 330 peer-reviewed papers in neurology.' },
+      { name: 'Peter Emtage, Ph.D.', role: 'Founder', bio: 'Peter leads Santa Ana Bio and is also a Venture Partner at Versant Ventures. Peter brings more than 25 years of drug development across autoimmunity, inflammation, oncology and infectious disease, including roles at Kite Pharma and Cell Design Labs.' }
     ],
     'Scientific Founders': [
-      { name: 'Alexander Rudensky, Ph.D.', role: 'Scientific Founder', bio: 'Alexander chairs the Immunology Program at the Sloan Kettering Institute and is a Howard Hughes Medical Institute Investigator. A member of the National Academy of Sciences, Alexander has received the Crafoord Prize and the Vilcek Prize in Biomedical Science.' },
-      { name: 'Richard Flavell, Ph.D.', role: 'Scientific Founder', bio: 'Richard pioneered reverse genetics in the 1970s and co-discovered introns in eukaryotic genes. For decades Richard’s lab has studied innate and adaptive immunity, the inflammasome and the mechanisms of autoimmune disease.' },
-      { name: 'Graham Lord, M.D., Ph.D.', role: 'Scientific Founder', bio: 'Graham is Vice-President and Dean of the Faculty of Biology, Medicine and Health at the University of Manchester and a practicing transplant nephrologist. Graham’s research looks at how lymphocyte gene expression is regulated in mucosal and auto-inflammatory disease.' },
-      { name: 'Ansuman Satpathy, M.D., Ph.D.', role: 'Scientific Founder', bio: 'Ansu is a physician-scientist and Associate Professor of Pathology and Immunology at Stanford University, and founding director of the Stanford Center for Immunotherapy Design. Ansu’s lab combines immunology, genomics and computation to turn discoveries about the immune system into new therapies.' }
+      { name: 'Alexander Rudensky, Ph.D.', role: 'Co-Founder', bio: 'Alexander chairs the Immunology Program at the Sloan Kettering Institute and is a Howard Hughes Medical Institute Investigator. A member of the National Academy of Sciences, Alexander has received the Crafoord Prize and the Vilcek Prize in Biomedical Science.' },
+      { name: 'Richard Flavell, Ph.D.', role: 'Co-Founder', bio: 'Richard pioneered reverse genetics in the 1970s and co-discovered introns in eukaryotic genes. For decades Richard’s lab has studied innate and adaptive immunity, the inflammasome and the mechanisms of autoimmune disease.' },
+      { name: 'Graham Lord, M.D., Ph.D.', role: 'Co-Founder', bio: 'Graham is Vice-President and Dean of the Faculty of Biology, Medicine and Health at the University of Manchester and a practicing transplant nephrologist. Graham’s research looks at how lymphocyte gene expression is regulated in mucosal and auto-inflammatory disease.' },
+      { name: 'Ansuman Satpathy, M.D., Ph.D.', role: 'Co-Founder', bio: 'Ansu is a physician-scientist and Associate Professor of Pathology and Immunology at Stanford University, and founding director of the Stanford Center for Immunotherapy Design. Ansu’s lab combines immunology, genomics and computation to turn discoveries about the immune system into new therapies.' }
     ]
   };
 
@@ -539,6 +552,7 @@
   const setExpanded = (sheet, open) => document.querySelectorAll(`[aria-controls="${sheet.id}"]`).forEach(b => b.setAttribute('aria-expanded', open));
   function openSheet(sheet) {
     sheet.showModal();
+    sheet.focus({ preventScroll: true }); // focus the panel, not its close button, so no focus ring shows on open
     setExpanded(sheet, true);
     if (!motionOK()) return;
     sheet.animate({ transform: ['translateX(100%)', 'none'] }, { duration: 600, easing: ease });
@@ -563,15 +577,26 @@
   // Bio overlay
   const bio = document.getElementById('bio');
   let current = 0;
+  // Placeholder: each bio runs three times its length, its own text followed by lorem ipsum paragraphs
+  // (cut at a sentence) until the real, longer bios come in
+  const lorem = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.'.split(/(?<=\.) /);
+  function bioFiller(length) {
+    const paras = []; let para = [], total = 0, i = 0;
+    while (total < length) {
+      const s = lorem[i++ % lorem.length]; para.push(s); total += s.length + 1;
+      if (para.length === 4) { paras.push(para.join(' ')); para = []; }
+    }
+    if (para.length) paras.push(para.join(' '));
+    return paras.join('\n\n');
+  }
   function fillBio(i) {
     const people = team[group];
     current = (i + people.length) % people.length;
     const p = people[current];
-    document.getElementById('bio-count').textContent = `${group}, ${current + 1} of ${people.length}`;
     document.getElementById('bio-photo').innerHTML = photo(p);
     document.getElementById('bio-name').textContent = p.name;
     document.getElementById('bio-role').textContent = p.role;
-    document.getElementById('bio-text').textContent = p.bio;
+    document.getElementById('bio-text').textContent = p.bio + '\n\n' + bioFiller(p.bio.length * 2);
     bio.scrollTop = 0;
   }
   grid.addEventListener('click', e => { const card = e.target.closest('.person'); if (card) { fillBio(+card.dataset.i); openSheet(bio); } });
@@ -579,7 +604,7 @@
   document.getElementById('bio-prev').addEventListener('click', () => fillBio(current - 1));
   document.getElementById('bio-next').addEventListener('click', () => fillBio(current + 1));
   // Focus goes back to the card that opened it
-  bio.addEventListener('close', () => { const card = grid.querySelector(`[data-i="${current}"]`); if (card) card.focus(); });
+  bio.addEventListener('close', () => { const card = grid.querySelector(`[data-i="${current}"]`); if (card) card.focus({ preventScroll: true, focusVisible: false }); }); // quietly, without a focus ring
 
   // Menu (1024px and below): the bar's links, big, in a sheet behind the Menu button
   const menu = document.getElementById('menu');
@@ -648,23 +673,6 @@
     `<h3 class="news-title">${n.title}</h3>` +
     `<span class="news-more">Read More<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></span></a>`).join('');
 
-  // Carousels: the side buttons move one card at a time and grey out at either end
-  document.querySelectorAll('.carousel').forEach(carousel => {
-    const track = carousel.querySelector('.carousel-track');
-    const buttons = carousel.querySelectorAll('.carousel-btn');
-    const step = () => { const card = track.firstElementChild; return card ? card.offsetWidth + parseFloat(getComputedStyle(track).columnGap) : track.clientWidth; };
-    const update = () => {
-      const max = track.scrollWidth - track.clientWidth;
-      buttons.forEach(b => { b.disabled = b.dataset.dir === '-1' ? track.scrollLeft <= 1 : track.scrollLeft >= max - 1; });
-    };
-    buttons.forEach(b => b.addEventListener('click', () => {
-      track.scrollBy({ left: +b.dataset.dir * step(), behavior: motionOK() ? 'smooth' : 'auto' });
-    }));
-    track.addEventListener('scroll', update, { passive: true });
-    addEventListener('resize', update);
-    addEventListener('load', update); // again once fonts and styles have settled the card widths
-    update();
-  });
 
 
   // Contact form: a demo, so it checks the fields and confirms here without sending anything
