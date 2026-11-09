@@ -53,31 +53,32 @@
     --row-bg: #0c0f11; --ink: #ffffff; --bg: #1a1f1c; --muted: #9aa59f; --line: #333b37; --accent: #9aa59f;
     color: var(--ink); color-scheme: dark;
   }
-  /* Science images fill their whole cell: the full column width and the row's full height. An invisible 4:3 strut
-     sets the cell's minimum height; taller copy stretches the cell and the image with it. */
-  #science .split-media { aspect-ratio: auto; padding: 0; place-items: stretch; align-self: stretch; min-width: 0; }
-  #science .split-media::before { content: ""; grid-area: 1 / 1; padding-top: 75%; }
-  #science .split-img { grid-area: 1 / 1; width: 100%; height: 100%; }
-  /* Narrower copy in both rows: 24em, down from the framework's 30em */
-  #science .split-body { grid-template-columns: minmax(0, 24em); }
-  /* ...and run out to the edge of the screen on their outer side: past the side inset and the page gutter */
-  @media (min-width: 761px) {
-    #science .split:not(.flip) .split-media { margin-right: calc(-1 * (var(--inset-x) + max(var(--gutter), env(safe-area-inset-right, 0px)))); }
-    #science .split.flip .split-media { margin-left: calc(-1 * (var(--inset-x) + max(var(--gutter), env(safe-area-inset-left, 0px)))); }
+  /* Science: one row of four columns (copy, image, copy, image), each half the screen wide (full width on phones).
+     The band runs edge to edge with no side padding; the copy pads itself. */
+  /* The slide sits in a light gray band that fills the screen, 200px in from the top and bottom and edge to edge
+     across (160px top and bottom on phones) */
+  #science { padding-inline: 0; background: #e7e7e7; }
+  .sci-viewport { background: #e7e7e7; padding: 200px 0; }
+  .sci-window { overflow: hidden; height: 100%; }
+  .sci-track { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); width: 200%; background: var(--row-bg); }
+  #science .split-body { display: grid; grid-template-columns: minmax(0, 24em); justify-content: center; align-content: center; padding: 64px; } /* grid, so the label sits 12px over its headline like every section */
+  #science .split-media { aspect-ratio: auto; padding: 0; display: grid; place-items: stretch; min-width: 0; min-height: 37.5vw; }
+  #science .split-img { width: 100%; height: 100%; }
+  /* Scroll-driven (added by the script when motion is on): the row fills the screen top to bottom, pins, and slides
+     left as you scroll down, then lets the page carry on */
+  #science.sci-scrub .sci-viewport { height: 100vh; height: 100svh; }
+  #science.sci-scrub .sci-track { height: 100%; will-change: transform; }
+  #science.sci-scrub .split-media { min-height: 0; }
+  @media (max-width: 760px) {
+    .sci-viewport { padding: 160px 0; }
+    .sci-track { width: 400%; } /* one column per window */
+    #science .split-body { padding: 40px 20px; }
+    #science .split-media { min-height: 75vw; }
   }
-  @media (max-width: 760px) { /* stacked: the image spans the screen edge to edge */
-    #science .split-media { margin-inline: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px))) calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px))); }
-  }
-  /* Above phone width the Science rows take the same side inset as the other sections: the panel pads in
-     by it, the image runs from its column out to the screen edge */
+  /* Without the slide (reduced motion or no script): the four columns wrap into a 2 × 2 grid, one column on phones */
+  #science:not(.sci-scrub) .sci-track { width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 760px) { #science:not(.sci-scrub) .sci-track { grid-template-columns: minmax(0, 1fr); } }
   @media (min-width: 761px) {
-    #science .split { padding-inline: var(--inset-x); }
-    /* Both rows: the copy block sits centered, across and down, in its cell, with the same 64px padding on every side */
-    #science .split-body { justify-content: center; align-content: center; padding: 64px; }
-    /* ...and the text cell runs out to the screen edge on its outer side too, like the image, so each cell is exactly
-       half the screen and the copy centers in what you see, not in the inset area */
-    #science .split:not(.flip) .split-body { margin-left: calc(-1 * (var(--inset-x) + max(var(--gutter), env(safe-area-inset-left, 0px)))); }
-    #science .split.flip .split-body { margin-right: calc(-1 * (var(--inset-x) + max(var(--gutter), env(safe-area-inset-right, 0px)))); }
     /* The nav (or the Menu bar on tablets) and the hero copy line up on the same inset: one gutter plus the side inset from the screen edges */
     .pinbar { padding-inline: calc(max(var(--gutter), env(safe-area-inset-left, 0px)) + var(--inset-x)) calc(max(var(--gutter), env(safe-area-inset-right, 0px)) + var(--inset-x)); }
     .hero-body { padding-inline: var(--inset-x); }
@@ -146,8 +147,7 @@
     #news > .section-head, #news > .h2,
     #team > * { --inset: 20px; }
   }
-  /* Nav links glide down to their section */
-  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+  /* Nav links glide down to their section (the script does the glide; no CSS smooth scrolling, which throws off the scroll effects' measurements) */
   /* lands below the pinned bar (the script measures it) with a little room above the label */
   .wrap > section { scroll-margin-top: calc(var(--pinbar-h, 60px) + var(--gutter)); }
   .wrap > section[tabindex="-1"]:focus { outline: none; } /* the nav glide focuses the section it lands on (for keyboards and screen readers); no ring around it */
@@ -159,6 +159,7 @@
   [data-reveal-01] .word-mask, [data-reveal-01] .char-mask { vertical-align: top; }
   [data-reveal-01] .line-mask, [data-reveal-01] .word-mask, [data-reveal-01] .char-mask { overflow: clip; overflow-clip-margin: 0.06em; }
   [data-reveal-01] .line-mask > *, [data-reveal-01] .word-mask > *, [data-reveal-01] .char-mask > * { padding-bottom: 0.18em; will-change: transform; }
+  [data-reveal-01] .line-mask > * { white-space: nowrap; } /* each split line was measured as one line; keep it one line, or a near-full line wraps inside its mask */
 </style>
 
 <div class="topbar pinbar" id="pinbar">
@@ -192,9 +193,9 @@
         <h2 id="about-title" class="section-label" data-reveal-01="lines" data-scroll>About</h2>
       </div>
       <div class="about-main">
-        <p class="h2" data-reveal-01="lines" data-scroll data-delay="0.1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
+        <p class="h2" data-reveal-01="lines" data-scroll data-delay="0.1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam. Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
         <details class="accordion">
-          <summary>Our approach<svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path class="v" d="M8 1V15"/></svg></summary>
+          <summary>Read mission statement<svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path class="v" d="M8 1V15"/></svg></summary>
           <div class="detail-body about-text">
             <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.</p>
           </div>
@@ -204,20 +205,23 @@
   </section>
 
   <section id="science" aria-labelledby="science-title">
-    <div class="split">
-      <div class="split-body">
-        <h2 id="science-title" class="section-label">Science</h2>
-        <p class="h2">Translating immune biology into precision therapeutics.</p>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+    <!-- One row of four columns (copy, image, copy, image). With motion on, the row pins and slides sideways as you scroll -->
+    <div class="sci-viewport">
+      <div class="sci-window">
+      <div class="sci-track">
+        <div class="split-body">
+          <h2 id="science-title" class="section-label">Science</h2>
+          <p class="h2">Translating immune biology into precision therapeutics.</p>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        </div>
+        <div class="split-media"><div class="split-img" role="img" aria-label="Image placeholder"><span class="label">Image placeholder</span></div></div>
+        <div class="split-body">
+          <p class="h2">Disrupting disease at the cells that drive it.</p>
+          <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem.</p>
+        </div>
+        <div class="split-media"><div class="split-img" role="img" aria-label="Image placeholder"><span class="label">Image placeholder</span></div></div>
       </div>
-      <div class="split-media"><div class="split-img" role="img" aria-label="Image placeholder"><span class="label">Image placeholder</span></div></div>
-    </div>
-    <div class="split flip">
-      <div class="split-body">
-        <p class="h2">Disrupting disease at the cells that drive it.</p>
-        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem.</p>
       </div>
-      <div class="split-media"><div class="split-img" role="img" aria-label="Image placeholder"><span class="label">Image placeholder</span></div></div>
     </div>
   </section>
 
@@ -332,7 +336,7 @@
   // Pinned bar: frosted once the page scrolls, dark text once it's past the hero
   const pinbar = document.getElementById('pinbar');
   const hero = document.getElementById('hero');
-  const darkBands = ['hero', 'science', 'news', 'contact'].map(id => document.getElementById(id));
+  const darkBands = ['hero', 'news', 'contact'].map(id => document.getElementById(id));
   const navLinks = [...pinbar.querySelectorAll('nav a[href^="#"]')].map(a => ({ a, section: document.querySelector(a.getAttribute('href')) })).filter(l => l.section);
   function updatePinbar() {
     const h = pinbar.offsetHeight;
@@ -921,10 +925,6 @@
     const showAll = () => document.querySelectorAll('[data-reveal-01]').forEach(el => { el.style.visibility = 'visible'; });
     if (!window.gsap || !window.SplitText || !window.ScrollTrigger || !matchMedia('(prefers-reduced-motion: no-preference)').matches) return showAll();
     gsap.registerPlugin(SplitText, ScrollTrigger);
-    // The page scrolls smoothly for nav links; ScrollTrigger jumps the scroll to measure, so smooth scrolling is
-    // switched off while it measures and back on after, or the trigger positions come out wrong
-    ScrollTrigger.addEventListener('refreshInit', () => { document.documentElement.style.scrollBehavior = 'auto'; });
-    ScrollTrigger.addEventListener('refresh', () => { document.documentElement.style.scrollBehavior = ''; });
     await document.fonts.ready;
     // ...and once the page's slide-up entrance has landed, or every scroll position is measured 200px off
     const wrap = document.querySelector('.wrap');
@@ -934,5 +934,20 @@
     wrap.classList.remove('page-in');
     textReveal01();
     sectionTransition01();
+    scienceSlide();
   })();
+
+  // Science: the four-column row pins to the screen and slides left as you scroll, one pixel across per pixel down,
+  // until its last column is in view; then the page scrolls on. scrub: 1 lets the row catch up softly.
+  function scienceSlide() {
+    const section = document.getElementById('science');
+    const viewport = section.querySelector('.sci-viewport');
+    const track = section.querySelector('.sci-track');
+    section.classList.add('sci-scrub');
+    const distance = () => track.scrollWidth - section.querySelector('.sci-window').clientWidth;
+    gsap.to(track, {
+      x: () => -distance(), ease: 'none',
+      scrollTrigger: { trigger: viewport, start: 'top top', end: () => '+=' + distance(), pin: true, scrub: 1, invalidateOnRefresh: true, anticipatePin: 1 }
+    });
+  }
 </script>
