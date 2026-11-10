@@ -13,7 +13,7 @@
      <meta name="viewport" content="width=device-width, initial-scale=1">
 
    TYPE SCALE (all Geist), largest first
-     H1 / display   200, clamp(48px, 11vw, 102px), line-height 1, -0.04em (also both hero headlines)
+     H1 / display   200, clamp(48px, 11vw, 97px), line-height 1, -0.04em (also both hero headlines)
      H2 / .h2       200, clamp(42px, 3.5vw + 16px, 52px), line-height 1.15, -0.02em
      H2 bold        400, the H2 style at weight 400 (.h2-bold)
      H3 / .h3       200, 41px (39px on phones), line-height 1.2, -0.01em
@@ -34,6 +34,7 @@
      --muted   #7a7976 / #9aa59f   gray text
      --link    #FF3434             red links
      --line    #e7e7e7 / #333b37   loading placeholder gray
+     --rule    #d9d9d9 / #333b37   lines and rules (borders, dividers, dotted pipeline lines)
      --row-bg  #ffffff / #1a1f1c   white panels (cards, rows)
 
    GRID
@@ -82,7 +83,8 @@
   --bg: #f7f7f7;
   --ink: #0c0f11;
   --muted: #7a7976;
-  --line: #e7e7e7;
+  --line: #e7e7e7; /* placeholder fills */
+  --rule: #d9d9d9; /* lines and rules: a step darker than --line */
   --accent: var(--muted);
   --link: #FF3434;
   --acc-bg: rgb(231 231 231 / 0.5);
@@ -96,13 +98,13 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #131715; --ink: #e6ebe7; --muted: #9aa59f; --line: #333b37; --accent: var(--muted);
+    --bg: #131715; --ink: #e6ebe7; --muted: #9aa59f; --line: #333b37; --rule: #333b37; --accent: var(--muted);
     --acc-bg: rgb(255 255 255 / 0.04); --row-bg: #1a1f1c;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #131715; --ink: #e6ebe7; --muted: #9aa59f; --line: #333b37; --accent: var(--muted);
+  --bg: #131715; --ink: #e6ebe7; --muted: #9aa59f; --line: #333b37; --rule: #333b37; --accent: var(--muted);
   --acc-bg: rgb(255 255 255 / 0.04); --row-bg: #1a1f1c;
   color-scheme: dark;
 }
@@ -140,7 +142,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 }
 
 h1 {
-  font: 200 clamp(3rem, 11vw, 6.375rem)/1 var(--font);
+  font: 200 clamp(3rem, 11vw, 6.0625rem)/1 var(--font);
   letter-spacing: -0.04em;
   margin: 0;
   text-wrap: balance;
@@ -201,7 +203,7 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/
      <summary>Project Details<svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path class="v" d="M8 1V15"/></svg></summary>
      <div class="detail-body">…</div>
    </details> */
-.accordion { border-top: 1px solid var(--line); overflow: hidden; } /* no fill: a light rule along the top, like the tab row's */
+.accordion { border-top: 1px solid var(--rule); overflow: hidden; } /* no fill: a light rule along the top, like the tab row's */
 .accordion summary {
   list-style: none; cursor: pointer;
   display: flex; justify-content: space-between; align-items: center; gap: 1rem;
@@ -234,9 +236,9 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/
 .pl-row {
   display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 3fr);
   gap: 0.5rem var(--gutter); align-items: center;
-  padding: 1.6rem 0;
+  padding: 1.85rem 0; /* a little taller */
 }
-.pl-item { border-top: 1px solid var(--line); overflow: hidden; } /* clips the panel while its height animates */
+.pl-item { border-top: 1px solid var(--rule); overflow: hidden; } /* clips the panel while its height animates */
 .pl-item summary { list-style: none; cursor: pointer; }
 .pl-item summary::-webkit-details-marker { display: none; }
 .pl-item summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
@@ -254,8 +256,9 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/
 .pl-slot { position: relative; height: 24px; background: var(--line); overflow: hidden; }
 .pl-slot::after { content: ""; position: absolute; inset: 0; background: var(--ink); transform-origin: 0 50%; transform: scaleX(var(--fill, 0)); }
 .pl-stage { grid-column: 3; display: none; } /* phone only: abbreviated stage names over each bar */
+.pl-item { margin-inline: -20px; padding-inline: 20px; } /* rules and band reach 20px past the content on each side; the content stays put */
 .pl-item[open]:not(.closing), .pl-item:hover { background: var(--acc-bg); } /* open or hovered row: a faint gray band, faded in and out */
-.pl-item:last-child { border-bottom: 1px solid var(--line); } /* closes the chart, matching the rules between rows */
+.pl-item:last-child { border-bottom: 1px solid var(--rule); } /* closes the chart, matching the rules between rows */
 /* Column rules: dotted vertical lines in the rules' color between the columns, through every program row
    (not the open panels). The script sets --pl-cols (one dotted line per column edge) and --pl-cols-x (where each sits). */
 .pl-row { background-image: var(--pl-cols, none); background-repeat: no-repeat; background-position: var(--pl-cols-x, 0 0); background-size: 1px 100%; }
@@ -268,19 +271,19 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/
    The bar carries the rule across the full width; the tabs inside all take the width of the longest one. */
 /* Styled like the pinned nav: a 60px row with a light rule under it and thin rules on both sides of
    each tab, labels centered. The selected tab turns black. */
-.tabs-bar { border-bottom: 1px solid var(--line); }
+.tabs-bar { border-bottom: 1px solid var(--rule); }
 .tabs { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; min-height: 60px; } /* equal columns, sized to the longest tab */
 .tab {
   appearance: none; background: none; border: 0; display: flex; align-items: center; justify-content: center; padding: 0 1.25rem; cursor: pointer;
   font: 400 0.9375rem/normal var(--font); letter-spacing: 0.01em; color: var(--ink); /* nav style, in ink: the line marks the selected tab */
 }
-.tab { border-left: 1px solid var(--line); } /* a rule on both sides of every tab, labels centered */
-.tab:last-child { border-right: 1px solid var(--line); }
+.tab { border-left: 1px solid var(--rule); } /* a rule on both sides of every tab, labels centered */
+.tab:last-child { border-right: 1px solid var(--rule); }
 .tab[aria-selected="true"] { color: var(--ink); }
 /* Same line as the pinned nav: 4px red under the selected tab, gray (the rule's color) on hover, faded in and out */
 .tab { position: relative; }
 .tab::before, .tab::after { content: ""; position: absolute; inset: auto 0 0; height: 4px; opacity: 0; pointer-events: none; }
-.tab::before { background: var(--line); }   /* hover line, gray */
+.tab::before { background: var(--rule); }   /* hover line, gray */
 .tab::after { background: var(--link); }    /* selected line, red, drawn on top of the hover line */
 .tab:hover::before, .tab[aria-selected="true"]::after { opacity: 1; }
 
@@ -454,16 +457,16 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 
 /* Menu sheet: a .bio dialog holding the section links, one per row with a rule under each */
 .bio-inner > nav { align-self: stretch; } /* the menu's links run the full width of the sheet */
-.menu-links { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.menu-links { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
 .menu-links a {
-  display: flex; justify-content: space-between; align-items: center; padding: 1.1rem 0; border-bottom: 1px solid var(--line);
+  display: flex; justify-content: space-between; align-items: center; padding: 1.1rem 0; border-bottom: 1px solid var(--rule);
   color: var(--ink); font: 200 clamp(2.625rem, calc(3.5vw + 16px), 3.25rem)/1.15 var(--font); letter-spacing: -0.02em; /* h2 style */
 }
 .menu-links a:hover, .menu-links a:focus-visible { color: var(--link); }
 .menu-links .ar { width: 0.45em; height: 0.45em; stroke-width: 3; color: var(--link); }
 
 .pinbar.scrolled { background: rgb(0 0 0 / 0.2); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
-.pinbar.on-light { background: color-mix(in srgb, var(--bg) 72%, transparent); color: var(--ink); --nav-line: var(--line); }
+.pinbar.on-light { background: color-mix(in srgb, var(--bg) 72%, transparent); color: var(--ink); --nav-line: var(--rule); }
 
 
 /* ---------- Hero (full-screen, video behind) ---------- */
@@ -527,7 +530,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .contact-form { display: grid; gap: 1.25rem; align-content: start; }
 .field { display: grid; gap: 0.5rem; }
 .field input, .field textarea, .field select {
-  width: 100%; padding: 0.9rem 1rem; border: 1px solid var(--line); border-radius: 0;
+  width: 100%; padding: 0.9rem 1rem; border: 1px solid var(--rule); border-radius: 0;
   background: var(--bg); color: var(--ink); font: 300 1rem/1.4 var(--font); letter-spacing: 0;
 }
 .field textarea { min-height: 9rem; resize: vertical; }
@@ -546,7 +549,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .contact-form .button { justify-self: start; margin-top: 0.5rem; }
 .form-note { margin: 0; font-size: 1rem; color: var(--muted); }
 
-.bio-nav { display: flex; justify-content: space-between; gap: 1rem; padding-top: 1.25rem; margin-top: auto; border-top: 1px solid var(--line); } /* sits at the bottom of the sheet */
+.bio-nav { display: flex; justify-content: space-between; gap: 1rem; padding-top: 1.25rem; margin-top: auto; border-top: 1px solid var(--rule); } /* sits at the bottom of the sheet */
 
 @media (max-width: 1024px) {
   /* Too narrow for the links: they move into the slide-in menu behind the Menu button */
@@ -570,7 +573,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   /* Phones: too narrow for the tabs in one row, so they stack as a list, one rule between each */
   .tabs { display: grid; grid-auto-flow: row; min-height: 0; }
   .tab { min-height: 48px; padding: 0; }
-  .tab + .tab { border-top: 1px solid var(--line); }
+  .tab + .tab { border-top: 1px solid var(--rule); }
   .person { padding: 12px 12px 1.25rem; }
   .bio-inner { padding: var(--gutter) var(--gutter) 2rem; }
   .news-item { padding: 1.75rem 20px; }

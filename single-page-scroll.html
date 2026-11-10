@@ -51,7 +51,7 @@
   }
   /* Science in dark mode: the same token swap as Contact, so the band, text and placeholders invert */
   #science {
-    --row-bg: #0c0f11; --ink: #ffffff; --bg: #1a1f1c; --muted: #9aa59f; --line: #333b37; --accent: #9aa59f;
+    --row-bg: #0c0f11; --ink: #ffffff; --bg: #1a1f1c; --muted: #9aa59f; --line: #333b37; --rule: #333b37; --accent: #9aa59f;
     color: var(--ink); color-scheme: dark;
   }
   /* Science: one row of four columns (copy, image, copy, image), each half the screen wide (full width on phones).
@@ -110,7 +110,7 @@
   /* Contact in reverse: the framework's colors flipped for this section only. The panel takes the ink color,
      text goes white, fields go dark; red links and the button stay red. */
   #contact {
-    --row-bg: #0c0f11; --ink: #ffffff; --bg: #1a1f1c; --muted: #9aa59f; --line: #333b37; --accent: #9aa59f;
+    --row-bg: #0c0f11; --ink: #ffffff; --bg: #1a1f1c; --muted: #9aa59f; --line: #333b37; --rule: #333b37; --accent: #9aa59f;
     color: var(--ink); color-scheme: dark;
     /* Edge to edge on the colorFlow image, touching News; the gutter padding is the band of image around the panel */
     position: relative; isolation: isolate; overflow: hidden;
@@ -428,7 +428,7 @@
     const cells = [head.children[0], head.children[1], ...head.querySelector('.pl-stages').children].map(c => c.getBoundingClientRect());
     const left = head.getBoundingClientRect().left;
     const xs = cells.slice(1).map((c, i) => Math.round((cells[i].right + c.left) / 2 - left));
-    const dots = 'repeating-linear-gradient(to bottom, var(--line) 0 2px, transparent 2px 5px)';
+    const dots = 'repeating-linear-gradient(to bottom, var(--rule, #d9d9d9) 0 2px, transparent 2px 5px)';
     table.style.setProperty('--pl-cols', xs.map(() => dots).join(', '));
     table.style.setProperty('--pl-cols-x', xs.map(x => x + 'px 0').join(', '));
   }
