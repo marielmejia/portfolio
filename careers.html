@@ -1,0 +1,251 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Careers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap">
+<link rel="stylesheet" href="clean-modern-scroll.css">
+<style>
+  /* Same side inset and section spacing as the scroll page */
+  :root { --inset-x: clamp(60px, calc(15.35vw - 57.9px), 200px); }
+  .wrap > section + section { margin-top: calc(180px - 4.5rem); }
+  @media (min-width: 761px) {
+    .pinbar { padding-inline: calc(max(var(--gutter), env(safe-area-inset-left, 0px)) + var(--inset-x)) calc(max(var(--gutter), env(safe-area-inset-right, 0px)) + var(--inset-x)); }
+  }
+  .pinbar-cta[aria-current] { background: #fff; color: #0c0f11; } /* this page: the button sits in its hover look */
+  .pinbar.on-light .pinbar-cta[aria-current] { background: var(--ink); color: var(--bg); }
+  .c-inset { padding-inline: var(--inset-x); }
+  @media (max-width: 760px) { .c-inset { padding-inline: 0; } }
+  .c-head { display: grid; gap: 0.75rem; margin-bottom: 2.5rem; } /* label 12px over its headline */
+  .c-head > * { margin: 0; }
+  .c-head .h2 { max-width: 22em; }
+
+  /* Hero: fills the screen in two rows, a placeholder image on top and the headline underneath. Edge to edge. */
+  .c-hero {
+    display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 0; height: 100vh; height: 100svh;
+    margin: calc(-1 * var(--gutter)) calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px))) 0 calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px)));
+  }
+  .c-hero-img { position: relative; overflow: hidden; background: #2b312e; } /* the homepage video, filling the top row */
+  .c-hero-img video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .c-hero-img::after { content: ""; position: absolute; inset: 0 0 auto; height: 160px; background: linear-gradient(rgb(0 0 0 / 0.35), transparent); pointer-events: none; } /* darker behind the bar, like the homepage */
+  .c-hero-copy { padding: 56px calc(max(var(--gutter), env(safe-area-inset-left, 0px)) + var(--inset-x)) 64px; }
+  .c-hero-copy h1 { font-size: clamp(calc(3rem - 5px), calc(7vw - 5px), calc(7rem - 5px)); max-width: 13em; text-align: left; }
+  @media (max-width: 760px) { .c-hero-copy { padding: 40px 20px 48px; } }
+
+  /* Intro: label in the left third, the statement and a paragraph in the right two thirds */
+  .c-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 1.5rem calc(2 * var(--gutter)); align-items: start; }
+  .c-intro-main { display: grid; gap: 2rem; }
+  .c-intro-main > * { margin: 0; }
+  .c-intro-main p:not(.h2) { max-width: 36em; color: color-mix(in srgb, currentColor 80%, transparent); }
+  @media (max-width: 760px) { .c-cols { grid-template-columns: minmax(0, 1fr); } }
+
+  /* Photo strip: full width, edge to edge, drifting left on its own and looping. Photos share a width and their
+     tops; landscape (4:3), portrait (3:4) and square (1:1) mixed. Hovering pauses it; with reduced motion it holds still and scrolls by hand. */
+  #photos { margin-inline: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px))) calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px))); }
+  #photos { min-width: 0; } /* the long track must not widen the page */
+  .c-strip { overflow: hidden; min-width: 0; }
+  .c-strip-track { display: flex; align-items: flex-start; gap: var(--gutter); width: max-content; }
+  .c-photo { flex: none; width: clamp(240px, 26vw, 420px); display: grid; place-items: center; background: var(--line); }
+  .c-photo.r43 { aspect-ratio: 4 / 3; } /* landscape */
+  .c-photo.r34 { aspect-ratio: 3 / 4; } /* portrait */
+  .c-photo.r11 { aspect-ratio: 1; } /* square */
+  .c-photo .label { color: var(--muted); }
+  @media (prefers-reduced-motion: no-preference) {
+    .c-strip-track { animation: c-drift 60s linear infinite; }
+    .c-strip:hover .c-strip-track { animation-play-state: paused; }
+  }
+  @media (prefers-reduced-motion: reduce) { .c-strip { overflow-x: auto; } .c-strip-track > [aria-hidden] { display: none; } }
+  /* half the track is one full set plus half a gap, so sliding by that lands exactly where it started */
+  @keyframes c-drift { to { transform: translateX(calc(-50% - var(--gutter) / 2)); } }
+
+  /* Values: four rows like the News cards: no fill, a light rule under each (and over the first). Two columns:
+     the value in the H2 style on the left, the paragraph on the right. On hover the row inverts (dark fill, light
+     text) and the word rolls: it slides up and out while a copy slides up into its place. The cards don't link. */
+  .c-values { display: grid; gap: 0; }
+  .c-value {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 1rem calc(2 * var(--gutter)); align-items: baseline;
+    padding: 2.5rem 2rem; background: transparent; color: var(--ink); border-bottom: 1px solid var(--line);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  .c-value:first-child { border-top: 1px solid var(--line); }
+  .c-value:hover { background: var(--ink); color: var(--row-bg); }
+  .c-value > * { margin: 0; }
+  .c-value p { max-width: 36em; opacity: 0.8; } /* body copy at 80%; opacity (not a mixed color) so it follows the hover inversion */
+  .c-value-word { display: block; overflow: hidden; padding-bottom: 0.08em; } /* the window the word rolls through */
+  .c-value-word span { position: relative; display: inline-block; }
+  .c-value-word span::after { content: attr(data-text); content: attr(data-text) / ""; position: absolute; left: 0; top: 100%; } /* the copy waiting underneath */
+  @media (prefers-reduced-motion: no-preference) {
+    .c-value-word span { transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1); }
+    .c-value:hover .c-value-word span { transform: translateY(-100%); }
+  }
+  @media (max-width: 760px) { .c-value { grid-template-columns: minmax(0, 1fr); padding: 2rem 1.25rem; } }
+
+  /* Open roles: one row each, ruled top and bottom, a faint gray band on hover */
+  .c-roles { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .c-role { border-bottom: 1px solid var(--line); }
+  .c-role a {
+    display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) auto; gap: 0.5rem var(--gutter); align-items: center;
+    padding: 1.6rem 0; color: var(--ink); text-decoration: none; transition: background-color 0.4s ease;
+  }
+  .c-role a:hover, .c-role a:focus-visible { background: var(--acc-bg); }
+  .c-role .h3 { font-weight: 300; }
+  .c-role .meta { color: var(--muted); }
+  .c-role .ar { width: 0.9rem; height: 0.9rem; margin: 0; color: var(--link); stroke-width: 3; }
+  @media (max-width: 760px) {
+    .c-role a { grid-template-columns: minmax(0, 1fr) auto; }
+    .c-role .h3 { grid-column: 1; }
+    .c-role .meta { grid-column: 1; }
+    .c-role .ar { grid-column: 2; grid-row: 1 / span 3; }
+  }
+  .c-roles-note { margin: 2rem 0 0; color: var(--muted); }
+  .c-roles-note a { color: var(--link); }
+</style>
+
+<div class="topbar pinbar" id="pinbar">
+  <a class="label pinbar-logo" href="single-page-scroll.html#top">LOGO</a>
+  <nav aria-label="Sections">
+    <a href="single-page-scroll.html#about">About</a>
+    <a href="single-page-scroll.html#science">Science</a>
+    <a href="single-page-scroll.html#pipeline-section">Pipeline</a>
+    <a href="single-page-scroll.html#team">Team</a>
+    <a href="single-page-scroll.html#news">News</a>
+    <a href="single-page-scroll.html#contact">Contact</a>
+  </nav>
+  <a class="pinbar-cta" href="careers.html" aria-current="page">Careers</a>
+  <button class="menu-toggle" type="button" id="menu-toggle" aria-controls="menu" aria-expanded="false">Menu<svg viewBox="0 0 20 12" aria-hidden="true"><path d="M0 1H20M0 6H20M0 11H20"/></svg></button>
+</div>
+
+<div class="wrap page-in">
+  <header class="c-hero" id="hero">
+    <div class="c-hero-img"><video id="hero-video" src="work/Rezera_Campaign_Video_R2.mp4" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video></div>
+    <div class="c-hero-copy"><h1>Shape the future of immunology.</h1></div>
+  </header>
+
+  <section id="intro" class="c-inset" aria-labelledby="intro-title">
+    <div class="c-cols">
+      <h2 id="intro-title" class="section-label">Careers</h2>
+      <div class="c-intro-main">
+        <p class="h2">We are a small team of scientists, clinicians and builders working on the hardest problems in immunology.</p>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="photos" aria-label="Life at the company">
+    <!-- A strip of photos that drifts sideways on its own: the set runs twice so the loop has no seam -->
+    <div class="c-strip">
+      <div class="c-strip-track">
+        <div class="c-photo r43" role="img" aria-label="Photo placeholder"><span class="label">Photo placeholder</span></div>
+        <div class="c-photo r34" role="img" aria-label="Photo placeholder"><span class="label">Photo placeholder</span></div>
+        <div class="c-photo r11" role="img" aria-label="Photo placeholder"><span class="label">Photo placeholder</span></div>
+        <div class="c-photo r43" role="img" aria-label="Photo placeholder"><span class="label">Photo placeholder</span></div>
+        <div class="c-photo r11" role="img" aria-label="Photo placeholder"><span class="label">Photo placeholder</span></div>
+        <div class="c-photo r34" role="img" aria-label="Photo placeholder"><span class="label">Photo placeholder</span></div>
+        <div class="c-photo r43" role="img" aria-label="Photo placeholder"><span class="label">Photo placeholder</span></div>
+        <div class="c-photo r11" role="img" aria-label="Photo placeholder"><span class="label">Photo placeholder</span></div>
+        <div class="c-photo r43" aria-hidden="true"><span class="label">Photo placeholder</span></div>
+        <div class="c-photo r34" aria-hidden="true"><span class="label">Photo placeholder</span></div>
+        <div class="c-photo r11" aria-hidden="true"><span class="label">Photo placeholder</span></div>
+        <div class="c-photo r43" aria-hidden="true"><span class="label">Photo placeholder</span></div>
+        <div class="c-photo r11" aria-hidden="true"><span class="label">Photo placeholder</span></div>
+        <div class="c-photo r34" aria-hidden="true"><span class="label">Photo placeholder</span></div>
+        <div class="c-photo r43" aria-hidden="true"><span class="label">Photo placeholder</span></div>
+        <div class="c-photo r11" aria-hidden="true"><span class="label">Photo placeholder</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="values" class="c-inset" aria-labelledby="values-title">
+    <div class="c-head">
+      <h2 id="values-title" class="section-label">Values</h2>
+      <p class="h2">What we hold ourselves to.</p>
+    </div>
+    <div class="c-values">
+      <article class="c-value"><h3 class="h2 c-value-word"><span data-text="Patients first">Patients first</span></h3><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p></article>
+      <article class="c-value"><h3 class="h2 c-value-word"><span data-text="Rigor">Rigor</span></h3><p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p></article>
+      <article class="c-value"><h3 class="h2 c-value-word"><span data-text="Candor">Candor</span></h3><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p></article>
+      <article class="c-value"><h3 class="h2 c-value-word"><span data-text="Ownership">Ownership</span></h3><p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p></article>
+    </div>
+  </section>
+
+  <section id="roles" class="c-inset" aria-labelledby="roles-title">
+    <div class="c-head">
+      <h2 id="roles-title" class="section-label">Open roles</h2>
+      <p class="h2">Join the team.</p>
+    </div>
+    <ul class="c-roles">
+      <li class="c-role"><a href="mailto:careers@example.com?subject=Scientist%2C%20Immunology"><span class="h3">Scientist, Immunology</span><span class="meta">Research</span><span class="meta">San Diego, CA</span><svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></a></li>
+      <li class="c-role"><a href="mailto:careers@example.com?subject=Senior%20Scientist%2C%20Protein%20Engineering"><span class="h3">Senior Scientist, Protein Engineering</span><span class="meta">Research</span><span class="meta">San Diego, CA</span><svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></a></li>
+      <li class="c-role"><a href="mailto:careers@example.com?subject=Clinical%20Operations%20Lead"><span class="h3">Clinical Operations Lead</span><span class="meta">Clinical</span><span class="meta">Remote, US</span><svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></a></li>
+      <li class="c-role"><a href="mailto:careers@example.com?subject=Research%20Associate"><span class="h3">Research Associate</span><span class="meta">Research</span><span class="meta">San Diego, CA</span><svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></a></li>
+      <li class="c-role"><a href="mailto:careers@example.com?subject=Finance%20Lead"><span class="h3">Finance Lead</span><span class="meta">Operations</span><span class="meta">San Diego, CA</span><svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></a></li>
+    </ul>
+    <p class="c-roles-note">Don’t see your role? Write to <a href="mailto:careers@example.com">careers@example.com</a>.</p>
+  </section>
+
+  <footer>
+    <span class="label">© 2026 Mariel Mejia</span>
+    <a class="to-top" href="index.html">All Work<svg class="ar u" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 11L8 5L14 11"/></svg></a>
+  </footer>
+</div>
+
+<dialog class="bio" id="menu" aria-label="Menu" tabindex="-1" autofocus>
+  <div class="bio-inner">
+    <div class="bio-top">
+      <span class="label">Menu</span>
+      <button class="bio-close" type="button" aria-label="Close"><svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path d="M8 1V15"/></svg></button>
+    </div>
+    <nav aria-label="Sections"><ul class="menu-links" id="menu-links"></ul></nav>
+  </div>
+</dialog>
+
+<script>
+  const motionOK = () => matchMedia('(prefers-reduced-motion: no-preference)').matches;
+  if (!motionOK()) { const v = document.getElementById('hero-video'); v.removeAttribute('autoplay'); v.pause(); } // the video holds still for reduced motion
+  const ease = 'cubic-bezier(0.2, 0.7, 0.2, 1)';
+
+  // Bar: frosted once the page scrolls; dark over the hero image, light once it's scrolled past
+  // (measured without the page's slide-up entrance)
+  const pinbar = document.getElementById('pinbar');
+  const heroImg = document.querySelector('.c-hero-img');
+  const wrap = document.querySelector('.wrap');
+  function updatePinbar() {
+    const t = getComputedStyle(wrap).transform, entrance = t && t !== 'none' ? new DOMMatrixReadOnly(t).m42 : 0;
+    pinbar.classList.toggle('scrolled', scrollY > 0);
+    pinbar.classList.toggle('on-light', heroImg.getBoundingClientRect().bottom - entrance <= pinbar.offsetHeight);
+  }
+  addEventListener('scroll', updatePinbar, { passive: true });
+  addEventListener('resize', updatePinbar);
+  wrap.addEventListener('animationend', updatePinbar);
+  updatePinbar();
+
+  // Menu (1024px and below): the bar's links plus Careers, in a sheet that slides in from the right
+  const menu = document.getElementById('menu');
+  const menuToggle = document.getElementById('menu-toggle');
+  const arrow = '<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg>';
+  document.getElementById('menu-links').innerHTML = [...pinbar.querySelectorAll('nav a'), pinbar.querySelector('.pinbar-cta')]
+    .map(a => `<li><a href="${a.getAttribute('href')}">${a.textContent}${arrow}</a></li>`).join('');
+  const setExpanded = open => menuToggle.setAttribute('aria-expanded', open);
+  function openMenu() {
+    menu.showModal(); menu.focus({ preventScroll: true }); setExpanded(true);
+    if (!motionOK()) return;
+    menu.animate({ transform: ['translateX(100%)', 'none'] }, { duration: 600, easing: ease });
+    menu.animate({ opacity: [0, 1] }, { duration: 400, pseudoElement: '::backdrop' });
+  }
+  function closeMenu() {
+    if (!menu.open || menu.classList.contains('closing')) return;
+    const done = () => { menu.close(); setExpanded(false); };
+    if (!motionOK()) { done(); return; }
+    menu.classList.add('closing');
+    menu.animate({ opacity: [1, 0] }, { duration: 400, pseudoElement: '::backdrop', fill: 'forwards' });
+    menu.animate({ transform: ['none', 'translateX(100%)'] }, { duration: 450, easing: 'cubic-bezier(0.5, 0, 0.75, 0)', fill: 'forwards' })
+      .onfinish = () => { menu.getAnimations({ subtree: true }).forEach(a => a.cancel()); menu.classList.remove('closing'); done(); };
+  }
+  menuToggle.addEventListener('click', openMenu);
+  menu.querySelector('.bio-close').addEventListener('click', closeMenu);
+  menu.addEventListener('cancel', e => { e.preventDefault(); closeMenu(); });
+  menu.addEventListener('click', e => { if (e.target === menu) closeMenu(); });
+  matchMedia('(min-width: 1025px)').addEventListener('change', e => { if (e.matches && menu.open) { menu.close(); setExpanded(false); } });
+
+</script>

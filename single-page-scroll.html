@@ -174,7 +174,7 @@
 </style>
 
 <div class="topbar pinbar" id="pinbar">
-  <span class="label">LOGO</span>
+  <a class="label pinbar-logo" href="#top">LOGO</a>
   <nav aria-label="Sections">
     <a href="#about">About</a>
     <a href="#science">Science</a>
@@ -183,10 +183,11 @@
     <a href="#news">News</a>
     <a href="#contact">Contact</a>
   </nav>
+  <a class="pinbar-cta" href="careers.html">Careers</a>
   <button class="menu-toggle" type="button" id="menu-toggle" aria-controls="menu" aria-expanded="false">Menu<svg viewBox="0 0 20 12" aria-hidden="true"><path d="M0 1H20M0 6H20M0 11H20"/></svg></button>
 </div>
 
-<div class="wrap page-in">
+<div class="wrap page-in" id="top">
   <header class="hero" id="hero" data-st-01="parallax" data-st-opacity="0.5">
     <video class="hero-video" id="hero-video" src="work/Rezera_Campaign_Video_R2.mp4" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
     <div class="hero-body">
@@ -624,6 +625,7 @@
   const menuToggle = document.getElementById('menu-toggle');
   document.getElementById('menu-links').innerHTML = [...document.querySelectorAll('#pinbar nav a')].map(a =>
     `<li><a href="${a.getAttribute('href')}">${a.textContent}<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></a></li>`).join('');
+  document.getElementById('menu-links').insertAdjacentHTML('beforeend', '<li><a href="careers.html">Careers<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></a></li>'); // the Careers page, last
   menuToggle.addEventListener('click', () => openSheet(menu));
   wireSheet(menu);
   // Nav glide: an ease-out scroll to the section (fast at first, settling softly), with the page dipping
@@ -653,6 +655,11 @@
     };
     glide = requestAnimationFrame(step);
   }
+  pinbar.querySelector('.pinbar-logo').addEventListener('click', e => { // LOGO glides back to the top
+    if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+    e.preventDefault();
+    glideTo('#top');
+  });
   pinbar.querySelector('nav').addEventListener('click', e => {
     const link = e.target.closest('a[href^="#"]');
     if (!link || e.metaKey || e.ctrlKey || e.shiftKey) return;
@@ -662,7 +669,7 @@
 
   // A link slides the menu out, then glides down to its section
   menu.addEventListener('click', e => {
-    const link = e.target.closest('.menu-links a');
+    const link = e.target.closest('.menu-links a[href^="#"]'); // section links glide; Careers opens its page
     if (!link) return;
     e.preventDefault();
     closeSheet(menu, () => glideTo(link.getAttribute('href')));

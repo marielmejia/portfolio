@@ -546,7 +546,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 
 /* ---------- Pinned top bar ---------- */
 /* Markup (before .wrap, so nothing on the page can paint over it):
-   <div class="topbar pinbar"><span class="label">Name</span><nav>…</nav></div>
+   <div class="topbar pinbar"><span class="label">Name</span><nav>…</nav><a class="pinbar-cta" href="careers.html">Careers</a></div>
    Clear over the hero; frosted once you scroll; dark text on a light tint past the hero.
    A light gray rule runs under it and between the links. Its sides line up with the hero copy
    and the .split images: one gutter plus 5% of the row (gutter + 5% of (width - 2 gutters)). */
@@ -557,6 +557,17 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   --nav-line: rgb(255 255 255 / 0.2); /* faint white over the hero video */
 }
 .pinbar .label { color: inherit; align-self: center; }
+/* Three columns: the logo on the left, the links centered on the screen, the Careers button on the right */
+.pinbar { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 0 1.25rem; }
+.pinbar .label { justify-self: start; }
+.pinbar-logo { text-decoration: none; } /* the logo links to the top of the homepage */
+.pinbar-cta {
+  grid-column: 3; justify-self: end; align-self: center; display: inline-flex; align-items: center;
+  padding: 0.6rem 1rem; background: var(--link); color: #fff; text-decoration: none;
+  font: 400 0.9375rem/1 var(--font); letter-spacing: 0.01em; /* nav style, in a solid red box */
+}
+.pinbar-cta:hover, .pinbar-cta:focus-visible { background: #fff; color: #0c0f11; }
+.pinbar.on-light .pinbar-cta:hover, .pinbar.on-light .pinbar-cta:focus-visible { background: var(--ink); color: var(--bg); }
 .pinbar nav { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 0; } /* every link as wide as the longest one */
 .pinbar nav a { display: flex; align-items: center; justify-content: center; padding: 0 1.25rem; color: inherit; } /* text in the bar's color, not red: the line marks the active link */
 .pinbar nav a + a { border-left: 1px solid var(--nav-line); }
@@ -678,9 +689,10 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 @media (max-width: 1024px) {
   /* Too narrow for the links: they move into the slide-in menu behind the Menu button */
   .pinbar nav { display: none; }
-  .pinbar { flex-wrap: nowrap; }
-  .pinbar .label { flex: 1 1 auto; min-width: 0; padding-block: 0.75rem; } /* a long name wraps in place, beside the button */
-  .menu-toggle { display: inline-flex; flex: none; }
+  .pinbar { grid-template-columns: minmax(0, 1fr) auto auto; } /* logo, then Careers and Menu side by side on the right */
+  .pinbar .label { min-width: 0; padding-block: 0.75rem; } /* a long name wraps in place, beside the buttons */
+  .pinbar-cta { grid-column: 2; }
+  .menu-toggle { display: inline-flex; flex: none; grid-column: 3; }
   .carousel { --per-view: 2; }
   .team-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
@@ -768,6 +780,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   .tab { transition: color 0.2s ease, border-color 0.2s ease; }
   .tab::before, .tab::after { transition: opacity 0.4s ease; }
   .button { transition: background-color 0.25s ease, color 0.25s ease; }
+  .pinbar-cta { transition: background-color 0.25s ease, color 0.25s ease; }
 
   .pinbar nav a::before, .pinbar nav a::after { transition: opacity 0.4s ease; }
   .pinbar { transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1), background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, -webkit-backdrop-filter 0.3s ease, backdrop-filter 0.3s ease; }}
