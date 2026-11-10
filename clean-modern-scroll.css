@@ -24,7 +24,6 @@
      Text link      300, red
      Program name   300, 20px, red (pipeline)
      Accordion head 400, 18px
-     Timeline year  200, 16px, line-height 1.65, tabular numbers
 
    COLORS (light / dark)
      --bg      #f7f7f7 / #131715   page background
@@ -32,48 +31,36 @@
      --muted   #7a7976 / #9aa59f   gray text
      --link    #FF3434             red links
      --line    #e7e7e7 / #333b37   loading placeholder gray
-     --row-bg  #ffffff / #1a1f1c   project card panel
+     --row-bg  #ffffff / #1a1f1c   white panels (cards, rows)
 
    GRID
      One gutter for everything: 24px (20px at 1024px and below).
-     Media boxes use a 1256:720 ratio (export at 1884x1080).
      Phones (760px and below) collapse to one column.
 
    COMPONENTS
-     .topbar          name label left, red nav right
+     .topbar          nav type for the bar's links (used with .pinbar)
      .label           small uppercase label
-     .section-head    heading row with a label on each side
-     .piece           clickable project card (white panel, inverts on hover)
-     .strip           row of five media boxes inside a card
-     .media           ratio box for an image or video (fades in when ready)
-     .spec            label / value table (stacks inside cards)
-     .about           photo + bio two-column block
-     .timeline        year + role list
+     .section-label   a section's name, in a pill of its own color
+     .section-head    row that holds a section label
      .accordion       <details> with a rule on top and a plus that turns into a minus
-     .bleed           large video panel, video inset on black, rounded corners
-     .gallery         two-column media grid
-     .next            "Next project" link bar at the end of a page
      .ar              line chevron icon (.r right, .l left, .u up)
      .pipeline        five-slot progress table (program, indication, stages)
      .tabs            row of label-style tab buttons (ink text, red line under the selected one)
      .team-grid       grid of .person cards (ink panel slides in on hover)
      .bio             <dialog> side sheet with a person's full bio
-     .news            full-width press release rows (invert like .piece on hover)
-     .carousel        horizontal card track with previous/next buttons on the sides
-     .split           two panels, centered content and an inset image (.flip mirrors them)
+     .news-item       press release row (inverts on hover)
+     .split-body      centered copy column; .split-media / .split-img hold its image
      .hero            full-screen header with a background video
+     .pinbar-cta      solid red button at the right of the bar (Careers)
      .pinbar          top bar pinned to the screen, frosted once you scroll
      .menu-toggle     Menu button that replaces the bar's links at 1024px and below
      .menu-links      big section links inside a .bio sheet (the slide-in menu)
      .button          solid red label-style button (works on <a> and <button>)
      .contact         white panel: headline and details left, form right
      .field           form field with a label-style label above it
-     .cta             red label-style link with a chevron
      footer .to-top   "Back to Top" link
 
    NEEDS A LITTLE JAVASCRIPT
-     .media .ready              add "ready" to an <img>/<video> once loaded (fade-in)
-     .piece.will-reveal         add "revealed" when the card scrolls into view
      .text-reveal               text waiting to slide up; add "revealed" when it scrolls into view
      .page-in                   add to a page section to play the slide-up entrance
      .accordion.closing         add while the accordion animates shut
@@ -82,7 +69,6 @@
      .bio                       open with showModal(); the script slides it in and out
      .pinbar.scrolled           add once the page has scrolled (frosted background)
      .pinbar.on-light           add once the bar is past the hero (dark text on a light tint)
-     .pinbar.tucked             add while scrolling down (slides up out of view), remove on scroll up
      .pinbar nav a[aria-current] set on the link whose section is on screen (red line under it)
    Without the script these still work; they just skip the animation.
    ========================================================================== */
@@ -91,14 +77,12 @@
 /* ---------- Tokens ---------- */
 :root {
   --bg: #f7f7f7;
-  --paper: #f7f8f5;
   --ink: #0c0f11;
   --muted: #7a7976;
   --line: #e7e7e7;
   --accent: var(--muted);
   --link: #FF3434;
   --acc-bg: rgb(231 231 231 / 0.5);
-  --acc-bg-hover: #e7e7e7;
   --row-bg: #ffffff;
   --font: "Geist", "Helvetica Neue", Arial, sans-serif;
   --gutter: 24px; /* one value for page margins and every column/row gutter */
@@ -109,14 +93,14 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #131715; --paper: #1a1f1c; --ink: #e6ebe7; --muted: #9aa59f; --line: #333b37; --accent: var(--muted);
-    --acc-bg: rgb(255 255 255 / 0.04); --acc-bg-hover: rgb(255 255 255 / 0.08); --row-bg: #1a1f1c;
+    --bg: #131715; --ink: #e6ebe7; --muted: #9aa59f; --line: #333b37; --accent: var(--muted);
+    --acc-bg: rgb(255 255 255 / 0.04); --row-bg: #1a1f1c;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #131715; --paper: #1a1f1c; --ink: #e6ebe7; --muted: #9aa59f; --line: #333b37; --accent: var(--muted);
-  --acc-bg: rgb(255 255 255 / 0.04); --acc-bg-hover: rgb(255 255 255 / 0.08); --row-bg: #1a1f1c;
+  --bg: #131715; --ink: #e6ebe7; --muted: #9aa59f; --line: #333b37; --accent: var(--muted);
+  --acc-bg: rgb(255 255 255 / 0.04); --row-bg: #1a1f1c;
   color-scheme: dark;
 }
 
@@ -160,7 +144,6 @@ h1 {
 }
 h1 span { color: var(--accent); }
 h1 * { letter-spacing: inherit; } /* anything inside an H1 keeps its -4% */
-h1 .h1-part { color: inherit; display: inline-block; } /* one animated line of the headline */
 header h1 { text-align: center; } /* homepage headline only */
 
 h2, .h2 { font: 200 clamp(2rem, calc(3.5vw + 6px), 2.625rem)/1.15 var(--font); letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
@@ -188,67 +171,11 @@ header { display: grid; gap: 1.75rem; }
 .ar.u { margin-left: 0.35em; }
 
 
-/* ---------- Media boxes ---------- */
-.media {
-  aspect-ratio: 1256 / 720;
-  max-width: 100%;
-  position: relative;
-  overflow: hidden;
-  background: var(--line); /* light gray until the picture arrives */
-}
-.media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-/* Older videos with black strips baked into the sides: slightly wider so the strips sit outside the box */
-.media video, .bleed video {
-  position: absolute; top: 0; left: 50%;
-  width: 102.1%; height: 100%;
-  transform: translateX(-50%);
-  object-fit: cover; display: block;
-}
-/* MP4s exported without strips fill the box exactly (whole-pixel edges, no gray hairline) */
-.media video[src$=".mp4"], .media video[data-src$=".mp4"], .bleed video[src$=".mp4"] { width: 100%; left: 0; transform: none; }
-/* Fade in once loaded (script adds .ready) */
-.media video, .media img { opacity: 0; }
-.media .ready { opacity: 1; }
-.media:has(> .ready) { background: transparent; }
-
-
-/* ---------- Project cards (homepage) ---------- */
-.work { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--gutter); }
-.piece { position: relative; background: var(--row-bg); padding: 100px; display: grid; grid-template-rows: auto 1fr; }
-.piece .stretched { position: absolute; inset: 0; z-index: 1; } /* whole card is the link */
-.piece .stretched:focus-visible { outline-offset: -3px; border-radius: 0; }
-/* Hover (or keyboard focus): the panel inverts */
-.piece:hover, .piece:has(.stretched:focus-visible) { background: var(--ink); color: var(--row-bg); }
-.piece-body { padding: 1.25rem 0 0; display: grid; gap: 0.85rem; align-content: start; }
-.strip { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--gutter); }
-
-
-/* ---------- Spec table (label / value) ---------- */
-.spec { width: 100%; border-collapse: collapse; font: 300 1rem/1.4 var(--font); }
-.spec th { text-align: left; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); width: 34%; padding: 0.3rem 0; vertical-align: baseline; } /* label style */
-.spec td { padding: 0.3rem 0; vertical-align: baseline; }
-/* Inside cards: each label sits above its value */
-.piece .spec { color: inherit; }
-.piece .spec, .piece .spec tbody, .piece .spec tr, .piece .spec th, .piece .spec td { display: block; width: auto; padding: 0; }
-.piece .spec tbody { display: grid; gap: 0.6rem; }
-.piece h2 + .spec { margin-top: -0.6rem; }
-
-
-/* ---------- About ---------- */
-.about { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 2rem var(--gutter); padding-top: 2.5rem; }
-.about-side { display: grid; gap: 1rem; align-content: start; }
-.about-photo { width: 100%; max-width: 250px; height: auto; aspect-ratio: 1; object-fit: cover; display: block; background: var(--line); overflow: hidden; }
+/* ---------- About text ---------- */
 .about-text { display: grid; gap: 1rem; }
 .about-text p { margin: 0; }
 .about-text a { font-weight: 300; }
 .about-text .h2 { margin-bottom: 0.5rem; } /* extra room under the lead sentence */
-
-
-/* ---------- Timeline ---------- */
-.timeline-label { margin-top: 2.5rem; }
-.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
-.timeline li { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: 1rem; font-size: 1.125rem; }
-.timeline time { font: 200 1rem/1.65 var(--font); color: var(--ink); font-variant-numeric: tabular-nums; }
 
 
 /* ---------- Footer ---------- */
@@ -256,31 +183,9 @@ footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.
 footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/normal var(--font); letter-spacing: 0.01em; } /* matches the nav */
 
 
-/* ---------- Project detail page ---------- */
-#detail { padding-block: var(--gutter); display: grid; gap: 2.5rem; }
-.detail-inner { width: 100%; }
-.detail-head { display: grid; gap: 1.5rem; }
-.back { color: var(--link); text-decoration: none; font: 400 0.9375rem/normal var(--font); letter-spacing: 0.01em; }
-.detail-title { font: 200 clamp(3rem, 11vw, 8.5rem)/1 var(--font); letter-spacing: -0.04em; margin: 0; text-wrap: balance; }
-.detail-tagline { font-size: 1.5rem; line-height: 1.3; margin: 0; color: var(--muted); max-width: 30em; }
-
-/* Main video panel: video at 80%, centered on black, rounded corners */
-.bleed { position: relative; aspect-ratio: 1256 / 720; width: 100%; overflow: hidden; background: #000; }
-.bleed #d-video { top: 10%; left: 10%; width: 80%; height: 80%; transform: none; border-radius: 20px; }
-
+/* ---------- Detail text (the About accordion's panel) ---------- */
 .detail-body { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 2rem var(--gutter); align-items: start; }
 .detail-body p { margin: 0; font-size: 1.125rem; line-height: 1.5; max-width: 36em; }
-
-.gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gutter); }
-.bleed + .gallery { margin-top: calc(var(--gutter) - 2.5rem); } /* leaves one gutter under the video */
-
-/* Next-project bar: label left, H2 project name right */
-.next {
-  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem 2rem;
-  padding-top: 1.25rem;
-  color: var(--link); text-decoration: none;
-}
-.next .ar { width: 0.5em; height: 0.5em; stroke-width: 3; }
 
 
 /* ---------- Accordion ---------- */
@@ -380,7 +285,6 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/
      <button class="person" type="button">
        <span class="person-photo">PE</span>  (or an <img> inside it)
        <span class="person-name h3">Name</span><span class="person-role">Title</span>
-       <span class="person-more">Read Bio <svg class="ar r">…</svg></span>
      </button>
    </div> */
 .team-head { display: grid; justify-items: start; gap: 3rem; margin-bottom: 3rem; } /* tabs sit under the headline, on its left edge */
@@ -407,9 +311,6 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/
 .person-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .person-name { margin-bottom: 0.2rem; font-size: 1.25rem; font-weight: 300; } /* .h3 type at a fixed 20px and weight 300, a step down for the narrower cards */
 .person-role { font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); } /* label style (12.5px all caps), in the muted gray */
-.person-more { margin-top: 0.75rem; font: 400 0.9375rem/normal var(--font); letter-spacing: 0.01em; color: var(--link); opacity: 0; translate: -0.75em 0; }
-.person:hover .person-more, .person:focus-visible .person-more { opacity: 1; translate: 0 0; }
-@media (hover: none) { .person-more { opacity: 1; translate: 0 0; } } /* touch screens have no hover to reveal it */
 
 
 /* ---------- Bio overlay ---------- */
@@ -463,14 +364,13 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 }
 /* ---------- News ---------- */
 /* Markup:
-   <div class="news">
+   <div class="news-stack">
      <a class="news-item" href="…">
        <time class="label">October 21, 2026</time>
        <h3 class="news-title">Headline</h3>
        <svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg>
      </a>
    </div> */
-.news { display: grid; gap: 1px; } /* rows sit 1px apart, no rules */
 .news-item {
   display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.75rem 2rem; align-items: center;
   background: var(--row-bg); color: var(--ink); font-weight: 200; padding: 2.5rem 100px;
@@ -478,59 +378,20 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .news-item time { grid-column: 1; color: inherit; }
 .news-title { grid-column: 1; max-width: 36em; text-wrap: pretty; } /* H3 type */
 .news-item .ar { grid-column: 2; grid-row: 1 / span 2; width: 0.9rem; height: 0.9rem; margin: 0; color: var(--link); stroke-width: 3; }
-/* Hover (or keyboard focus): the panel inverts, like the project cards */
+/* Hover (or keyboard focus): the panel inverts */
 .news-item:hover, .news-item:focus-visible { background: var(--ink); color: var(--row-bg); }
 .news-item:focus-visible { outline-offset: 3px; border-radius: 0; }
 
 
-/* ---------- Carousel ---------- */
-/* Markup:
-   <div class="carousel">
-     <button class="carousel-btn" data-dir="-1" aria-label="Previous"><svg class="ar l">…</svg></button>
-     <div class="carousel-track" tabindex="0">…cards…</div>
-     <button class="carousel-btn" data-dir="1" aria-label="Next"><svg class="ar r">…</svg></button>
-   </div>
-   Three cards per view (two at 1024px and below, one on phones). The buttons sit in the 100px side
-   columns, so the cards line up with inset content above; on phones they move under the track.
-   The track scrolls and snaps on its own too (trackpad, swipe, keyboard). */
-.carousel { --per-view: 3; --carousel-gap: var(--gutter); display: grid; grid-template-columns: 100px minmax(0, 1fr) 100px; align-items: center; }
-.carousel-track {
-  display: grid; grid-auto-flow: column; gap: var(--carousel-gap);
-  grid-auto-columns: calc((100% - (var(--per-view) - 1) * var(--carousel-gap)) / var(--per-view));
-  overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none;
-  padding-block: 6px; /* room for the cards' hover lift */
-}
-.carousel-track::-webkit-scrollbar { display: none; }
-.carousel-track > * { scroll-snap-align: start; }
-.carousel-track:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-.carousel-btn {
-  justify-self: center; display: grid; place-items: center; width: 48px; height: 48px;
-  appearance: none; border: 0; padding: 0; cursor: pointer;
-  background: color-mix(in srgb, var(--row-bg) 80%, transparent); color: var(--link);
-  -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
-}
-.carousel-btn .ar { width: 0.8rem; height: 0.8rem; margin: 0; stroke-width: 3; }
-.carousel-btn:hover:not(:disabled), .carousel-btn:focus-visible { background: var(--ink); color: var(--row-bg); }
-.carousel-btn:disabled { opacity: 0.35; cursor: default; }
-/* News cards in a carousel: date on top, headline, arrow at the bottom */
-.carousel .news-item { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; align-items: start; gap: 1rem; padding: 2rem; min-height: 22rem; } /* headline row stretches; "Read more" stays at the bottom */
-.carousel .news-item time::after { content: ""; display: block; width: 30px; height: 3px; margin-top: 0.75rem; background: currentColor; } /* short rule under the date; turns white with the hover */
-.carousel .news-item .ar { grid-column: 1; grid-row: 3; }
 /* "Read more" line at the bottom of a card, label style in red, arrow after the text */
 .news-more { align-self: end; color: var(--link); font: 400 0.9375rem/normal var(--font); letter-spacing: 0.01em; }
 .news-item .news-more .ar { width: 0.6em; height: 0.6em; margin: 0 0 0 0.35em; stroke-width: 4; } /* the .ar size, not the big row arrow */
 
-/* ---------- Split (content beside an image) ---------- */
+/* ---------- Split pieces (copy column and image box) ---------- */
 /* Markup:
-   <div class="split">            (add .flip to put the image on the left)
-     <div class="split-body">…</div>
-     <div class="split-media"><div class="split-img"><span class="label">Image placeholder</span></div></div>  (or an <img> in .split-img)
-   </div>
-   One white panel split into two columns with no visible seam. Content sits in the
-   middle of its column; the image is inset at 80% of its column, like the main video on project pages. */
-.split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: var(--row-bg); }
-.split > * { display: grid; place-items: center; }
-.split.flip .split-media { order: -1; }
+   <div class="split-body">…</div>
+   <div class="split-media"><div class="split-img"><span class="label">Image placeholder</span></div></div>  (or an <img> in .split-img)
+   The copy column sits centered in its cell; the image box is inset at 80% of its cell (pages can stretch it). */
 /* one left-aligned column, centered in the panel */
 .split-body { grid-template-columns: minmax(0, 30em); gap: 1.5rem; align-content: center; justify-content: center; justify-items: start; padding: 64px; }
 .split-body > * { margin: 0; }
@@ -548,8 +409,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 /* Markup (before .wrap, so nothing on the page can paint over it):
    <div class="topbar pinbar"><span class="label">Name</span><nav>…</nav><a class="pinbar-cta" href="careers.html">Careers</a></div>
    Clear over the hero; frosted once you scroll; dark text on a light tint past the hero.
-   A light gray rule runs under it and between the links. Its sides line up with the hero copy
-   and the .split images: one gutter plus 5% of the row (gutter + 5% of (width - 2 gutters)). */
+   A light gray rule runs under it and between the links. */
 .pinbar {
   position: fixed; inset: 0 0 auto; z-index: 10;
   min-height: 60px; align-items: stretch; padding: 0 calc(5% + 0.9 * var(--gutter));
@@ -597,8 +457,6 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 
 .pinbar.scrolled { background: rgb(0 0 0 / 0.2); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
 .pinbar.on-light { background: color-mix(in srgb, var(--bg) 72%, transparent); color: var(--ink); --nav-line: var(--line); }
-/* Slid up out of view while scrolling down; it comes back when someone tabs into it */
-.pinbar.tucked:not(:focus-within) { transform: translateY(-100%); }
 
 
 /* ---------- Hero (full-screen, video behind) ---------- */
@@ -624,8 +482,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .hero-video { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
 .hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to bottom, rgb(0 0 0 / 0.35), rgb(0 0 0 / 0.1) 35%, rgb(0 0 0 / 0.65)); } /* light in the middle, darker behind the nav and the copy */
 .hero .label { color: inherit; }
-/* Inset to line up with the images in .split sections (inset 10% of a half-width panel = 5% of the row).
-   The same inset sits below it: % padding is measured from the width, so all three sides match. */
+/* Inset 5% of the row: % padding is measured from the width, so all three sides match. */
 .hero-body { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 2rem var(--gutter); align-items: end; align-self: end; padding: 0 5% 5%; }
 .hero h1 { text-align: left; font-size: clamp(3rem, 7vw, 7rem); max-width: 11em; }
 .hero-side { display: grid; gap: 1.5rem; justify-items: start; }
@@ -654,7 +511,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .contact { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3rem var(--gutter); background: var(--row-bg); padding: 100px; }
 .contact-info { display: grid; gap: 2.5rem; align-content: start; }
 .contact-info .h2 span { display: block; color: var(--muted); } /* second line in gray */
-.contact-head { display: grid; gap: 0.75rem; } /* eyebrow sits close above its headline, like .split */
+.contact-head { display: grid; gap: 0.75rem; } /* eyebrow sits close above its headline, like .split-body */
 .contact-head > * { margin: 0; }
 .contact-list { display: grid; gap: 2.25rem; margin: 0; }
 .contact-list dd { margin: 0.35rem 0 0; }
@@ -682,8 +539,6 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .contact-form .button { justify-self: start; margin-top: 0.5rem; }
 .form-note { margin: 0; font-size: 1rem; color: var(--muted); }
 
-.cta { color: var(--link); font: 400 0.9375rem/normal var(--font); letter-spacing: 0.01em; } /* nav style */
-
 .bio-nav { display: flex; justify-content: space-between; gap: 1rem; padding-top: 1.25rem; margin-top: auto; border-top: 1px solid var(--line); } /* sits at the bottom of the sheet */
 
 @media (max-width: 1024px) {
@@ -693,7 +548,6 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   .pinbar .label { min-width: 0; padding-block: 0.75rem; } /* a long name wraps in place, beside the buttons */
   .pinbar-cta { grid-column: 2; }
   .menu-toggle { display: inline-flex; flex: none; grid-column: 3; }
-  .carousel { --per-view: 2; }
   .team-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
@@ -714,30 +568,16 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   .bio-inner { padding: var(--gutter) var(--gutter) 2rem; }
   .news-item { padding: 1.75rem 20px; }
   h3, .h3 { font-size: 1.25rem; }
-  .carousel { --per-view: 1; grid-template-columns: minmax(0, 1fr) auto auto; gap: 1rem 4px; }
-  .carousel-track { grid-column: 1 / -1; grid-row: 1; }
-  .carousel-btn { grid-row: 2; }
-  .carousel-btn[data-dir="-1"] { grid-column: 2; } /* both buttons under the track, on the right */
-  .carousel-btn[data-dir="1"] { grid-column: 3; }
-  .carousel .news-item { padding: 1.5rem; min-height: 17rem; }
-  .split { grid-template-columns: minmax(0, 1fr); }
   .split-body { padding: 40px 20px; }
-  .split .split-media { order: -1; } /* image first on both, so the stack reads the same */
-  .hero-body { grid-template-columns: minmax(0, 1fr); padding: 0 10% 10%; } /* split images are full-width panels here */
+  .hero-body { grid-template-columns: minmax(0, 1fr); padding: 0 10% 10%; }
   .pinbar { padding-inline: calc(10% + 0.8 * var(--gutter)); }
   .contact { grid-template-columns: minmax(0, 1fr); padding: 40px 20px; }
-  .about, .detail-body { grid-template-columns: minmax(0, 1fr); }
-  .gallery { grid-template-columns: minmax(0, 1fr); }
-  .strip { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .strip .media:first-child { grid-column: 1 / -1; } /* lead video spans the row */
-  .piece { padding: 20px; }
+  .detail-body { grid-template-columns: minmax(0, 1fr); }
 }
 
 
 /* ---------- Motion (skipped for reduced-motion users) ---------- */
 @media (prefers-reduced-motion: no-preference) {
-  .piece { transition: transform 0.25s ease, background-color 0.3s ease, color 0.3s ease; }
-  .piece:hover { transform: translateY(-3px); }
   .news-item { transition: transform 0.25s ease, background-color 0.3s ease, color 0.3s ease; }
   .news-item:hover { transform: translateY(-3px); }
 
@@ -748,39 +588,29 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   a:hover .ar.u, a:focus-visible .ar.u { transform: translateY(-0.3em); }
 
   .acc-icon .v { transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1); }
-  .media video, .media img { transition: opacity 0.8s ease; }
 
   /* Page entrance: slides up into place */
   .page-in { animation: page-in 1s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
   @keyframes page-in { from { opacity: 0; transform: translateY(200px); } to { opacity: 1; transform: none; } }
 
-  /* Homepage headline: each line starts oversized and low, then settles; the second overlaps the first */
-  header { overflow-x: clip; }
-  #home.page-in header h1 .h1-part { transform-origin: 50% 100%; animation: h1-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
-  #home.page-in header h1 .h1-part + .h1-part { animation-delay: 0.6s; }
-  @keyframes h1-in { from { opacity: 0; transform: translateY(120px) scale(1.6); } 40% { opacity: 1; } to { opacity: 1; transform: none; } }
+  header { overflow-x: clip; } /* nothing animating in a header pokes out sideways */
 
   /* Text slides up as it scrolls into view: the page script adds .text-reveal, then .revealed on screen */
   .text-reveal { opacity: 0; translate: 0 40px; transition: opacity 0.8s ease, translate 0.8s cubic-bezier(0.2, 0.7, 0.2, 1); }
   .text-reveal.revealed { opacity: 1; translate: 0 0; }
-
-  /* Cards slide up as they scroll into view (translate, so the hover lift still works) */
-  .piece.will-reveal { opacity: 0; translate: 0 80px; transition: opacity 0.9s ease, translate 0.9s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.25s ease, background-color 0.3s ease, color 0.3s ease; }
-  .piece.will-reveal.revealed { opacity: 1; translate: 0 0; }
 
   /* Pipeline: slots fill left to right, one after another, once the table is on screen */
   .pl-item { transition: background-color 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); }
   .pipeline.will-fill .pl-slot::after { transform: scaleX(0); transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) calc(var(--i, 0) * 0.35s + var(--row, 0) * 0.2s); }
   .pipeline.will-fill.filled .pl-slot::after { transform: scaleX(var(--fill, 0)); }
 
-  /* Team cards: the ink panel slides in, then "Read Bio" follows it */
+  /* Team cards: the ink panel slides in */
   .person { transition: color 0.3s ease; }
   .person::before { transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1); }
-  .person-more { transition: opacity 0.3s ease 0.1s, translate 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s; }
   .tab { transition: color 0.2s ease, border-color 0.2s ease; }
   .tab::before, .tab::after { transition: opacity 0.4s ease; }
   .button { transition: background-color 0.25s ease, color 0.25s ease; }
   .pinbar-cta { transition: background-color 0.25s ease, color 0.25s ease; }
 
   .pinbar nav a::before, .pinbar nav a::after { transition: opacity 0.4s ease; }
-  .pinbar { transition: transform 0.4s cubic-bezier(0.2, 0.7, 0.2, 1), background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, -webkit-backdrop-filter 0.3s ease, backdrop-filter 0.3s ease; }}
+  .pinbar { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, -webkit-backdrop-filter 0.3s ease, backdrop-filter 0.3s ease; }}

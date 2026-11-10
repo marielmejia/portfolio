@@ -10,6 +10,7 @@
   /* Same side inset and section spacing as the scroll page */
   :root { --inset-x: clamp(60px, calc(15.35vw - 57.9px), 200px); }
   .wrap > section + section { margin-top: calc(180px - 4.5rem); }
+  #intro { margin-top: calc(180px + 80px - 4.5rem); } /* room for the pixel divider under the hero (180px), then 80px clear above the label */
   @media (min-width: 761px) {
     .pinbar { padding-inline: calc(max(var(--gutter), env(safe-area-inset-left, 0px)) + var(--inset-x)) calc(max(var(--gutter), env(safe-area-inset-right, 0px)) + var(--inset-x)); }
   }
@@ -248,4 +249,39 @@
   menu.addEventListener('click', e => { if (e.target === menu) closeMenu(); });
   matchMedia('(min-width: 1025px)').addEventListener('change', e => { if (e.matches && menu.open) { menu.close(); setExpanded(false); } });
 
+</script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script>
+  // Hero → Intro: the homepage's pixel divider. A 180px strip under the hero of flat light gray pixels
+  // (10 across, each 15% as tall as it is wide) fills in from the bottom up as you scroll, then clears;
+  // the Intro label sits 80px below it. Skipped without GSAP or for reduced motion.
+  (async () => {
+    if (!window.gsap || !window.ScrollTrigger || !matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
+    gsap.registerPlugin(ScrollTrigger);
+    const wrap = document.querySelector('.wrap');
+    await Promise.all(wrap.getAnimations().map(a => a.finished.catch(() => {}))); // measure after the entrance lands
+    const hero = document.getElementById('hero');
+    const columns = 10, aspect = 0.15, color = '#e7e7e7', spread = 3, height = 180;
+    hero.style.position = 'relative';
+    const layer = document.createElement('div');
+    layer.setAttribute('aria-hidden', 'true');
+    Object.assign(layer.style, { position: 'absolute', top: '100%', left: 0, right: 0, height: height + 'px', pointerEvents: 'none' });
+    hero.append(layer);
+    const rows = Math.max(1, Math.round(height / ((layer.offsetWidth / columns) * aspect)));
+    Object.assign(layer.style, { display: 'grid', gridTemplateColumns: `repeat(${columns}, 1fr)`, gridTemplateRows: `repeat(${rows}, 1fr)` });
+    const hash = i => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+    const cells = Array.from({ length: rows * columns }, () => {
+      const cell = document.createElement('span');
+      cell.style.background = color;
+      layer.append(cell);
+      return cell;
+    });
+    gsap.set(cells, { opacity: 0 });
+    const maxDelay = Math.max(rows - 1 + spread, 1);
+    const delay = i => ((rows - 1 - Math.floor(i / columns)) + hash(i) * spread) / maxDelay; // bottom rows first
+    gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: layer, start: 'top 85%', end: 'bottom 25%', scrub: 0.6 } })
+      .to(cells, { opacity: 1, duration: 0.05, stagger: i => delay(i) * 0.5 }, 0)
+      .to(cells, { opacity: 0, duration: 0.05, stagger: i => delay(i) * 0.5 }, 0.55);
+  })();
 </script>
