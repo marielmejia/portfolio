@@ -39,7 +39,8 @@
   .about-cols { display: grid; grid-template-columns: calc(30% - 2 * var(--gutter)) minmax(0, 1fr); /* 30/70: the paragraph column starts 30% in and fills the other 70% */ gap: 1.5rem calc(2 * var(--gutter)); align-items: start; }
   .about-cols .section-head { margin: 0; padding-top: 0.6em; } /* the label sits level with the top of the paragraph's first line */
   .about-main { display: grid; gap: 3rem; }
-  .about-main > .h2 { margin: 0; text-wrap: pretty; }
+  .about-main > .h3 { margin: 0; text-wrap: pretty; }
+  #about .accordion summary { font: 300 1.25rem/1.3 var(--font); letter-spacing: -0.01em; } /* the team name style (300, 20px, -1%) */
   #about .accordion .detail-body { display: block; }
   #about .accordion .detail-body p { margin: 0; }
   @media (max-width: 760px) {
@@ -204,7 +205,7 @@
         <h2 id="about-title" class="section-label" data-reveal-01="lines" data-scroll>About</h2>
       </div>
       <div class="about-main">
-        <p class="h2" data-reveal-01="lines" data-scroll data-delay="0.1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam. Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <p class="h3" data-reveal-01="lines" data-scroll data-delay="0.1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam. Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
         <details class="accordion">
           <summary>Read mission statement<svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path class="v" d="M8 1V15"/></svg></summary>
           <div class="detail-body about-text">
@@ -222,12 +223,12 @@
       <div class="sci-track">
         <div class="split-body">
           <h2 id="science-title" class="section-label">Science</h2>
-          <p class="h2">Translating immune biology into precision therapeutics.</p>
+          <p class="h3">Translating immune biology into precision therapeutics.</p>
           <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
         </div>
         <div class="split-media"><div class="split-img" role="img" aria-label="Image placeholder"><span class="label">Image placeholder</span></div></div>
         <div class="split-body">
-          <p class="h2">Disrupting disease at the cells that drive it.</p>
+          <p class="h3">Disrupting disease at the cells that drive it.</p>
           <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem.</p>
         </div>
         <div class="split-media"><div class="split-img" role="img" aria-label="Image placeholder"><span class="label">Image placeholder</span></div></div>
@@ -689,7 +690,7 @@
   document.getElementById('news-list').innerHTML = news.map(n =>
     `<a class="news-item" href="${pressBase}${n.slug}/" target="_blank" rel="noopener">` +
     `<time class="label" datetime="${n.date}">${longDate(n.date)}</time>` +
-    `<h3 class="news-title">${n.title}</h3>` +
+    `<h3 class="news-title h4">${n.title}</h3>` +
     `<span class="news-more">Read More<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></span></a>`).join('');
 
 

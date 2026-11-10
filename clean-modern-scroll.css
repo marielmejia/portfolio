@@ -12,19 +12,21 @@
    And the viewport tag:
      <meta name="viewport" content="width=device-width, initial-scale=1">
 
-   TYPE SCALE (all Geist)
-     H1 / display   200, clamp(48px, 11vw, 102px), line-height 1, -0.04em
-     H2 / .h2       200, clamp(32px, 3.5vw + 6px, 42px), line-height 1.15, -0.02em
-     H2 bold        400, clamp(32px, 3.5vw + 6px, 42px), line-height 1.15, -0.02em: H2 at weight 400 (.h2-bold)
-     H3 / .h3       200, 20px (18px on phones), line-height 1.3, -0.01em (also the News card title)
-     Body           300, 18px, line-height 1.5, +0.01em (also bio, project and hero text, at 80% opacity)
-     Small text     300, 16px, line-height 1.4 (titles, codes, form fields)
-     Section label  400, 14px, line-height 1.4 (1px under the nav links, in a pill of its color at 8%; the name over each section)
-     Label          400, 12.5px, line-height 1.3, +0.06em, UPPERCASE, black
-     Nav link       400, 15px, line-height normal, +0.01em, Title Case, red (also tabs, CTAs, "Read More")
+   TYPE SCALE (all Geist), largest first
+     H1 / display   200, clamp(48px, 11vw, 102px), line-height 1, -0.04em (also both hero headlines)
+     H2 / .h2       200, clamp(42px, 3.5vw + 16px, 52px), line-height 1.15, -0.02em
+     H2 bold        400, the H2 style at weight 400 (.h2-bold)
+     H3 / .h3       200, 41px (39px on phones), line-height 1.2, -0.01em
+     H3 bold        400, the H3 style at weight 400 (.h3-bold; the accordion head)
+     H4 / .h4       200, 28px (26px on phones), line-height 1.3, -0.01em: between H3 (41px) and the team name style (the News card titles)
+     H4 bold        400, the H4 style at weight 400 (.h4-bold; the Careers values)
+     Team name      300, 20px, line-height 1.3, -0.01em (team names, role titles; in red for pipeline program names)
+     Body           300, 18px, line-height 1.5, +0.01em (paragraphs at 80% opacity)
+     Small text     300, 16px, line-height 1.4 (codes, team and location, form fields)
+     Nav link       400, 15px, line-height normal, +0.01em, Title Case (bar links, tabs, Careers button, "Read More")
+     Section label  400, 14px, line-height 1.4, in a pill of its color at 8% (the name over each section)
+     Label          400, 12.5px, line-height 1.3, +0.06em, UPPERCASE
      Text link      300, red
-     Program name   300, 20px, red (pipeline)
-     H3 bold        400, 20px (18px on phones), line-height 1.3, -0.01em: H3 at weight 400 (.h3-bold; the accordion head, the Careers values)
 
    COLORS (light / dark)
      --bg      #f7f7f7 / #131715   page background
@@ -147,13 +149,15 @@ h1 span { color: var(--accent); }
 h1 * { letter-spacing: inherit; } /* anything inside an H1 keeps its -4% */
 header h1 { text-align: center; } /* homepage headline only */
 
-h2, .h2 { font: 200 clamp(2rem, calc(3.5vw + 6px), 2.625rem)/1.15 var(--font); letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
-.h2-bold { font: 400 clamp(2rem, calc(3.5vw + 6px), 2.625rem)/1.15 var(--font); letter-spacing: -0.02em; margin: 0; text-wrap: balance; } /* H2 bold: the H2 style at weight 400 */
-h3, .h3 { font: 200 1.25rem/1.3 var(--font); letter-spacing: -0.01em; margin: 0; text-wrap: balance; } /* between H2 and body; also the News card title */
-.h3-bold { font: 400 1.25rem/1.3 var(--font); letter-spacing: -0.01em; margin: 0; text-wrap: balance; } /* H3 bold: the H3 style at weight 400 */
+h2, .h2 { font: 200 clamp(2.625rem, calc(3.5vw + 16px), 3.25rem)/1.15 var(--font); letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
+.h2-bold { font: 400 clamp(2.625rem, calc(3.5vw + 16px), 3.25rem)/1.15 var(--font); letter-spacing: -0.02em; margin: 0; text-wrap: balance; } /* H2 bold: the H2 style at weight 400 */
+h3, .h3 { font: 200 2.5625rem/1.2 var(--font); letter-spacing: -0.01em; margin: 0; text-wrap: balance; } /* between H2 and body */
+.h3-bold { font: 400 2.5625rem/1.2 var(--font); letter-spacing: -0.01em; margin: 0; text-wrap: balance; } /* H3 bold: the H3 style at weight 400 */
+h4, .h4 { font: 200 1.75rem/1.3 var(--font); letter-spacing: -0.01em; margin: 0; text-wrap: balance; } /* H4: between H3 (41px) and the team name style (20px) */
+.h4-bold { font: 400 1.75rem/1.3 var(--font); letter-spacing: -0.01em; margin: 0; text-wrap: balance; } /* H4 bold: the H4 style at weight 400 */
 
 /* Body copy: the text color at 80% (dark sections and the hero follow their own text color); links inside keep theirs */
-.hero-side p, .split-body p:not(.h2), .about-text p:not(.h2), .detail-body p, .pl-panel p, .bio-text { color: color-mix(in srgb, currentColor 80%, transparent); }
+.hero-side p, .split-body p:not(.h2, .h3), .about-text p:not(.h2, .h3), .detail-body p, .pl-panel p, .bio-text { color: color-mix(in srgb, currentColor 80%, transparent); }
 
 
 /* ---------- Header and navigation ---------- */
@@ -202,7 +206,7 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/
   list-style: none; cursor: pointer;
   display: flex; justify-content: space-between; align-items: center; gap: 1rem;
   padding: 0.9rem 0; /* flush with the text around it, now there's no fill */
-  font: 400 1.25rem/1.3 var(--font); letter-spacing: -0.01em; color: var(--ink); /* H3 bold: the H3 style at weight 400 */
+  font: 400 2.5625rem/1.2 var(--font); letter-spacing: -0.01em; color: var(--ink); /* H3 bold: the H3 style at weight 400 */
 }
 .accordion summary::-webkit-details-marker { display: none; }
 .accordion summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
@@ -240,7 +244,7 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/
 .pl-head .pl-stages { align-items: start; }
 .pl-head > *, .pl-stages > * { font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); } /* label style */
 .pl-stages, .pl-bar { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1px; }
-.pl-program { font: 300 1.25rem/1.3 var(--font); color: var(--link); } /* red, like every other link */
+.pl-program { font: 300 1.25rem/1.3 var(--font); letter-spacing: -0.01em; color: var(--link); } /* the team name style (300, 20px, -1%), in red like every other link */
 .pl-program .acc-icon { width: 0.6em; height: 0.6em; margin-left: 0.5em; vertical-align: 0.05em; }
 .pl-item[open]:not(.closing) .acc-icon .v { transform: scaleY(0); } /* plus becomes minus */
 .pl-program small { display: block; font: 300 1rem/1.4 var(--font); color: var(--muted); }
@@ -370,7 +374,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
    <div class="news-stack">
      <a class="news-item" href="…">
        <time class="label">October 21, 2026</time>
-       <h3 class="news-title">Headline</h3>
+       <h3 class="news-title h4">Headline</h3>
        <svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg>
      </a>
    </div> */
@@ -379,7 +383,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   background: var(--row-bg); color: var(--ink); font-weight: 200; padding: 2.5rem 100px;
 }
 .news-item time { grid-column: 1; color: inherit; }
-.news-title { grid-column: 1; max-width: 36em; text-wrap: pretty; } /* H3 type */
+.news-title { grid-column: 1; max-width: 36em; text-wrap: pretty; } /* H4 type (add .h4) */
 .news-item .ar { grid-column: 2; grid-row: 1 / span 2; width: 0.9rem; height: 0.9rem; margin: 0; color: var(--link); stroke-width: 3; }
 /* Hover (or keyboard focus): the panel inverts */
 .news-item:hover, .news-item:focus-visible { background: var(--ink); color: var(--row-bg); }
@@ -399,7 +403,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .split-body { grid-template-columns: minmax(0, 30em); gap: 1.5rem; align-content: center; justify-content: center; justify-items: start; padding: 64px; }
 .split-body > * { margin: 0; }
 .split-body > .label:first-child, .split-body > .section-label:first-child { margin-bottom: -0.75rem; } /* eyebrow sits close above its headline */
-.split-body p:not(.h2) { max-width: 30em; } /* body style */
+.split-body p:not(.h2, .h3) { max-width: 30em; } /* body style */
 .split-media { aspect-ratio: 1; }
 .split-img {
   position: relative; overflow: hidden; width: 80%; height: 80%;
@@ -453,7 +457,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .menu-links { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
 .menu-links a {
   display: flex; justify-content: space-between; align-items: center; padding: 1.1rem 0; border-bottom: 1px solid var(--line);
-  color: var(--ink); font: 200 clamp(2rem, calc(3.5vw + 6px), 2.625rem)/1.15 var(--font); letter-spacing: -0.02em; /* h2 style */
+  color: var(--ink); font: 200 clamp(2.625rem, calc(3.5vw + 16px), 3.25rem)/1.15 var(--font); letter-spacing: -0.02em; /* h2 style */
 }
 .menu-links a:hover, .menu-links a:focus-visible { color: var(--link); }
 .menu-links .ar { width: 0.45em; height: 0.45em; stroke-width: 3; color: var(--link); }
@@ -570,7 +574,8 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   .person { padding: 12px 12px 1.25rem; }
   .bio-inner { padding: var(--gutter) var(--gutter) 2rem; }
   .news-item { padding: 1.75rem 20px; }
-  h3, .h3, .h3-bold, .accordion summary { font-size: 1.125rem; } /* H3 and H3 bold */
+  h3, .h3, .h3-bold, .accordion summary { font-size: 2.4375rem; } /* H3 and H3 bold */
+  h4, .h4, .h4-bold { font-size: 1.625rem; }
   .split-body { padding: 40px 20px; }
   .hero-body { grid-template-columns: minmax(0, 1fr); padding: 0 10% 10%; }
   .pinbar { padding-inline: calc(10% + 0.8 * var(--gutter)); }
