@@ -11,6 +11,7 @@
   :root { --inset-x: clamp(60px, calc(15.35vw - 57.9px), 200px); }
   /* 180px between the content sections (.wrap already spaces them 4.5rem) */
   .wrap > section + section { margin-top: calc(180px - 4.5rem); }
+  #team { margin-top: calc(180px + 80px - 4.5rem); } /* 80px more above Team, between the Pipeline pixel transition and the Team label */
   /* About sits right under the hero, and Science right under About, with no gap (cancels .wrap's 4.5rem) */
   #about, #science { margin-top: -4.5rem; }
   /* About and Science run edge to edge: the section's band reaches the screen edges while the gutter padding keeps
@@ -955,7 +956,46 @@
     textReveal01();
     sectionTransition01();
     scienceSlide();
+    pipelinePixels();
   })();
+
+  // Pipeline → Team: a quick pixel wave in a 180px strip under Pipeline (80px clear of the Team label), in the light gray of the page's
+  // rules. Flat, wide pixels (10 across, each 15% as tall as it is wide) fill in from the bottom up as you scroll
+  // down, then clear the same way, so they pass through without covering either section's content.
+  function pipelinePixels() {
+    const pipeline = document.getElementById('pipeline-section');
+    const team = document.getElementById('team');
+    if (!pipeline || !team) return;
+    const columns = 10, aspect = 0.15, color = '#e7e7e7', spread = 3;
+    const gap = 180; // the strip's height; Team sits a further 80px below it
+    pipeline.style.position = 'relative';
+    const layer = document.createElement('div');
+    layer.setAttribute('aria-hidden', 'true');
+    Object.assign(layer.style, {
+      position: 'absolute', top: '100%', height: gap + 'px', zIndex: 0, pointerEvents: 'none',
+      left: 'calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px)))',
+      right: 'calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)))'
+    });
+    pipeline.append(layer);
+    const rows = Math.max(1, Math.round(gap / ((layer.offsetWidth / columns) * aspect)));
+    Object.assign(layer.style, { display: 'grid', gridTemplateColumns: `repeat(${columns}, 1fr)`, gridTemplateRows: `repeat(${rows}, 1fr)` });
+    const hash = i => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+    const cells = Array.from({ length: rows * columns }, () => {
+      const cell = document.createElement('span');
+      cell.style.background = color;
+      layer.append(cell);
+      return cell;
+    });
+    gsap.set(cells, { opacity: 0 });
+    const maxDelay = Math.max(rows - 1 + spread, 1);
+    const delay = i => ((rows - 1 - Math.floor(i / columns)) + hash(i) * spread) / maxDelay; // bottom rows first
+    gsap.timeline({
+      defaults: { ease: 'none' },
+      scrollTrigger: { trigger: layer, start: 'top 85%', end: 'bottom 25%', scrub: 0.6 }
+    })
+      .to(cells, { opacity: 1, duration: 0.05, stagger: i => delay(i) * 0.5 }, 0)
+      .to(cells, { opacity: 0, duration: 0.05, stagger: i => delay(i) * 0.5 }, 0.55);
+  }
 
   // Science: the four-column row pins to the screen and slides left as you scroll, one pixel across per pixel down,
   // until its last column is in view; then the page scrolls on. scrub: 1 lets the row catch up softly.
