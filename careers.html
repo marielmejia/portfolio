@@ -38,7 +38,10 @@
   .c-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 1.5rem calc(2 * var(--gutter)); align-items: start; }
   .c-intro-main { grid-column: 2; display: grid; gap: 2rem; } /* the right two thirds; the left third stays open */
   .c-intro-main > * { margin: 0; }
-  .c-intro-main p:not(.h2) { max-width: 36em; color: color-mix(in srgb, currentColor 80%, transparent); }
+  /* Headline (H3, like the About statement) and paragraph share one measure, so the paragraph narrows to the headline's lines */
+  .c-intro-main { --measure: 38rem; }
+  .c-intro-main > .h3 { max-width: var(--measure); text-wrap: pretty; }
+  .c-intro-main p:not(.h3) { max-width: var(--measure); color: color-mix(in srgb, currentColor 80%, transparent); }
   @media (max-width: 760px) { .c-cols { grid-template-columns: minmax(0, 1fr); } .c-intro-main { grid-column: 1; } }
 
   /* Photo strip: full width, edge to edge, drifting left on its own and looping. Photos share a width and their
@@ -125,7 +128,7 @@
   <section id="intro" class="c-inset" aria-label="Careers">
     <div class="c-cols">
       <div class="c-intro-main">
-        <p class="h2">We are a small team of scientists, clinicians and builders working on the hardest problems in immunology.</p>
+        <p class="h3">We are a small team of scientists, clinicians and builders working on the hardest problems in immunology.</p>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
       </div>
     </div>
