@@ -121,7 +121,7 @@
   #contact .field input, #contact .field textarea, #contact .field select { background: transparent; border-color: rgb(255 255 255 / 0.2); color: #fff; } /* stroke: white at 20%, like the nav over the hero */
   #contact .field :user-invalid { border-color: var(--link); }
   /* Black overlay over the image (under the panel), to darken it */
-  #contact::after { content: ""; position: absolute; inset: 0; z-index: -1; background: rgb(0 0 0 / 0.6); }
+  #contact::after { content: ""; position: absolute; inset: 0; z-index: -1; background: rgb(12 15 17 / 0.8); } /* the framework's dark ink (#0c0f11) at 80% */
   /* Frosted panel so the image shows through behind the text and form; fields stay solid */
   /* Inset like the News cards (the side inset), so the panel lines up with them and the image shows there.
      On phones the cards run gutter to gutter (their buttons move below), so the panel does too. */
@@ -600,8 +600,21 @@
   }
   grid.addEventListener('click', e => { const card = e.target.closest('.person'); if (card) { fillBio(+card.dataset.i); openSheet(bio); } });
   wireSheet(bio);
-  document.getElementById('bio-prev').addEventListener('click', () => fillBio(current - 1));
-  document.getElementById('bio-next').addEventListener('click', () => fillBio(current + 1));
+  // Previous / Next: the photo, name, title and bio fade out, swap, and fade back in (Close and the buttons stay put)
+  const bioParts = ['bio-photo', 'bio-name', 'bio-role', 'bio-text'].map(id => document.getElementById(id));
+  let bioFade = 0, pending = null; // pending: where a fade in progress is headed, so quick clicks keep counting
+  function showBio(i) {
+    if (!motionOK()) { fillBio(i); return; }
+    const run = ++bioFade; pending = i;
+    const out = bioParts.map(el => el.animate({ opacity: [getComputedStyle(el).opacity, 0] }, { duration: 200, easing: 'ease-out', fill: 'forwards' }));
+    Promise.all(out.map(a => a.finished.catch(() => {}))).then(() => {
+      if (run !== bioFade) return; // a newer click took over
+      pending = null; fillBio(i);
+      bioParts.forEach(el => { el.getAnimations().forEach(a => a.cancel()); el.animate({ opacity: [0, 1] }, { duration: 400, easing: 'ease-out' }); });
+    });
+  }
+  document.getElementById('bio-prev').addEventListener('click', () => showBio((pending ?? current) - 1));
+  document.getElementById('bio-next').addEventListener('click', () => showBio((pending ?? current) + 1));
   // Focus goes back to the card that opened it
   bio.addEventListener('close', () => { const card = grid.querySelector(`[data-i="${current}"]`); if (card) card.focus({ preventScroll: true, focusVisible: false }); }); // quietly, without a focus ring
 
