@@ -13,7 +13,8 @@
     --muted: #7a7976;
     --line: #e7e7e7;
     --accent: var(--muted); /* was green; now the label gray */
-    --link: #FF8138; /* warm orange */
+    --link: var(--ink); /* links default to the dark ink color */
+    --arrow-bg: #F4B943; /* yellow circle behind every arrow */
     --acc-bg: rgb(231 231 231 / 0.5); /* #e7e7e7 at 50% */
     --acc-bg-hover: #e7e7e7;
     --row-bg: #ffffff;
@@ -100,16 +101,13 @@
     padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
   }
   .hero-stage { position: relative; display: grid; place-items: center; isolation: isolate; }
+  /* Headline: one line, as large as fits across the window (up to the H1's 118px), sitting at the bottom of its row */
   #home > header h1 {
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    align-self: end; justify-self: start; text-align: left; white-space: nowrap;
+    font-size: min(7.375rem, calc((100vw - 3rem) / 9.7)); /* the line is about 9.5 times its font size wide */
     padding: var(--gutter);
   }
-  #home > header h1 br { display: none; } /* each line is already its own row here */
-  /* Staggered headline: first line sits off to the left, second off to the right */
-  #home > header h1 .h1-part { --shift: -0.6em; transform: translateX(var(--shift)); }
-  #home > header h1 .h1-part ~ .h1-part { --shift: 2.1em; } /* three steps right, plus half the gap reduction so "Shine" stays put */
-  #home > header h1 .h1-part ~ .h1-part { display: inline-flex; gap: 0.4em; } /* "that" and "Shine" set slightly apart */
-  #home > header h1 .h1-part span { color: inherit; } /* the split words keep the headline color */
+  #home > header h1 .h1-part { --shift: 0; }
   /* Reel: the portfolio pieces play across the top two thirds of the screen, one after another,
      each cutting in with a slow push; the whole reel fades in from transparent on load */
   #home > header .topbar, .hero-stage { position: relative; z-index: 1; }
@@ -127,9 +125,12 @@
   #home > header .topbar .label { color: #fff; } /* light type over the reel */
   .topbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem 2rem; padding-bottom: 0.9rem; }
   .topbar nav { display: flex; gap: 1.5rem; }
-  .topbar nav a { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; } /* label style, in the link color */
+  .topbar nav a {
+    color: var(--ink); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; /* label style */
+    background: var(--arrow-bg); padding: 0 0.15em; /* dark text on a yellow highlighter mark, like the links in paragraphs */
+  }
   h1 {
-    font: 300 clamp(1.875rem, calc(11vw - 10px), 7.375rem)/1.12 var(--font-serif); /* 30px to 118px; low floor so "Crafting Brands" fits a 375px phone */
+    font: 500 clamp(1.875rem, calc(11vw - 10px), 7.375rem)/1.12 var(--font-serif); /* 30px to 118px; low floor so "Crafting Brands" fits a 375px phone */
     letter-spacing: -0.04em;
     margin: 0;
     text-wrap: balance;
@@ -139,12 +140,20 @@
   h1 .h1-part { color: inherit; display: inline-block; }
   header h1 { text-align: center; } /* homepage name only; project titles stay left-aligned */
 
-  h2, .h2 { font: 300 clamp(2.5rem, calc(3.5vw + 14px), 3.125rem)/1.12 var(--font-serif); /* 40px to 50px */ letter-spacing: -0.03em; margin: 0; text-wrap: balance; }
+  h2, .h2 { font: 500 clamp(2.5rem, calc(3.5vw + 14px), 3.125rem)/1.12 var(--font-serif); /* 40px to 50px */ letter-spacing: -0.03em; margin: 0; text-wrap: balance; }
   h3, .h3 { font-family: var(--font-serif); font-weight: 200; } /* no H3 on this page yet; ready if one is added */
   .section-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem 2rem; margin-bottom: 1.75rem; }
 
   /* Work grid */
-  .work { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; background: var(--row-bg); } /* one white container holding all the rows, flush */
+  .work {
+    display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; background: var(--row-bg); /* one white container holding all the rows, flush */
+    /* White runs edge to edge; the rows keep their usual inset from the window edges */
+    margin-left: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px)));
+    margin-right: calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)));
+    padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+    padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
+    padding-top: var(--gutter); padding-bottom: var(--gutter); /* same 24px gap above and below the rows as at the sides */
+  }
   /* Each row: four columns, with one feature thumbnail spanning two columns and two rows;
      the small ones fill the space around it. Which thumbnail and where it sits varies by row. */
   .strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-flow: dense; gap: var(--gutter); }
@@ -153,7 +162,8 @@
   .strip .media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
   .piece { background: var(--row-bg); padding: 25px; display: grid; grid-template-rows: auto 1fr; } /* thumbnails fill the row inside a 25px frame */
   .piece { background: transparent; } /* rows sit on the container's white; hover still turns them dark */
-  .piece-name { margin: 0; padding: 15px 25px 40px; font: 500 1.125rem/1.3 var(--font-serif); color: var(--ink); } /* project name below each row (outside its hover area), lined up with the thumbnails, in the "Project Details" style; 40px above it (with the row's 25px) and 40px below */
+  .piece-name { margin: 0; padding: 15px 25px 0; font: 500 1.125rem/1.3 var(--font-serif); color: var(--ink); } /* project name below each row (outside its hover area), lined up with the thumbnails, in the "Project Details" style; 40px above it (with the row's 25px) */
+  .piece-deliverables { margin: 0; padding: 0.25rem 25px 40px; } /* the project's deliverables under its name, in the paragraph style; 40px below before the next row */
   .media {
     aspect-ratio: 1256 / 720; /* picture area of the videos, without their black side strips */
     max-width: 100%;
@@ -177,9 +187,9 @@
   .media:has(> .ready) { background: transparent; } /* drop the loading gray so it can't peek out at the edges */
 
   .spec { width: 100%; border-collapse: collapse; } /* values use the body style */
-  .spec a { font-weight: 300; }
+  .spec a { font-weight: 300; color: var(--ink); } /* website link: dark, with its arrow in a yellow circle */
   .spec th { text-align: left; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; color: var(--ink); width: 34%; padding: 0.3rem 0; vertical-align: baseline; } /* label style */
-  .spec td { padding: 0.3rem 0; vertical-align: baseline; }
+  .spec td { padding: 0.3rem 0; vertical-align: baseline; font-weight: 300; /* matches the website link */ }
   /* Homepage cards: each label sits above its value in one column */
   .piece .spec, .piece .spec tbody, .piece .spec tr, .piece .spec th, .piece .spec td { display: block; width: auto; padding: 0; }
   .piece .spec tbody { display: grid; gap: 0.6rem; }
@@ -190,6 +200,12 @@
   .about-text { display: grid; gap: 1rem; padding-right: 25px; } /* right edge lines up with the last thumbnail in each project row (rows have 25px padding) */
   .about-text p { margin: 0; }
   .about-text a { font-weight: inherit; } /* same weight as the bio text */
+  /* Links inside paragraphs: dark text on a yellow highlighter mark */
+  .about-text p a, .detail-body p a {
+    color: var(--ink);
+    background: var(--arrow-bg); padding: 0 0.15em;
+    -webkit-box-decoration-break: clone; box-decoration-break: clone; /* the mark wraps cleanly if a link breaks across lines */
+  }
   .about-text .h2 { margin-bottom: 2rem; text-wrap: pretty; } /* 3rem (48px) between the lead sentence and the bio (with the 1rem gap); lines run the full width like the paragraphs (no balancing) */
   .timeline-label { margin-top: 2rem; } /* 3rem (48px) between the bio and Experience (with the 1rem gap) */
   .timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
@@ -201,11 +217,13 @@
 
 
   /* Geometric line arrows */
-  .ar { display: inline-block; width: 0.6em; height: 0.6em; vertical-align: 0; overflow: visible; fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: square; stroke-linejoin: miter; vector-effect: non-scaling-stroke; }
+  .ar { display: inline-block; width: 0.6em; height: 0.6em; vertical-align: 0; overflow: visible; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: square; stroke-linejoin: miter; vector-effect: non-scaling-stroke; }
+  /* Each arrow sits in a yellow circle; the arrow and its link text are the dark ink color */
+  .ar { box-sizing: content-box; padding: 0.45em; border-radius: 50%; background: var(--arrow-bg); color: var(--ink); vertical-align: middle; }
   .ar.r { margin-left: 0.35em; }
   .ar.l { margin-right: 0.35em; }
   .ar.u { margin-left: 0.35em; }
-  footer .to-top { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; } /* matches the top navigation */
+  footer .to-top { color: var(--ink); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; } /* matches the top navigation */
 
   /* Clickable cards */
   .piece { position: relative; }
@@ -226,7 +244,7 @@
   .detail-columns .detail-title { font-size: min(7.375rem, 18cqi); } /* the H1, capped so long names fit the narrow column */
   .detail-columns .detail-body { grid-template-columns: minmax(0, 1fr); } /* description above the details, one column */
   .detail-work { display: grid; gap: var(--gutter); }
-  .back { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; }
+  .back { color: var(--ink); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; }
   /* .detail-title uses the shared H1 style (30px to 118px) */
   .detail-tagline { font-size: 1.5rem; line-height: 1.3; margin: 0; color: var(--ink); max-width: 30em; }
   .bleed {
@@ -260,9 +278,9 @@
   .next {
     display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem 2rem;
     padding-top: 1.25rem;
-    color: var(--link); text-decoration: none;
+    color: var(--ink); text-decoration: none;
   }
-  .next .ar { width: 0.5em; height: 0.5em; stroke-width: 3; }
+  .next .ar { width: 0.5em; height: 0.5em; stroke-width: 2; padding: 0.2em; } /* tighter circle around the same-size arrow */
 
   @media (max-width: 760px) {
     .about, .detail-body { grid-template-columns: minmax(0, 1fr); }
@@ -283,17 +301,15 @@
     /* Homepage headline slides in: "Crafting Brands" from the left, then "that Shine" from the right */
     header { overflow-x: clip; } /* keeps the off-screen start from widening the page */
     #home.page-in header h1 .h1-part { animation: h1-in-left 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s backwards; /* backwards: once done, the lines' own styles take over so the scroll fade can apply */ }
-    #home.page-in header h1 .h1-part ~ .h1-part { animation-name: h1-in-right; animation-delay: 0.5s; } /* ~ not +, since a <br> sits between the lines */
     @keyframes h1-in-left { from { opacity: 0; transform: translateX(calc(var(--shift) - 20vw)); } 30% { opacity: 1; } to { opacity: 1; transform: translateX(var(--shift)); } }
-    @keyframes h1-in-right { from { opacity: 0; transform: translateX(calc(var(--shift) + 20vw)); } 30% { opacity: 1; } to { opacity: 1; transform: translateX(var(--shift)); } }
     /* Homepage rows slide up as they scroll into view (uses translate, so the hover lift still works) */
     .piece.will-reveal { opacity: 0; translate: 0 80px; transition: opacity 0.9s ease, translate 0.9s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.25s ease, background-color 0.3s ease, color 0.3s ease; }
     .piece.will-reveal.revealed { opacity: 1; translate: 0 0; }
     /* Hero reel fades in from transparent as the page opens */
     .hero-reel { animation: reel-in 1.6s ease 0.2s both; }
     @keyframes reel-in { from { opacity: 0; } to { opacity: 1; } }
-    .piece.will-reveal + .piece-name { opacity: 0; transition: opacity 0.9s ease 0.2s; } /* each name fades in with its row */
-    .piece.will-reveal.revealed + .piece-name { opacity: 1; }
+    .piece.will-reveal + .piece-name, .piece.will-reveal + .piece-name + .piece-deliverables { opacity: 0; transition: opacity 0.9s ease 0.2s; } /* each name and its deliverables fade in with the row */
+    .piece.will-reveal.revealed + .piece-name, .piece.will-reveal.revealed + .piece-name + .piece-deliverables { opacity: 1; }
     .accordion { transition: background-color 0.2s ease; }
     a:hover .ar.r, a:focus-visible .ar.r { transform: translateX(0.3em); }
     a:hover .ar.l, a:focus-visible .ar.l { transform: translateX(-0.3em); }
@@ -326,7 +342,7 @@
       <img src="work/kardigan-5-v2.svg" alt="">
     </div>
     <div class="hero-stage">
-      <h1><span class="h1-part">Crafting Brands</span><br> <span class="h1-part"><span>that</span> <span>Shine</span></span></h1>
+      <h1><span class="h1-part">Let your brand shine.</span></h1>
     </div>
   </header>
 
@@ -458,13 +474,13 @@
 
   <footer>
     <span class="label">© 2026 Mariel Mejia</span>
-    <a class="to-top" href="#top">Back to Top<svg class="ar u" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 11L8 5L14 11"/></svg></a>
+    <a class="to-top" href="#top">Back to Top<svg class="ar u" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 12L8 6L14 12"/></svg></a>
   </footer>
 </div>
 
 <main id="detail" hidden>
   <div class="topbar">
-    <a class="back" href="#work"><svg class="ar l" viewBox="0 0 16 16" aria-hidden="true"><path d="M11 2L5 8L11 14"/></svg>All Work</a>
+    <a class="back" href="#work"><svg class="ar l" viewBox="0 0 16 16" aria-hidden="true"><path d="M12 2L6 8L12 14"/></svg>All Work</a>
     <span class="label">MARIEL MEJIA / ART DIRECTOR AND DESIGNER</span>
   </div>
   <div class="detail-columns">
@@ -729,6 +745,18 @@
     'rezolute': 'https://rezolutebio.com'
   };
   const order = Object.keys(projects);
+
+  // Homepage rows: show each project's deliverables (from its Project Details) under its name
+  document.querySelectorAll('#work .piece').forEach(row => {
+    const id = row.querySelector('.stretched').getAttribute('href').slice(1);
+    const name = row.nextElementSibling;
+    const item = projects[id] && projects[id].spec.find(([k]) => k === 'Deliverables');
+    if (!item || !name || !name.classList.contains('piece-name')) return;
+    const line = document.createElement('p');
+    line.className = 'piece-deliverables';
+    line.textContent = item[1];
+    name.after(line);
+  });
   const home = document.getElementById('home');
   const detail = document.getElementById('detail');
   const dVideo = document.getElementById('d-video');
@@ -785,7 +813,7 @@
       document.getElementById('d-text').textContent = p.text;
       const site = sites[id];
       const siteRow = site
-        ? `<tr><th>Website</th><td><a href="${site}" target="_blank" rel="noopener">${site.replace(/^https?:\/\/(www\.)?/, '')}<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4H12V12"/></svg></a></td></tr>`
+        ? `<tr><th>Website</th><td><a href="${site}" target="_blank" rel="noopener">${site.replace(/^https?:\/\/(www\.)?/, '')}<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 5H11V13"/></svg></a></td></tr>`
         : '';
       document.getElementById('d-spec').innerHTML = p.spec.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join('') + siteRow;
       dVideo.setAttribute('aria-label', p.title + ' project video');
@@ -815,7 +843,7 @@
       const nextId = order[(order.indexOf(id) + 1) % order.length];
       const next = document.getElementById('d-next');
       next.href = '#' + nextId;
-      next.innerHTML = `<span class="label">Next Project</span><span class="h2">${projects[nextId].title}<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></span>`;
+      next.innerHTML = `<span class="label">Next Project</span><span class="h2">${projects[nextId].title}<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2L10.5 8L4.5 14"/></svg></span>`;
       homeVideos.forEach(v => v.pause());
       home.hidden = true;
       detail.hidden = false;
