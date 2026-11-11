@@ -48,19 +48,16 @@
     padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
     padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
   }
-  /* Background video: pinned to the window so it stays put while the page scrolls (light mode only) */
+  /* Background image: pinned to the window so it stays put while the page scrolls (light mode only) */
   .bg-video {
     position: fixed; inset: 0; z-index: -1; pointer-events: none;
     width: 100%; height: 100%; object-fit: cover; display: block;
   }
-  /* Blur layer over the video: softens it into a hazy wash behind the content */
-  .bg-blur {
-    position: fixed; inset: 0; z-index: -1; pointer-events: none;
-    -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);
-  }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) :is(.bg-video, .bg-blur) { display: none; } }
-  :root[data-theme="dark"] :is(.bg-video, .bg-blur) { display: none; }
-  body:has(> #home[hidden]) :is(.bg-video, .bg-blur) { display: none; } /* homepage only, not on project pages */
+  /* Black wash over the background image at 8% */
+  .bg-shade { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: rgb(0 0 0 / 0.08); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) :is(.bg-video, .bg-shade) { display: none; } }
+  :root[data-theme="dark"] :is(.bg-video, .bg-shade) { display: none; }
+  body:has(> #home[hidden]) :is(.bg-video, .bg-shade) { display: none; } /* homepage only, not on project pages */
   .wrap { padding-block: var(--gutter); display: grid; gap: 4.5rem; }
 
   a { color: var(--link); font-weight: 300; text-decoration: none; }
@@ -121,7 +118,7 @@
     opacity: 0; transition: opacity 0.5s ease;
   }
   .hero-reel > .on { opacity: 1; }
-  .hero-reel::after { content: ""; position: absolute; inset: 0; background: rgb(12 15 17 / 0.35); } /* darkens the footage so the name in the top bar reads */
+  /* (no darkening overlay on the reel: the footage shows at full strength) */
   #home > header .topbar .label { color: #fff; } /* light type over the reel */
   .topbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem 2rem; padding-bottom: 0.9rem; }
   .topbar nav { display: flex; gap: 1.5rem; }
@@ -279,7 +276,7 @@
   .detail-body p { margin: 0; max-width: 36em; } /* uses the body style */
   .gallery .media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
   .gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gutter); }
-  .gallery .media:nth-child(1), .gallery .media:nth-child(4) { grid-column: 1 / -1; } /* full, pair, full: after the main video, one wide piece, two side by side, one wide */
+  .gallery .media:nth-child(1), .gallery .media:nth-child(n+4) { grid-column: 1 / -1; } /* full, pair, full: after the main video, one wide piece, two side by side, one wide; any extra pieces run wide below */
   .next {
     display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem 2rem;
     padding-top: 1.25rem;
@@ -323,8 +320,8 @@
   }
 </style>
 
-<video class="bg-video" src="work/colorflow-animation.mp4?v=4" autoplay muted loop playsinline aria-hidden="true"></video>
-<div class="bg-blur" aria-hidden="true"></div>
+<img class="bg-video" src="work/bg_pixel_1%201.png?v=4" alt="" aria-hidden="true">
+<div class="bg-shade" aria-hidden="true"></div>
 
 <div class="wrap" id="home">
   <header>
@@ -340,11 +337,11 @@
       <video src="work/rezera.mp4" muted loop playsinline preload="auto"></video>
       <img src="work/celcuity-mobile.jpg" alt="">
       <video src="work/kardigan-4.mp4" muted loop playsinline preload="auto"></video>
-      <img src="work/santa-ana-bio-2.jpg" alt="">
       <video src="work/kailera-5.mp4" muted loop playsinline preload="auto"></video>
       <img src="work/celcuity-web1.jpg" alt="">
       <video src="work/rezera-colors.mp4" muted loop playsinline preload="auto"></video>
       <img src="work/kardigan-5-v2.svg" alt="">
+      <video src="work/santa-ana-bio-6.mp4" muted loop playsinline preload="auto"></video>
     </div>
     <div class="hero-stage">
       <h1><span class="h1-part">Designing brands that shine.</span></h1>
@@ -518,11 +515,6 @@
 </main>
 
 <script>
-  // Background video holds still for visitors who prefer reduced motion
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    document.querySelectorAll('.bg-video').forEach(v => { v.removeAttribute('autoplay'); v.pause(); });
-  }
-
   // Hero reel: each piece plays full screen in turn, a few seconds apiece, looping through all of them.
   // Videos restart as they come up; the reel holds on the first piece for reduced-motion visitors.
   (() => {
@@ -646,7 +638,7 @@
       "title": "Santa Ana Bio",
       "tagline": "Targeted therapies for precision immunology.",
       "video": "work/santa-ana-bio.mp4",
-      "gallery": ["work/santa-ana-bio-2.jpg", "work/santa-ana-bio-3.jpg", "work/santa-ana-bio-4.jpg", "work/santa-ana-bio-5.png"],
+      "gallery": ["work/santa-ana-bio-2.jpg", "work/santa-ana-bio-3.jpg", "work/santa-ana-bio-4.jpg", "work/santa-ana-bio-5.png", "work/santa-ana-bio-6.mp4"],
       "text": "Santa Ana Bio develops targeted therapies for precision immunology. The website presents the company's science and pipeline in a calm, clear layout built for investors, partners and future hires.",
       "spec": [
         [
@@ -826,9 +818,13 @@
       document.getElementById('d-spec').innerHTML = p.spec.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join('') + siteRow;
       dVideo.setAttribute('aria-label', p.title + ' project video');
       if (!dVideo.src.endsWith(p.video)) dVideo.src = p.video;
-      // Four gallery cards (video or still image); the main video stands in until each project has its own
+      // Gallery cards (video or still image), four by default; a project can list more. The main video stands in
+      // until each project has its own. Cards are added or removed to match the project's list.
       const gallery = p.gallery || [p.video, p.video, p.video, p.video];
-      document.querySelectorAll('#d-gallery .media').forEach((m, i) => {
+      const galleryEl = document.getElementById('d-gallery');
+      while (galleryEl.children.length < gallery.length) { const m = document.createElement('div'); m.className = 'media'; galleryEl.appendChild(m); }
+      while (galleryEl.children.length > gallery.length) galleryEl.lastElementChild.remove();
+      galleryEl.querySelectorAll('.media').forEach((m, i) => {
         const src = gallery[i];
         let v = m.querySelector('video'), img = m.querySelector('img');
         if (/\.(jpe?g|png|webp|gif|svg)$/i.test(src)) {
