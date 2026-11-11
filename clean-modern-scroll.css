@@ -268,17 +268,16 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/
 /* ---------- Tabs ---------- */
 /* Markup:
    <div class="tabs-bar"><div class="tabs" role="tablist"><button class="tab" role="tab" aria-selected="true">Leadership</button>…</div></div>
-   The bar carries the rule across the full width; the tabs inside all take the width of the longest one. */
-/* Styled like the pinned nav: a 60px row with a light rule under it and thin rules on both sides of
-   each tab, labels centered. The selected tab turns black. */
-.tabs-bar { border-bottom: 1px solid var(--rule); }
+   The tabs all take the width of the longest one. */
+/* 60px buttons side by side, each outlined in a light rule (neighbors share one line), labels centered. No rule
+   runs across the page. */
 .tabs { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; min-height: 60px; } /* equal columns, sized to the longest tab */
 .tab {
   appearance: none; background: none; border: 0; display: flex; align-items: center; justify-content: center; padding: 0 1.25rem; cursor: pointer;
   font: 400 0.9375rem/normal var(--font); letter-spacing: 0.01em; color: var(--ink); /* nav style, in ink: the line marks the selected tab */
 }
-.tab { border-left: 1px solid var(--rule); } /* a rule on both sides of every tab, labels centered */
-.tab:last-child { border-right: 1px solid var(--rule); }
+.tab { border: 1px solid var(--rule); } /* each tab outlined on its own */
+.tab + .tab { margin-left: -1px; } /* touching tabs share one line instead of doubling it */
 .tab[aria-selected="true"] { color: var(--ink); }
 /* Same line as the pinned nav: 4px red under the selected tab, gray (the rule's color) on hover, faded in and out */
 .tab { position: relative; }
@@ -298,7 +297,6 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/
      </button>
    </div> */
 .team-head { display: grid; justify-items: start; gap: 3rem; margin-bottom: 3rem; } /* tabs sit under the headline, on its left edge */
-.team-head .tabs-bar { justify-self: stretch; } /* the tab row's rule runs the full width of the cards below */
 .team-head .h2 { max-width: 20em; }
 .team-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gutter); } /* four across, three at 1024px and below, two on phones */
 .person {
@@ -576,10 +574,11 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   .pl-head + .pl-item { border-top: 0; }
   .pl-stage { grid-column: auto; display: grid; margin-top: 0.75rem; }
   .team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  /* Phones: too narrow for the tabs in one row, so they stack as a list, one rule between each */
+  /* Phones: too narrow for the tabs in one row, so the buttons stack, sharing the line between them */
+  .team-head .tabs-bar { justify-self: stretch; } /* the stacked buttons run the full width */
   .tabs { display: grid; grid-auto-flow: row; min-height: 0; }
   .tab { min-height: 48px; padding: 0; }
-  .tab + .tab { border-top: 1px solid var(--rule); }
+  .tab + .tab { margin-left: 0; margin-top: -1px; }
   .person { padding: 12px 12px 1.25rem; }
   .bio-inner { padding: var(--gutter) var(--gutter) 2rem; }
   .news-item { padding: 1.75rem 20px; }
