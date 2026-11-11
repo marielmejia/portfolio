@@ -68,6 +68,10 @@
   /* Scroll-driven (added by the script when motion is on): the row fills the screen top to bottom, pins, and slides
      left as you scroll down, then lets the page carry on */
   #science.sci-scrub .sci-viewport { height: 100vh; height: 100svh; }
+  /* While pinned, the row gets whatever the screen has left after the gray above and below, so on short screens the
+     gray gives way: up to 200px each side, never less than 40px, always leaving the row at least 520px (the copy
+     columns need about 470px). Without this, screens under ~870px tall cut off the bottom of the copy. */
+  #science.sci-scrub .sci-viewport { padding-block: clamp(40px, (100vh - 520px) / 2, 200px); padding-block: clamp(40px, (100svh - 520px) / 2, 200px); }
   #science.sci-scrub .sci-track { height: 100%; will-change: transform; }
   #science.sci-scrub .split-media { min-height: 0; }
   @media (max-width: 760px) {
@@ -75,6 +79,7 @@
     .sci-track { width: 400%; } /* one column per window */
     #science .split-body { padding: 40px 20px; }
     #science .split-media { min-height: 75vw; }
+    #science.sci-scrub .sci-viewport { padding-block: clamp(40px, (100vh - 520px) / 2, 160px); padding-block: clamp(40px, (100svh - 520px) / 2, 160px); }
   }
   /* Without the slide (reduced motion or no script): the four columns wrap into a 2 × 2 grid, one column on phones */
   #science:not(.sci-scrub) .sci-track { width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -967,6 +972,17 @@
     sectionTransition01();
     scienceSlide();
     pipelinePixels();
+    // Re-measure every scroll effect when the page's height changes after load (the About accordion opening or
+    // closing, images settling): otherwise the Science pin keeps its old start and jumps by the difference.
+    // Waits for the change to finish (the accordion animates) and ignores the pin's own spacing changes.
+    let lastHeight = document.body.offsetHeight, refreshTimer;
+    new ResizeObserver(() => {
+      clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(() => {
+        const h = document.body.offsetHeight;
+        if (h !== lastHeight) { lastHeight = h; ScrollTrigger.refresh(); lastHeight = document.body.offsetHeight; }
+      }, 200);
+    }).observe(document.body);
   })();
 
   // Pipeline → Team: a quick pixel wave in a 180px strip under Pipeline (80px clear of the Team label), in the light gray of the page's

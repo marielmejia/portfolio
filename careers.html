@@ -63,29 +63,39 @@
   /* half the track is one full set plus half a gap, so sliding by that lands exactly where it started */
   @keyframes c-drift { to { transform: translateX(calc(-50% - var(--gutter) / 2)); } }
 
-  /* Values: four rows like the News cards: no fill, a light rule under each (and over the first). Two equal columns:
-     the value in the H4 bold style on the left, the paragraph on the right. As you scroll, the row crossing the middle
-     of the screen becomes active (the script adds .is-active): it fills with the red, its text turns white and its word
-     rolls up while a copy rolls in. One row at a time; the rows don't link anywhere. */
-  .c-values { display: grid; gap: 0; }
-  @media (min-width: 761px) { #values > * { width: 60%; margin-inline: auto; } } /* the heading and rows at 60% of the section's width, centered */
+  /* Values: six cards across the full width, one per row, alternating left and right (each half the width). Each card
+     has a placeholder icon, the value (H4 bold) and its paragraph in a column of its own, on a very light gray fill
+     (no rules). As you scroll, the card crossing a line 45% down the screen
+     lights up (the script adds .is-active): it fills with the red, and its text turns white. The cards don't link anywhere. */
+  .c-values { display: grid; grid-template-columns: minmax(0, 1fr); overflow-x: clip; overflow-clip-margin: 0; } /* the cards sliding in from off to the side don't widen the page */
   .c-value {
-    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem calc(2 * var(--gutter)); align-items: baseline; /* value and paragraph 50/50 */
-    padding: 2.5rem 2rem; background: transparent; color: var(--ink); border-bottom: 1px solid var(--rule, #d9d9d9);
+    display: grid; grid-template-columns: 3.5rem minmax(0, 1fr) minmax(0, 1fr); gap: 0.75rem 1.5rem; align-items: start; /* icon | value | paragraph */
+    padding: 2.5rem 2rem; background: var(--acc-bg); color: var(--ink); /* very light gray fill, no rules */
     transition: background-color 0.5s ease, color 0.5s ease;
   }
-  .c-value:first-child { border-top: 1px solid var(--rule, #d9d9d9); }
+  .c-value { width: calc(50% - var(--gutter) / 2); }
+  .c-value:nth-child(even) { justify-self: end; }
   .c-value.is-active { background: var(--link); color: #fff; }
   .c-value > * { margin: 0; }
-  .c-value p { max-width: 36em; opacity: 0.8; } /* body copy at 80%; opacity (not a mixed color) so it follows the active colors */
-  .c-value-word { display: block; overflow: hidden; padding-bottom: 0.08em; } /* the window the word rolls through */
-  .c-value-word span { position: relative; display: inline-block; }
-  .c-value-word span::after { content: attr(data-text); content: attr(data-text) / ""; position: absolute; left: 0; top: 100%; } /* the copy waiting underneath */
+  .c-value-icon { width: 3.5rem; aspect-ratio: 1; display: grid; place-items: center;
+    background: color-mix(in srgb, currentColor 10%, transparent); transition: background-color 0.5s ease; } /* placeholder; tints with the card's text color */
+  #values .c-head { justify-items: center; text-align: center; margin-bottom: 4.5rem; } /* headline centered over the cards, with the same room below it as Current Openings */
+  .c-value-icon svg { width: 1.5rem; height: 1.5rem; fill: none; stroke: currentColor; stroke-width: 1.5; opacity: 0.6; }
+  .c-value p { max-width: 36em; opacity: 0.8; font-size: 1rem; line-height: 1.4; } /* Small text style */ /* body copy at 80%; opacity (not a mixed color) so it follows the active colors */
   @media (prefers-reduced-motion: no-preference) {
-    .c-value-word span { transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1); }
-    .c-value.is-active .c-value-word span { transform: translateY(-100%); }
+    /* Slide in with the scroll: left cards from the left, right cards from the right. The script sets --slide from 1
+       (card just entering at the bottom of the screen) to 0 (card reaching the line where it turns red), so each card
+       lands in place as it changes color, and slides back out if you scroll back up. Without the script they just show. */
+    .c-value { --dir: -1; transform: translateX(calc(var(--slide, 0) * var(--dir) * 120px)); opacity: calc(1 - var(--slide, 0)); }
+    .c-value:nth-child(even) { --dir: 1; }
   }
-  @media (max-width: 760px) { .c-value { grid-template-columns: minmax(0, 1fr); padding: 2rem 1.25rem; } }
+  @media (max-width: 760px) {
+    .c-values { grid-template-columns: minmax(0, 1fr); }
+    .c-value { grid-template-columns: 3rem minmax(0, 1fr); gap: 0.75rem 1rem; padding: 2rem 1.25rem; }
+    .c-value-icon { width: 3rem; grid-row: 1 / span 2; }
+    .c-value p { grid-column: 2; } /* paragraph back under the value */
+    .c-value { width: auto; }
+  }
 
   /* Open roles: one row each, ruled top and bottom, a faint gray band on hover */
   /* Heading on the left, a short paragraph on the right whose right edge lines up with the table's content */
@@ -166,15 +176,17 @@
     </div>
   </section>
 
-  <section id="values" class="c-inset" aria-labelledby="values-title">
+  <section id="values" aria-labelledby="values-title">
     <div class="c-head">
       <h2 id="values-title" class="h2">Values we stand by</h2>
     </div>
     <div class="c-values">
-      <article class="c-value"><h3 class="h4-bold c-value-word"><span data-text="Patients first">Patients first</span></h3><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p></article>
-      <article class="c-value"><h3 class="h4-bold c-value-word"><span data-text="Rigor">Rigor</span></h3><p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p></article>
-      <article class="c-value"><h3 class="h4-bold c-value-word"><span data-text="Candor">Candor</span></h3><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p></article>
-      <article class="c-value"><h3 class="h4-bold c-value-word"><span data-text="Ownership">Ownership</span></h3><p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p></article>
+      <article class="c-value"><span class="c-value-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg></span><h3 class="h4-bold">Patients first</h3><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute irure.</p></article>
+      <article class="c-value"><span class="c-value-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg></span><h3 class="h4-bold">Rigor</h3><p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur sed ut perspiciatis.</p></article>
+      <article class="c-value"><span class="c-value-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg></span><h3 class="h4-bold">Candor</h3><p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum et dolorum.</p></article>
+      <article class="c-value"><span class="c-value-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg></span><h3 class="h4-bold">Ownership</h3><p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque.</p></article>
+      <article class="c-value"><span class="c-value-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg></span><h3 class="h4-bold">Curiosity</h3><p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi.</p></article>
+      <article class="c-value"><span class="c-value-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg></span><h3 class="h4-bold">Together</h3><p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem.</p></article>
     </div>
   </section>
 
@@ -213,11 +225,18 @@
   if (!motionOK()) { const v = document.getElementById('hero-video'); v.removeAttribute('autoplay'); v.pause(); } // the video holds still for reduced motion
   const ease = 'cubic-bezier(0.2, 0.7, 0.2, 1)';
 
-  // Values: the row crossing a line 45% down the screen is the active one (one at a time, none when the list is off it)
+  // Values: the card crossing a line 45% down the screen is the active one (one at a time, none when the list is off it)
   const valueRows = [...document.querySelectorAll('.c-value')];
   function updateValues() {
     const probe = innerHeight * 0.45;
-    valueRows.forEach(row => { const r = row.getBoundingClientRect(); row.classList.toggle('is-active', r.top <= probe && r.bottom > probe); });
+    const scrub = motionOK();
+    valueRows.forEach(row => {
+      const r = row.getBoundingClientRect();
+      row.classList.toggle('is-active', r.top <= probe && r.bottom > probe);
+      // slide: 1 while the card is below the screen, easing to 0 as its top reaches the probe line (where it turns red)
+      const t = Math.min(1, Math.max(0, (innerHeight - r.top) / (innerHeight - probe)));
+      if (scrub) row.style.setProperty('--slide', ((1 - t) ** 2).toFixed(4));
+    });
   }
   addEventListener('scroll', updateValues, { passive: true });
   addEventListener('resize', updateValues);
