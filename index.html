@@ -56,7 +56,7 @@
   /* Blur layer over the video: softens it into a hazy wash behind the content */
   .bg-blur {
     position: fixed; inset: 0; z-index: -1; pointer-events: none;
-    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);
   }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) :is(.bg-video, .bg-blur) { display: none; } }
   :root[data-theme="dark"] :is(.bg-video, .bg-blur) { display: none; }
