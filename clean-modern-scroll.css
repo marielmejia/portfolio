@@ -354,23 +354,29 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .bio-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .bio-role { margin: 0; font-size: 1.25rem; line-height: 1.3; color: var(--muted); }
 .bio-text { margin: 1rem 0 2.5rem; max-width: 36em; } /* body style */
-/* Team bio (#bio): fills the screen in two columns, the photo on the left third (held in place while the
-   text scrolls) and the details on the right two thirds, all 25px in from the edges; the photo stays square */
+/* Team bio (#bio): fills the screen, 25px in from every edge. Top row: a small square photo (half the left
+   third) beside the name, title and Close. Then a rule across the whole page, and the bio under it, in line with
+   the name; Previous / Next sit at the foot of the screen */
 #bio { width: 100%; }
-#bio .bio-inner { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); align-items: start; gap: 0; padding: 25px; } /* 25px in from every edge */
-#bio .bio-photo { position: sticky; top: 25px; width: auto; aspect-ratio: 1; margin: 0; font-size: clamp(3rem, 8vw, 7rem); } /* square, the column's full width */
-#bio .bio-info { min-height: calc(100vh - 50px); min-height: calc(100svh - 50px); display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; padding: 0 0 0 64px; }
-#bio .bio-nav { margin-top: auto; } /* Previous / Next sit at the foot of the screen */
+#bio .bio-inner {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); grid-template-rows: auto auto 1fr;
+  align-items: start; gap: 40px 0; padding: 25px; min-height: 100vh; min-height: 100svh;
+}
+#bio .bio-photo { grid-column: 1; grid-row: 1; justify-self: end; width: 50%; aspect-ratio: 1; margin: 0; font-size: clamp(2rem, 4vw, 3.5rem); } /* square, half the column's width, against the column's right edge */
+#bio .bio-head { grid-column: 2; grid-row: 1; display: grid; gap: 1rem; padding-left: 64px; }
 #bio .bio-top { align-items: flex-start; padding-bottom: 0; } /* the name, level with the top of the photo, with Close on the right */
 #bio .bio-close { margin-top: 0; } /* the box lines up with the top of the photo */
-#bio .bio-text { white-space: pre-line; } /* blank lines in a bio break it into paragraphs */
-@media (max-width: 760px) { /* phones: one column as before, Close on top, then the photo and the details */
+#bio .bio-rule { grid-column: 1 / -1; grid-row: 2; margin: 0 -25px; border: 0; border-top: 1px solid var(--rule); } /* edge to edge across the page */
+#bio .bio-body { grid-column: 2; grid-row: 3; align-self: stretch; display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; padding-left: 64px; }
+#bio .bio-text { margin-top: 0; white-space: pre-line; } /* blank lines in a bio break it into paragraphs */
+#bio .bio-nav { margin-top: auto; } /* Previous / Next sit at the foot of the screen */
+@media (max-width: 760px) { /* phones: one column, Close on top, then the photo, the name and title, the rule and the bio */
   #bio .bio-inner { display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; min-height: 100%; padding: var(--gutter) 20px 2rem; }
-  #bio .bio-info { display: contents; }
-  #bio .bio-top { display: contents; } /* Close first, then the photo, then the name */
+  #bio .bio-head, #bio .bio-body { display: contents; }
+  #bio .bio-top { display: contents; }
   #bio .bio-close { order: -2; align-self: flex-end; margin: 0; }
-  #bio .bio-photo { order: -1; }
-  #bio .bio-photo { position: relative; width: 160px; height: auto; aspect-ratio: 1; margin-bottom: 1rem; font-size: 3rem; }
+  #bio .bio-photo { order: -1; position: relative; width: 80px; height: auto; margin-bottom: 1rem; font-size: 1.75rem; }
+  #bio .bio-rule { align-self: stretch; margin: 1rem -20px; }
 }
 /* ---------- News ---------- */
 /* Markup:
