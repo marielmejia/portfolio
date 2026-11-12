@@ -101,7 +101,7 @@
   /* Headline: one line, as large as fits across the window (up to the H1's 118px), sitting at the bottom of its row */
   #home > header h1 {
     align-self: end; justify-self: start; text-align: left; white-space: nowrap;
-    font-size: clamp(1.25rem, calc((100vw - 3rem) / 13.6 - 10px), 6.75rem); /* fits the line (about 13.3 times its font size wide), then 10px smaller */
+    font-size: clamp(1.25rem, calc((100vw - 3rem) / 13.6 - 10px), 6.25rem); /* fits the line (about 13.3 times its font size wide), then 10px smaller */
     padding: var(--gutter);
   }
   #home > header h1 .h1-part { --shift: 0; }
@@ -127,7 +127,7 @@
     background: var(--arrow-bg); padding: 0 0.15em; /* dark text on a yellow highlighter mark, like the links in paragraphs */
   }
   h1 {
-    font: 400 clamp(1.25rem, calc(11vw - 20px), 6.75rem)/1.12 var(--font-serif); /* 20px to 108px */
+    font: 400 clamp(1.25rem, calc(11vw - 20px), 6.25rem)/1.12 var(--font-serif); /* 20px to 100px */
     letter-spacing: -0.04em;
     margin: 0;
     text-wrap: balance;
@@ -190,6 +190,7 @@
 
   .spec { width: 100%; border-collapse: collapse; } /* values use the body style */
   .spec a { font-weight: 300; color: var(--ink); } /* website link: dark, with its arrow in a yellow circle */
+  .spec .ar { font-size: 0.78125rem; } /* size the Website arrow button off the 12.5px label, matching All Work */
   .spec th { text-align: left; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; color: var(--ink); width: 34%; padding: 0.3rem 0; vertical-align: baseline; } /* label style */
   .spec td { padding: 0.3rem 0; vertical-align: baseline; font-weight: 300; /* matches the website link */ }
   /* Homepage cards: each label sits above its value in one column */
@@ -219,9 +220,9 @@
 
 
   /* Geometric line arrows */
-  .ar { display: inline-block; width: 0.6em; height: 0.6em; vertical-align: 0; overflow: visible; fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: square; stroke-linejoin: miter; vector-effect: non-scaling-stroke; }
+  .ar { display: inline-block; width: 0.726em; height: 0.726em; vertical-align: 0; overflow: visible; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: square; stroke-linejoin: miter; vector-effect: non-scaling-stroke; }
   /* Each arrow sits in a yellow circle; the arrow and its link text are the dark ink color */
-  .ar { box-sizing: content-box; padding: 0.45em; border-radius: 50%; background: var(--arrow-bg); color: var(--ink); vertical-align: middle; }
+  .ar { box-sizing: content-box; padding: 0.337em; /* circle = 0.726em arrow + 2 × 0.337em = 1.4em, 140% of the label */ border-radius: 50%; background: var(--arrow-bg); color: var(--ink); vertical-align: middle; }
   .ar.r { margin-left: 0.35em; }
   .ar.l { margin-right: 0.35em; }
   .ar.u { margin-left: 0.35em; }
@@ -243,7 +244,7 @@
      The text column stays in view while the work scrolls past. */
   .detail-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: var(--gutter); align-items: start; }
   .detail-columns .detail-head { position: sticky; top: var(--gutter); container-type: inline-size; }
-  .detail-columns .detail-title { font-size: min(6.75rem, calc(18cqi - 10px)); } /* the H1, capped so long names fit the narrow column */
+  .detail-columns .detail-title { font-size: min(6.25rem, calc(18cqi - 10px)); } /* the H1, capped so long names fit the narrow column */
   .detail-columns .detail-body { grid-template-columns: minmax(0, 1fr); } /* description above the details, one column */
   .detail-work { display: grid; gap: var(--gutter); }
   .back { color: var(--ink); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.03em; text-transform: uppercase; }
@@ -847,7 +848,7 @@
       const nextId = order[(order.indexOf(id) + 1) % order.length];
       const next = document.getElementById('d-next');
       next.href = '#' + nextId;
-      next.innerHTML = `<span class="label">Next Project</span><span class="h2">${projects[nextId].title}<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2L10.5 8L4.5 14"/></svg></span>`;
+      next.innerHTML = `<span class="label">Next Project</span><span class="h2">${projects[nextId].title}<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 2L11.5 8L5.5 14"/></svg></span>`;
       homeVideos.forEach(v => v.pause());
       home.hidden = true;
       detail.hidden = false;
