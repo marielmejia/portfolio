@@ -48,13 +48,19 @@
     padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
     padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
   }
-  /* Background image: pinned to the window so it stays put while the page scrolls (light mode only) */
+  /* Background video: pinned to the window so it stays put while the page scrolls (light mode only).
+     It lives inside the hero (still fixed to the window) so the headline's color dodge can blend with it */
   .bg-video {
     position: fixed; inset: 0; z-index: -1; pointer-events: none;
     width: 100%; height: 100%; object-fit: cover; display: block;
+    filter: grayscale(1); /* shown in black and white */
   }
-  /* Black wash over the background image at 8% */
-  .bg-shade { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: rgb(0 0 0 / 0.08); }
+  /* Golden yellow tint over the background video: #fdcf5a at 100% in screen mode, which lifts the darks toward the yellow */
+  .bg-shade {
+    position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: #fdcf5a; mix-blend-mode: screen;
+    will-change: transform; /* its own layer, so Safari blends it with the video (as with the headline) */
+  }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) :is(.bg-video, .bg-shade) { display: none; } }
   :root[data-theme="dark"] :is(.bg-video, .bg-shade) { display: none; }
   body:has(> #home[hidden]) :is(.bg-video, .bg-shade) { display: none; } /* homepage only, not on project pages */
@@ -97,7 +103,7 @@
     padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
     padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
   }
-  .hero-stage { position: relative; display: grid; place-items: center; isolation: isolate; }
+  .hero-stage { position: relative; display: grid; place-items: center; }
   /* Headline: one line, as large as fits across the window (up to the H1's 118px), sitting at the bottom of its row */
   #home > header h1 {
     align-self: end; justify-self: start; text-align: left; white-space: nowrap;
@@ -107,7 +113,8 @@
   #home > header h1 .h1-part { --shift: 0; }
   /* Reel: the portfolio pieces play across the top two thirds of the screen, one after another,
      each cutting in with a slow push; the whole reel fades in from transparent on load */
-  #home > header .topbar, .hero-stage { position: relative; z-index: 1; }
+  #home > header .topbar { position: relative; z-index: 1; }
+  .hero-stage { position: relative; } /* no stacking layer of its own, so the headline blends with the background video */
   .hero-reel {
     position: absolute; top: calc(-1 * var(--gutter)); left: 0; right: 0; /* from the very top of the screen */
     height: calc(var(--screen) * 2 / 3); /* down to the end of the top row */
@@ -301,6 +308,8 @@
     /* Page transition: each page slides up into place */
     .page-in { animation: page-in 1s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
     @keyframes page-in { from { opacity: 0; transform: translateY(200px); } to { opacity: 1; transform: none; } }
+    #home.page-in { animation-name: page-in-fade; } /* homepage fades in without the slide, so the fixed background video stays put */
+    @keyframes page-in-fade { from { opacity: 0; } to { opacity: 1; } }
     /* Homepage headline slides in: "Crafting Brands" from the left, then "that Shine" from the right */
     header { overflow-x: clip; } /* keeps the off-screen start from widening the page */
     #home.page-in header h1 .h1-part { animation: h1-in-left 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s backwards; /* backwards: once done, the lines' own styles take over so the scroll fade can apply */ }
@@ -321,11 +330,10 @@
   }
 </style>
 
-<img class="bg-video" src="work/bg_pixel_1%201.png?v=4" alt="" aria-hidden="true">
-<div class="bg-shade" aria-hidden="true"></div>
-
 <div class="wrap" id="home">
   <header>
+    <video class="bg-video" src="work/colorflow-animation-2.mp4?v=4" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
+    <div class="bg-shade" aria-hidden="true"></div>
     <div class="topbar">
       <span class="label">MARIEL MEJIA / ART DIRECTOR AND DESIGNER</span>
       <nav aria-label="Sections">
@@ -543,17 +551,19 @@
     const hero = document.querySelector('#home > header');
     const lines = hero.querySelectorAll('h1 .h1-part');
     const reel = hero.querySelector('.hero-reel');
+    const topbar = hero.querySelector('.topbar');
+    const stage = hero.querySelector('.hero-stage');
     let queued = false;
     function fade() {
       queued = false;
       const p = Math.min(1, Math.max(0, scrollY / (hero.offsetHeight * 0.9)));
-      hero.style.opacity = (1 - p).toFixed(3);
-      // The headline fades twice as fast as the rest of the hero (its own opacity offsets the hero's)
-      const o = p >= 1 ? '0' : (Math.max(0, 1 - 2 * p) / (1 - p)).toFixed(3);
-      lines.forEach(l => l.style.opacity = o);
+      // Each part fades on its own (not the whole hero), so the background video inside it stays
+      topbar.style.opacity = (1 - p).toFixed(3);
+      // The headline fades twice as fast
+      lines.forEach(l => l.style.opacity = Math.max(0, 1 - 2 * p).toFixed(3));
       // The reel fades three times as fast, so it's gone after about a third of the hero's height
-      reel.style.opacity = p >= 1 ? '0' : (Math.max(0, 1 - 3 * p) / (1 - p)).toFixed(3);
-      hero.style.visibility = p >= 1 ? 'hidden' : '';
+      reel.style.opacity = Math.max(0, 1 - 3 * p).toFixed(3);
+      [topbar, reel, stage].forEach(el => el.style.visibility = p >= 1 ? 'hidden' : '');
     }
     addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(fade); } }, { passive: true });
     fade();
