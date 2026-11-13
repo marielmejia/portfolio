@@ -125,7 +125,8 @@
     opacity: 0; transition: opacity 0.5s ease;
   }
   .hero-reel > .on { opacity: 1; }
-  /* (no darkening overlay on the reel: the footage shows at full strength) */
+  /* 20% black overlay over the reel */
+  .hero-reel::after { content: ""; position: absolute; inset: 0; background: rgb(0 0 0 / 0.2); pointer-events: none; }
   #home > header .topbar .label { color: #fff; } /* light type over the reel */
   .topbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem 2rem; padding-bottom: 0.9rem; }
   .topbar nav { display: flex; gap: 1.5rem; }
@@ -343,7 +344,6 @@
       </nav>
     </div>
     <div class="hero-reel" aria-hidden="true">
-      <video src="work/rezera.mp4" muted loop playsinline preload="auto"></video>
       <img src="work/celcuity-mobile.jpg" alt="">
       <video src="work/kardigan-4.mp4" muted loop playsinline preload="auto"></video>
       <video src="work/kailera-5.mp4" muted loop playsinline preload="auto"></video>
@@ -470,7 +470,6 @@
     </div>
     <div class="about-text">
       <p class="h2">I’m an art director and designer with more than 20 years of agency experience.</p>
-      <p>I enjoy every part of the process: shaping the creative strategy, getting hands-on with the design, leading design teams and working closely with clients and collaborators from every discipline.</p>
       <p>Since 2017, I’ve been a senior art director and designer at 22 Fillmore, a branding and marketing firm in the San Francisco Bay Area. Most of my work there has been in healthcare (biotech, life sciences and medtech), along with technology and financial services. Our websites for Ikena (2020), Aeglea (2021) and Kardigan (2026) each won Best Biotechnology Website of the Year from the Web Marketing Association.</p>
       <p>I approach every project with the same goal: create something that looks exceptional and serves a clear purpose. A website should tell a story, show what makes a brand different and guide visitors toward action.</p>
       <p id="contact">If you like what you see, I’d love to hear from you. Send me an <a href="mailto:mariel@spirolab.com" target="_blank" rel="noopener">email</a> or connect with me on <a href="https://www.linkedin.com/in/mariel-mejia-3bab542/" target="_blank" rel="noopener">LinkedIn</a>.</p>
@@ -529,7 +528,7 @@
   (() => {
     const shots = [...document.querySelectorAll('.hero-reel > *')];
     const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const hold = 2600; // ms on each piece
+    const hold = 4000; // ms on each piece
     let i = 0;
     function show(n) {
       shots.forEach((el, k) => el.classList.toggle('on', k === n));
@@ -558,7 +557,8 @@
       queued = false;
       const p = Math.min(1, Math.max(0, scrollY / (hero.offsetHeight * 0.9)));
       // Each part fades on its own (not the whole hero), so the background video inside it stays
-      topbar.style.opacity = (1 - p).toFixed(3);
+      // The name and nav fade three times as fast, like the reel, so they're gone after about a third of the hero's height
+      topbar.style.opacity = Math.max(0, 1 - 3 * p).toFixed(3);
       // The headline fades twice as fast
       lines.forEach(l => l.style.opacity = Math.max(0, 1 - 2 * p).toFixed(3));
       // The reel fades three times as fast, so it's gone after about a third of the hero's height
