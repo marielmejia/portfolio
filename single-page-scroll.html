@@ -149,7 +149,7 @@
   #news .news-item:hover, #news .news-item:focus-visible { background: var(--ink); }
   /* Inset by the panels' own inner padding (the side inset, 20px on phones): the Pipeline and News labels and headlines
      line up with the text inside the chart and the news rows, and everything in Team sits on that same inset */
-  #pipeline-section > .section-head, #pipeline-section > .h2,
+  #pipeline-section > .pl-intro,
   #news .news-intro,
   #team > * { --inset: var(--inset-x); padding-inline: var(--inset); }
   /* The same side inset inside the Pipeline chart */
@@ -157,9 +157,13 @@
   @media (min-width: 761px) {
     #pipeline-section .pipeline { padding-inline: var(--inset-x); }
   }
-  #pipeline-section > .h2 { max-width: calc(22em + 2 * var(--inset)); } /* padding counts inside max-width */
+  /* Pipeline and Team intros laid out like About (label left, headline right), with 80px under the headline */
+  #pipeline-section > .pl-intro, #team > .pl-intro { margin-bottom: 80px; }
+  /* The same 80px under the Contact headline */
+  #contact .contact-info { row-gap: 80px; }
+  .pl-intro > .h2 { margin: 0; max-width: none; text-wrap: pretty; } /* fills its column out to the chart's right edge (no balanced short lines) */
   @media (max-width: 760px) {
-    #pipeline-section > .section-head, #pipeline-section > .h2,
+    #pipeline-section > .pl-intro,
     #news .news-intro,
     #team > * { --inset: 20px; }
   }
@@ -243,19 +247,23 @@
   </section>
 
   <section id="pipeline-section" aria-labelledby="pipeline-title">
-    <div class="section-head">
-      <h2 id="pipeline-title" class="section-label">Pipeline</h2>
+    <div class="about-cols pl-intro">
+      <div class="section-head">
+        <h2 id="pipeline-title" class="section-label">Pipeline</h2>
+      </div>
+      <p class="h2">We are advancing a portfolio of internally invented, wholly owned NLRP3 inhibitor product candidates.</p>
     </div>
-    <p class="h2" style="margin-bottom: 2.5rem;">We are advancing a portfolio of internally invented, wholly owned NLRP3 inhibitor product candidates.</p>
     <div class="pipeline" role="group" aria-label="Development pipeline" id="pipeline"></div>
   </section>
 
   <section id="team" aria-labelledby="team-title">
-    <div class="section-head">
-      <h2 id="team-title" class="section-label">Team</h2>
+    <div class="about-cols pl-intro">
+      <div class="section-head">
+        <h2 id="team-title" class="section-label">Team</h2>
+      </div>
+      <p class="h2">A veteran team bringing together immunology, protein engineering and drug development.</p>
     </div>
     <div class="team-head">
-      <p class="h2">A veteran team bringing together immunology, protein engineering and drug development.</p>
       <div class="tabs-bar"><div class="tabs" role="tablist" aria-label="Team groups" id="team-tabs"></div></div>
     </div>
     <div class="team-grid" role="tabpanel" id="team-grid"></div>
@@ -645,8 +653,21 @@
     history.pushState(null, '', hash);
     const wrap = document.querySelector('.wrap');
     const from = scrollY;
-    const to = Math.min(Math.max(0, target.getBoundingClientRect().top + scrollY - (parseFloat(getComputedStyle(target).scrollMarginTop) || 0)),
-      document.documentElement.scrollHeight - innerHeight);
+    // Land on the section's label, so every label stops at the same height: 180px from the top of the screen. A section without a
+    // label falls back to its scroll margin. A pinned section (Science) can't sit higher than where its pin starts,
+    // or its row would already have slid, so it stops at the pin; the last section stops where the page ends.
+    // Measured again on every frame of the glide, since the page above can still shift while it runs (text reveals,
+    // re-measured scroll effects); otherwise a long jump lands off by that much.
+    const label = target.querySelector('.section-label');
+    const goal = () => {
+      let y = label
+        ? label.getBoundingClientRect().top + scrollY - 180
+        : target.getBoundingClientRect().top + scrollY - (parseFloat(getComputedStyle(target).scrollMarginTop) || 0);
+      const pin = window.ScrollTrigger && ScrollTrigger.getAll().find(t => t.pin && target.contains(t.trigger));
+      if (pin) y = Math.min(y, pin.start);
+      return Math.min(Math.max(0, y), document.documentElement.scrollHeight - innerHeight);
+    };
+    const to = goal();
     const land = () => { target.setAttribute('tabindex', '-1'); target.focus({ preventScroll: true }); };
     cancelAnimationFrame(glide);
     if (!motionOK() || Math.abs(to - from) < 2) { scrollTo({ top: to, behavior: 'instant' }); land(); return; }
@@ -657,7 +678,7 @@
     ['wheel', 'touchstart', 'keydown'].forEach(ev => addEventListener(ev, stop, { passive: true }));
     const step = now => {
       const t = Math.min(1, (now - start) / duration);
-      scrollTo({ top: from + (to - from) * easeOut(t), behavior: 'instant' });
+      scrollTo({ top: from + (goal() - from) * easeOut(t), behavior: 'instant' });
       wrap.style.opacity = 1 - 0.25 * Math.sin(Math.PI * Math.sqrt(t)); // dips most a quarter of the way in, back to 1 on landing
       if (t < 1) glide = requestAnimationFrame(step); else { stop(); land(); }
     };

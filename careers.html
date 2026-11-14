@@ -79,7 +79,7 @@
   .c-value > * { margin: 0; }
   .c-value-icon { width: 3.5rem; aspect-ratio: 1; display: grid; place-items: center;
     background: color-mix(in srgb, currentColor 10%, transparent); transition: background-color 0.5s ease; } /* placeholder; tints with the card's text color */
-  #values .c-head { justify-items: center; text-align: center; margin-bottom: 4.5rem; } /* headline centered over the cards, with the same room below it as Current Openings */
+  #values .c-head { justify-items: center; text-align: center; margin-bottom: 80px; } /* headline centered over the cards, 80px above them like every section headline */
   .c-value-icon svg { width: 1.5rem; height: 1.5rem; fill: none; stroke: currentColor; stroke-width: 1.5; opacity: 0.6; }
   .c-value p { max-width: 36em; opacity: 0.8; font-size: 1rem; line-height: 1.4; } /* Small text style */ /* body copy at 80%; opacity (not a mixed color) so it follows the active colors */
   @media (prefers-reduced-motion: no-preference) {
@@ -102,7 +102,7 @@
   /* The heading row and the table share one column grid (--role-cols): the heading takes the title column, the
      paragraph runs from the Team column to the arrows, and their tops line up */
   #roles { --role-cols: minmax(0, 2.5fr) minmax(0, 1fr) minmax(0, 1fr) 0.9rem; }
-  .c-roles-head { grid-template-columns: var(--role-cols); gap: 1.5rem var(--gutter); align-items: start; margin-bottom: 4.5rem; } /* more room above the table */
+  .c-roles-head { grid-template-columns: var(--role-cols); gap: 1.5rem var(--gutter); align-items: start; margin-bottom: 80px; } /* 80px above the table, like every section headline */
   .c-roles-head p { grid-column: 2 / -1; color: color-mix(in srgb, currentColor 80%, transparent); } /* body copy at 80% */
   @media (max-width: 760px) { .c-roles-head { grid-template-columns: minmax(0, 1fr); } .c-roles-head p { grid-column: 1; } }
   .c-roles { list-style: none; margin: 0 -20px; padding: 0; border-top: 1px solid var(--rule, #d9d9d9); } /* rules and band reach 20px past the content on each side; the rows pad back in */
@@ -176,7 +176,7 @@
     </div>
   </section>
 
-  <section id="values" aria-labelledby="values-title">
+  <section id="values" class="c-inset" aria-labelledby="values-title">
     <div class="c-head">
       <h2 id="values-title" class="h2">Values we stand by</h2>
     </div>
