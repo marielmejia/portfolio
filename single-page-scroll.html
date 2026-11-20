@@ -11,12 +11,12 @@
   :root { --inset-x: clamp(60px, calc(15.35vw - 57.9px), 200px); }
   /* 180px between the content sections (.wrap already spaces them 4.5rem) */
   .wrap > section + section { margin-top: calc(180px - 4.5rem); }
-  #team { margin-top: calc(180px + 80px - 4.5rem); } /* 80px more above Team, between the Pipeline pixel transition and the Team label */
+  #team, #pipeline-section { margin-top: calc(180px + 80px - 4.5rem); } /* 80px more above Team and Pipeline, between the pixel transition above each and its label */
   /* About sits right under the hero, and Science right under About, with no gap (cancels .wrap's 4.5rem) */
-  #about, #science { margin-top: -4.5rem; }
+  #about, #factoids { margin-top: -4.5rem; }
   /* About and Science run edge to edge: the section's band reaches the screen edges while the gutter padding keeps
      the content where it was */
-  #about, #science {
+  #about, #factoids {
     background: var(--row-bg);
     margin-inline: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px))) calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)));
     padding-inline: max(var(--gutter), env(safe-area-inset-left, 0px)) max(var(--gutter), env(safe-area-inset-right, 0px));
@@ -40,9 +40,19 @@
   .about-cols .section-head { margin: 0; padding-top: 0.6em; } /* the label sits level with the top of the paragraph's first line */
   .about-main { display: grid; gap: 3rem; }
   .about-main > .h3 { margin: 0; text-wrap: pretty; }
-  #about .accordion summary { font: 300 1.25rem/1.3 var(--font); letter-spacing: -0.01em; } /* the team name style (300, 20px, -1%) */
-  #about .accordion .detail-body { display: block; }
-  #about .accordion .detail-body p { margin: 0; }
+  /* Accordions (About and Science): the More / Less label sits at the bottom, under a rule, and the text opens
+     above it at the full width of the column, like the paragraphs around it */
+  .accordion .acc-toggle {
+    width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    padding: 0.9rem 0; background: none; border: 0; border-radius: 0; color: var(--ink); cursor: pointer; text-align: left;
+    font: 300 1.25rem/1.3 var(--font); letter-spacing: -0.01em; /* the team name style (300, 20px, -1%) */
+  }
+  .accordion:has(> .acc-toggle) { border-top: 0; }
+  .accordion .acc-toggle { border-top: 1px solid var(--rule); } /* the rule rides on the label, so it slides down with it */
+  .accordion .acc-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .accordion.is-open:not(.closing) .acc-icon .v { transform: scaleY(0); } /* plus becomes minus */
+  .accordion .detail-body { display: block; padding: 0 0 2.5rem; } /* no space above the text; 40px between its end and the label */
+  .accordion .detail-body p { margin: 0; max-width: none; }
   @media (max-width: 760px) {
     #about { padding-block: 100px; }
     #about > * { padding-inline: 20px; }
@@ -50,7 +60,7 @@
     .about-cols .section-head { padding-top: 0; }
   }
   /* Science in dark mode: the same token swap as Contact, so the band, text and placeholders invert */
-  #science {
+  #factoids {
     --row-bg: #0c0f11; --ink: #ffffff; --bg: #1a1f1c; --muted: #9aa59f; --line: #333b37; --rule: #333b37; --accent: #9aa59f;
     color: var(--ink); color-scheme: dark;
   }
@@ -58,32 +68,52 @@
      The band runs edge to edge with no side padding; the copy pads itself. */
   /* The slide sits in a light gray band that fills the screen, 200px in from the top and bottom and edge to edge
      across (160px top and bottom on phones) */
-  #science { padding-inline: 0; background: #e7e7e7; }
+  #factoids { padding-inline: 0; background: #e7e7e7; }
   .sci-viewport { background: #e7e7e7; padding: 200px 0; }
   .sci-window { overflow: hidden; height: 100%; }
   .sci-track { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); width: 200%; background: var(--row-bg); }
-  #science .split-body { display: grid; grid-template-columns: minmax(0, 24em); justify-content: center; align-content: center; padding: 64px; } /* grid, so the label sits 12px over its headline like every section */
-  #science .split-media { aspect-ratio: auto; padding: 0; display: grid; place-items: stretch; min-width: 0; min-height: 37.5vw; }
-  #science .split-img { width: 100%; height: 100%; }
+  #factoids .split-body { display: grid; grid-template-columns: minmax(0, 24em); justify-content: center; align-content: center; padding: 64px; } /* grid, so the label sits 12px over its headline like every section */
+  #factoids .split-media { aspect-ratio: auto; padding: 0; display: grid; place-items: stretch; min-width: 0; min-height: 37.5vw; }
+  #factoids .split-img { width: 100%; height: 100%; }
+  #factoids .factoid { gap: 1rem; } /* the line of text sits close under its number */
+  #factoids .sci-track > :nth-child(even) { background: var(--line); } /* columns 2 and 4 keep the lighter fill the image placeholders had, so the row alternates */
+  #factoids .factoid .h1 { font: 200 clamp(3rem, 11vw, 6.0625rem)/1 var(--font); letter-spacing: -0.04em; color: inherit; max-width: none; } /* the H1 style */
   /* Scroll-driven (added by the script when motion is on): the row fills the screen top to bottom, pins, and slides
      left as you scroll down, then lets the page carry on */
-  #science.sci-scrub .sci-viewport { height: 100vh; height: 100svh; }
+  #factoids.sci-scrub .sci-viewport { height: 100vh; height: 100svh; }
   /* While pinned, the row gets whatever the screen has left after the gray above and below, so on short screens the
      gray gives way: up to 200px each side, never less than 40px, always leaving the row at least 520px (the copy
      columns need about 470px). Without this, screens under ~870px tall cut off the bottom of the copy. */
-  #science.sci-scrub .sci-viewport { padding-block: clamp(40px, (100vh - 520px) / 2, 200px); padding-block: clamp(40px, (100svh - 520px) / 2, 200px); }
-  #science.sci-scrub .sci-track { height: 100%; will-change: transform; }
-  #science.sci-scrub .split-media { min-height: 0; }
+  #factoids.sci-scrub .sci-viewport { padding-block: clamp(40px, (100vh - 520px) / 2, 200px); padding-block: clamp(40px, (100svh - 520px) / 2, 200px); }
+  #factoids.sci-scrub .sci-track { height: 100%; will-change: transform; }
+  #factoids.sci-scrub .split-media { min-height: 0; }
   @media (max-width: 760px) {
     .sci-viewport { padding: 160px 0; }
     .sci-track { width: 400%; } /* one column per window */
-    #science .split-body { padding: 40px 20px; }
-    #science .split-media { min-height: 75vw; }
-    #science.sci-scrub .sci-viewport { padding-block: clamp(40px, (100vh - 520px) / 2, 160px); padding-block: clamp(40px, (100svh - 520px) / 2, 160px); }
+    #factoids .split-body { padding: 40px 20px; }
+    #factoids .split-media { min-height: 75vw; }
+    #factoids.sci-scrub .sci-viewport { padding-block: clamp(40px, (100vh - 520px) / 2, 160px); padding-block: clamp(40px, (100svh - 520px) / 2, 160px); }
   }
   /* Without the slide (reduced motion or no script): the four columns wrap into a 2 × 2 grid, one column on phones */
-  #science:not(.sci-scrub) .sci-track { width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  @media (max-width: 760px) { #science:not(.sci-scrub) .sci-track { grid-template-columns: minmax(0, 1fr); } }
+  #factoids:not(.sci-scrub) .sci-track { width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (max-width: 760px) { #factoids:not(.sci-scrub) .sci-track { grid-template-columns: minmax(0, 1fr); } }
+  /* Science: two columns on the side inset. Left: label, headline, two paragraphs and an accordion like About's.
+     Right: an image that fills the column's height */
+  #science > .sci-cols { padding-inline: var(--inset-x); } /* only the columns: the pixel divider under them runs edge to edge */
+  #science { padding-bottom: 80px; } /* clear space between the image and the pixel divider */
+  .sci-cols { display: grid; grid-template-columns: minmax(0, 1fr) calc(30% - 2 * var(--gutter)); /* About's 30/70, flipped: copy takes 70%, the image 30% */ gap: calc(2 * var(--gutter)); align-items: stretch; }
+  .sci-copy { display: grid; gap: 1.5rem; align-content: center; justify-items: start; }
+  .sci-copy > * { margin: 0; }
+  .sci-copy > .section-label { margin-bottom: -0.75rem; } /* 12px over its headline, like every section */
+  .sci-copy > .h2 { max-width: none; text-wrap: pretty; }
+  .sci-copy > p:not(.h2) { max-width: none; color: color-mix(in srgb, currentColor 80%, transparent); } /* body runs the full width of the headline */
+  .sci-copy .accordion { justify-self: stretch; margin-top: 6px; } /* 30px under the last paragraph (the 24px column gap + 6px) */
+  #science .split-media { aspect-ratio: 4 / 3; height: auto; align-self: start; display: grid; } /* 4:3, level with the top of the copy */
+  #science .split-img { width: 100%; height: 100%; }
+  @media (max-width: 760px) {
+    #science > .sci-cols { padding-inline: 20px; }
+    .sci-cols { grid-template-columns: minmax(0, 1fr); gap: 3rem; }
+  }
   @media (min-width: 761px) {
     /* The nav (or the Menu bar on tablets) and the hero copy line up on the same inset: one gutter plus the side inset from the screen edges */
     .pinbar { padding-inline: calc(max(var(--gutter), env(safe-area-inset-left, 0px)) + var(--inset-x)) calc(max(var(--gutter), env(safe-area-inset-right, 0px)) + var(--inset-x)); }
@@ -112,6 +142,19 @@
   #news .news-stack .news-item { grid-template-columns: minmax(0, 1fr); align-items: start; gap: 1rem; padding: 2rem; }
   #news .news-stack .news-item time::after { content: ""; display: block; width: 30px; height: 3px; margin-top: 0.75rem; background: currentColor; }
   @media (max-width: 760px) { #news .news-stack .news-item { padding: 1.5rem; } }
+  /* News pages: square buttons joined edge to edge in the white rule of the rows; the current page fills white */
+  .news-pager { display: flex; justify-content: center; margin-top: 2.5rem; }
+  .news-pager button {
+    min-width: 48px; height: 48px; padding: 0 0.75rem; display: grid; place-items: center;
+    background: transparent; color: #fff; border: 1px solid rgb(255 255 255 / 0.2); border-radius: 0;
+    font: 400 0.9375rem/1 var(--font); cursor: pointer; transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  .news-pager button + button { margin-left: -1px; }
+  .news-pager button:hover:not(:disabled, [aria-current]) { background: rgb(255 255 255 / 0.1); }
+  .news-pager button[aria-current] { background: #fff; color: #0c0f11; border-color: #fff; position: relative; }
+  .news-pager button:disabled { opacity: 0.35; cursor: default; }
+  .news-pager button:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; position: relative; }
+  .news-pager .ar { width: 0.75rem; height: 0.75rem; stroke-width: 3; }
   /* Contact in reverse: the framework's colors flipped for this section only. The panel takes the ink color,
      text goes white, fields go dark; red links and the button stay red. */
   #contact {
@@ -161,6 +204,16 @@
   #pipeline-section > .pl-intro, #team > .pl-intro { margin-bottom: 80px; }
   /* The same 80px under the Contact headline */
   #contact .contact-info { row-gap: 80px; }
+  /* Pipeline columns: Program, Target, Indication, the bar across Phase 1–3, then Next Milestone */
+  #pipeline .pl-row { grid-template-columns: minmax(0, 0.8fr) minmax(0, 0.8fr) minmax(0, 0.7fr) minmax(0, 3.4fr) minmax(0, 1.1fr); } /* the phase columns get most of the width */
+  #pipeline .pl-stages, #pipeline .pl-bar { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  #pipeline .pl-target, #pipeline .pl-milestone { font-size: 1.125rem; line-height: 1.4; } /* like Indication */
+  #pipeline .pl-date { display: block; } /* the date always takes the second line */
+  @media (max-width: 760px) {
+    #pipeline .pl-row { grid-template-columns: minmax(0, 1fr); }
+    /* no header row on phones, so Target and Next Milestone name themselves */
+    #pipeline .pl-target::before, #pipeline .pl-milestone::before { content: attr(data-label) ": "; color: var(--muted); }
+  }
   .pl-intro > .h2 { margin: 0; max-width: none; text-wrap: pretty; } /* fills its column out to the chart's right edge (no balanced short lines) */
   @media (max-width: 760px) {
     #pipeline-section > .pl-intro,
@@ -200,9 +253,9 @@
   <header class="hero" id="hero" data-st-01="parallax" data-st-opacity="0.5">
     <video class="hero-video" id="hero-video" src="work/Rezera_Campaign_Video_R2.mp4" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
     <div class="hero-body">
-      <h1>Main headline<br> goes here.</h1>
+      <h1>A breath of fresh ingenuity</h1>
       <div class="hero-side">
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.</p>
+        <p class="h4">We are advancing novel biologics to transform the treatment of inflammatory diseases.</p>
       </div>
     </div>
   </header>
@@ -215,33 +268,58 @@
       </div>
       <div class="about-main">
         <p class="h3" data-reveal-01="lines" data-scroll data-delay="0.1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam. Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-        <details class="accordion">
-          <summary>Read mission statement<svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path class="v" d="M8 1V15"/></svg></summary>
-          <div class="detail-body about-text">
+        <div class="accordion">
+          <div class="detail-body about-text" id="about-more" hidden>
             <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.</p>
           </div>
-        </details>
+          <button class="acc-toggle" type="button" aria-expanded="false" aria-controls="about-more"><span>More</span><svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path class="v" d="M8 1V15"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="factoids" aria-label="Science highlights">
+    <!-- Factoids: one row of four columns (a headline, then three factoids: a number in the H1 style over a line of text). With motion on, the row pins and slides sideways as you scroll -->
+    <div class="sci-viewport">
+      <div class="sci-window">
+      <div class="sci-track">
+        <div class="split-body">
+          <p class="h3">COPD is the highest unmet need in respiratory diseases and potentially in all of inflammatory disease.</p>
+        </div>
+        <div class="split-body factoid">
+          <p class="h1">~40 M</p>
+          <p>COPD patients on maintenance therapy</p>
+        </div>
+        <div class="split-body factoid">
+          <p class="h1">3rd</p>
+          <p>leading cause of death worldwide</p>
+        </div>
+        <div class="split-body factoid">
+          <p class="h1">50%</p>
+          <p>of patients on inhaled therapies still experience exacerbations</p>
+        </div>
+      </div>
       </div>
     </div>
   </section>
 
   <section id="science" aria-labelledby="science-title">
-    <!-- One row of four columns (copy, image, copy, image). With motion on, the row pins and slides sideways as you scroll -->
-    <div class="sci-viewport">
-      <div class="sci-window">
-      <div class="sci-track">
-        <div class="split-body">
-          <h2 id="science-title" class="section-label">Science</h2>
-          <p class="h3">Translating immune biology into precision therapeutics for inflammatory disease.</p>
+    <!-- Two columns: copy (label, headline, two paragraphs and an accordion) on the left, an image on the right -->
+    <div class="sci-cols">
+      <div class="sci-copy">
+        <h2 id="science-title" class="section-label">Science</h2>
+        <p class="h2">Targeting the inflammatory pathways at the root of chronic disease.</p>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.</p>
+        <div class="accordion">
+          <div class="detail-body" id="science-more" hidden>
+            <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.</p>
+          </div>
+          <button class="acc-toggle" type="button" aria-expanded="false" aria-controls="science-more"><span>More</span><svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path class="v" d="M8 1V15"/></svg></button>
         </div>
-        <div class="split-media"><div class="split-img" role="img" aria-label="Image placeholder"><span class="label">Image placeholder</span></div></div>
-        <div class="split-body">
-          <p class="h3">Disrupting disease at the cells that drive it.</p>
-          <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem.</p>
-        </div>
-        <div class="split-media"><div class="split-img" role="img" aria-label="Image placeholder"><span class="label">Image placeholder</span></div></div>
       </div>
-      </div>
+      <div class="split-media"><div class="split-img" role="img" aria-label="Image placeholder"><span class="label">Image placeholder</span></div></div>
     </div>
   </section>
 
@@ -405,16 +483,16 @@
   addEventListener('resize', updateParallax);
   updateParallax();
 
-  // Five stages; each program's progress is counted in slots (fractions fill part of a slot)
-  const stages = [['Discovery', 'Disc'], ['IND-Enabling', 'IND'], ['Phase 1', 'PH1'], ['Phase 2', 'PH2'], ['Phase 3', 'PH3']];
+  // Three stages; each program's progress is counted in slots (fractions fill part of a slot)
+  const stages = [['Phase 1', 'PH1'], ['Phase 2', 'PH2'], ['Phase 3', 'PH3']];
   const programs = [
     {
-      name: 'Ruvonoflast', code: 'NT-0796', indication: 'CVD', progress: 4,
-      text: 'Ruvonoflast is Rezera’s lead program, an oral NLRP3 inhibitor designed to reach high levels in tissue and the brain. It is advancing toward Phase 3 in cardiovascular disease, with peripheral artery disease as the lead indication.'
+      name: 'AIR-101', target: 'TSLP/IL33', indication: 'COPD', progress: 1, milestone: 'Phase 1 Readout', date: 'Q1 2027',
+      text: 'Placeholder program description. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
     },
     {
-      name: 'Trabzanoflast', code: 'NT-0150', indication: 'Neuroinflammatory conditions', progress: 3,
-      text: 'Trabzanoflast is Rezera’s second NLRP3 inhibitor, designed to set a new benchmark for brain penetration. The company plans to advance it into Phase 2 in neuroinflammatory disease.'
+      name: 'AIR-102', target: 'TSLP/IL33', indication: 'Asthma', progress: 1, milestone: 'Phase 1 Readout', date: 'Q1 2027',
+      text: 'Placeholder program description. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
     }
   ];
 
@@ -422,25 +500,28 @@
   const stageCells = labels => labels.map(s => `<span>${s}</span>`).join('');
   const plus = '<svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path class="v" d="M8 1V15"/></svg>';
   table.innerHTML =
-    `<div class="pl-row pl-head" aria-hidden="true"><span>Program</span><span>Indication</span>` +
-    `<div class="pl-stages">${stageCells(stages.map(s => s[0]))}</div></div>` +
+    `<div class="pl-row pl-head" aria-hidden="true"><span>Program</span><span>Target</span><span>Indication</span>` +
+    `<div class="pl-stages">${stageCells(stages.map(s => s[0]))}</div><span>Next Milestone</span></div>` +
     programs.map((p, r) => {
       const current = stages[Math.min(Math.ceil(p.progress), stages.length) - 1][0];
       const slots = stages.map((_, i) =>
         `<span class="pl-slot" style="--fill: ${Math.max(0, Math.min(1, p.progress - i))}; --i: ${i}"></span>`).join('');
       return `<details class="pl-item" style="--row: ${r}"><summary class="pl-row">` +
-        `<span class="pl-program">${p.name}${plus}<small>${p.code}</small></span>` +
+        `<span class="pl-program">${p.name}${plus}${p.code ? `<small>${p.code}</small>` : ''}</span>` +
+        `<span class="pl-target" data-label="Target">${p.target}</span>` +
         `<span class="pl-indication">${p.indication}</span>` +
         `<div class="pl-stages pl-stage" aria-hidden="true">${stageCells(stages.map(s => s[1]))}</div>` +
         `<div class="pl-bar" role="img" aria-label="Through ${current}, ${p.progress} of ${stages.length} stages">${slots}</div>` +
+        `<span class="pl-milestone" data-label="Next milestone">${p.milestone}${p.date ? `<span class="pl-date">${p.date}</span>` : ''}</span>` +
         `</summary><div class="pl-panel"><p>${p.text}</p></div></details>`;
     }).join('');
 
-  // Column rules: a dotted line midway across each gap between the header's columns (Program, Indication and the five stages)
+  // Column rules: a dotted line midway across each gap between the header's columns (Program, Target, Indication, the three
+  // stages and Next Milestone)
   function plColumns() {
     if (matchMedia('(max-width: 760px)').matches) { table.style.removeProperty('--pl-cols'); table.style.removeProperty('--pl-cols-x'); return; }
     const head = table.querySelector('.pl-head');
-    const cells = [head.children[0], head.children[1], ...head.querySelector('.pl-stages').children].map(c => c.getBoundingClientRect());
+    const cells = [...head.children].flatMap(c => c.classList.contains('pl-stages') ? [...c.children] : [c]).map(c => c.getBoundingClientRect());
     const left = head.getBoundingClientRect().left;
     const xs = cells.slice(1).map((c, i) => Math.round((cells[i].right + c.left) / 2 - left));
     const dots = 'repeating-linear-gradient(to bottom, var(--rule, #d9d9d9) 0 2px, transparent 2px 5px)';
@@ -479,8 +560,40 @@
   }
   // Pipeline rows (the + 1 is the row's top border)
   table.querySelectorAll('.pl-item').forEach(item => softAccordion(item, item.querySelector('.pl-panel'), s => s.offsetHeight + 1));
-  // About accordion
-  document.querySelectorAll('#about .accordion').forEach(item => softAccordion(item, item.querySelector('.detail-body'), s => s.offsetHeight));
+  // About and Science accordions: the button sits under the text, so the text opens above it. The block's height
+  // animates between the button alone and the button plus the text; the label reads More, then Less
+  document.querySelectorAll('.accordion:has(> .acc-toggle)').forEach(item => {
+    const button = item.querySelector('.acc-toggle'), label = button.querySelector('span'), panel = item.querySelector('.detail-body');
+    let itemAnim = null, panelAnim = null;
+    const stop = () => { if (itemAnim) itemAnim.cancel(); if (panelAnim) panelAnim.cancel(); itemAnim = panelAnim = null; };
+    const closed = () => { panel.hidden = true; item.classList.remove('is-open', 'closing'); };
+    button.addEventListener('click', () => {
+      const opening = button.getAttribute('aria-expanded') !== 'true';
+      button.setAttribute('aria-expanded', opening);
+      label.textContent = opening ? 'Less' : 'More';
+      if (!matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+        stop();
+        if (opening) { panel.hidden = false; item.classList.add('is-open'); } else closed();
+        return;
+      }
+      const from = item.offsetHeight; // current height, even mid-animation
+      stop();
+      panel.hidden = false;
+      item.classList.add('is-open');
+      item.classList.toggle('closing', !opening);
+      const full = item.offsetHeight;
+      const to = opening ? full : full - panel.offsetHeight;
+      // The text slides with the label: it rides just above it the whole way, so it glides down out from under
+      // the paragraphs above as the block opens and back up behind them as it closes
+      const timing = { duration: 700, easing: ease };
+      itemAnim = item.animate({ height: [from + 'px', to + 'px'] }, timing);
+      panelAnim = panel.animate({
+        marginTop: [`${from - full}px`, `${to - full}px`], // pulls the text, and the label under it, up by what's still closed
+        opacity: opening ? [0, 1] : [1, 0]
+      }, { ...timing, fill: 'forwards' });
+      itemAnim.onfinish = () => { stop(); if (!opening) closed(); };
+    });
+  });
 
   // Bars start empty only when the fill can animate, so the table still reads without it
   if ('IntersectionObserver' in window && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
@@ -712,14 +825,51 @@
     { date: '2026-10-21', title: 'Santa Ana Bio to Present Preclinical Data on SAB05, a CD40-Targeted Glucocorticoid Antibody-Drug Conjugate, at ACR Convergence 2026', slug: 'santa-ana-bio-to-present-preclinical-data-on-sab05-a-cd40-targeted-glucocorticoid-antibody-drug-conjugate-at-acr-convergence-2026' },
     { date: '2026-09-14', title: 'Santa Ana Bio Announces First Subjects Dosed in Phase 1 Study of SAB01 to Treat Autoimmune Inflammatory Diseases', slug: 'santa-ana-bio-announces-first-subjects-dosed-in-phase-1-study-of-sab01-to-treat-autoimmune-inflammatory-diseases' },
     { date: '2026-02-10', title: 'Santa Ana Bio Announces the Appointment of Newman Yeilding as Chief Medical Officer', slug: 'santa-ana-bio-announces-the-appointment-of-newman-yeilding-as-chief-medical-officer' },
-    { date: '2025-11-11', title: 'Santa Ana Bio Announces the Appointment of Mike Bonney as Chair of the Board', slug: 'santa-ana-bio-announces-the-appointment-of-mike-bonney-as-chair-of-the-board' }
+    { date: '2025-11-11', title: 'Santa Ana Bio Announces the Appointment of Mike Bonney as Chair of the Board', slug: 'santa-ana-bio-announces-the-appointment-of-mike-bonney-as-chair-of-the-board' },
+    // Placeholders to fill the second page (no slug: they don't link anywhere yet)
+    { date: '2025-08-19', title: 'Placeholder Press Release Headline: Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit' },
+    { date: '2025-05-06', title: 'Placeholder Press Release Headline: Sed Do Eiusmod Tempor Incididunt Ut Labore et Dolore' }
   ];
   const longDate = iso => new Date(iso + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-  document.getElementById('news-list').innerHTML = news.map(n =>
-    `<a class="news-item" href="${pressBase}${n.slug}/" target="_blank" rel="noopener">` +
+  // Three releases per page, with page buttons under the list (previous, numbers, next). Changing page fades the
+  // rows out and the new ones in; the buttons stay put
+  const newsList = document.getElementById('news-list');
+  const perPage = 3, pages = Math.ceil(news.length / perPage);
+  const chevron = d => `<svg class="ar" viewBox="0 0 16 16" aria-hidden="true"><path d="${d}"/></svg>`;
+  newsList.innerHTML = '<div class="news-page"></div>' + (pages > 1 ? '<nav class="news-pager" aria-label="News pages"></nav>' : '');
+  const newsPage = newsList.querySelector('.news-page'), pager = newsList.querySelector('.news-pager');
+  let currentPage = 1, turning = false;
+  const rows = page => news.slice((page - 1) * perPage, page * perPage).map(n =>
+    `<a class="news-item" href="${n.slug ? pressBase + n.slug + '/' : '#'}"${n.slug ? ' target="_blank" rel="noopener"' : ' data-placeholder'}>` +
     `<time class="label" datetime="${n.date}">${longDate(n.date)}</time>` +
     `<h3 class="news-title h4">${n.title}</h3>` +
     `<span class="news-more">Read More<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></span></a>`).join('');
+  const buttons = page =>
+    `<button type="button" data-page="${page - 1}" aria-label="Previous page"${page === 1 ? ' disabled' : ''}>${chevron('M11 2L5 8L11 14')}</button>` +
+    Array.from({ length: pages }, (_, i) => `<button type="button" data-page="${i + 1}"${i + 1 === page ? ' aria-current="page"' : ''}>${i + 1}</button>`).join('') +
+    `<button type="button" data-page="${page + 1}" aria-label="Next page"${page === pages ? ' disabled' : ''}>${chevron('M5 2L11 8L5 14')}</button>`;
+  newsPage.innerHTML = rows(1);
+  if (pager) pager.innerHTML = buttons(1);
+  async function turnTo(page) {
+    if (turning || page === currentPage || page < 1 || page > pages) return;
+    turning = true; currentPage = page;
+    pager.innerHTML = buttons(page);
+    pager.querySelector('[aria-current]').focus();
+    const motion = matchMedia('(prefers-reduced-motion: no-preference)').matches;
+    if (motion) await newsPage.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-12px)' }], { duration: 250, easing: 'ease-in', fill: 'forwards' }).finished;
+    newsPage.innerHTML = rows(page);
+    // a shorter page would leave the screen past the list: bring the list's top back into view, 180px down like the nav
+    const top = newsList.getBoundingClientRect().top;
+    if (top < 0) scrollTo({ top: top + scrollY - 180, behavior: motion ? 'smooth' : 'instant' });
+    if (motion) await newsPage.animate([{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'none' }], { duration: 400, easing: 'ease-out' }).finished;
+    newsPage.getAnimations().forEach(a => a.cancel());
+    turning = false;
+  }
+  newsList.addEventListener('click', e => {
+    if (e.target.closest('[data-placeholder]')) return e.preventDefault();
+    const b = e.target.closest('.news-pager button');
+    if (b && !b.disabled) turnTo(+b.dataset.page);
+  });
 
 
 
@@ -742,7 +892,8 @@
   // Text slides up into place as it scrolls into view. Every visible block of text below the hero gets it
   // (the hero has its own entrance); blocks that arrive together rise one after another.
   if ('IntersectionObserver' in window && motionOK()) {
-    const skip = '#hero, [data-reveal-01], .pinbar, dialog, option, .form-note, .person-photo, .split-img, details:not([open]) > :not(summary), .contact-form'; // image boxes, closed accordion text and the form stay put
+    const skip = '#hero, [data-reveal-01], .pinbar, dialog, option, .form-note, .person-photo, .split-img, details:not([open]) > :not(summary), .detail-body[hidden], .acc-toggle, .contact-form'; // image boxes, closed accordion text, the accordion labels and the form stay put
+    // (a label sits in its accordion's clipped box: pushed 40px down to wait, it can be hidden from the observer and never come back)
     const blocks = new Set();
     const walker = document.createTreeWalker(document.querySelector('.wrap'), NodeFilter.SHOW_TEXT,
       { acceptNode: n => n.textContent.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT });
@@ -1005,13 +1156,13 @@
     }).observe(document.body);
   })();
 
-  // Pipeline → Team: a quick pixel wave in a 180px strip under Pipeline (80px clear of the Team label), in the light gray of the page's
-  // rules. Flat, wide pixels (10 across, each 15% as tall as it is wide) fill in from the bottom up as you scroll
-  // down, then clear the same way, so they pass through without covering either section's content.
+  // Section dividers (Science → Pipeline, Pipeline → Team): a quick pixel wave in a 180px strip under the section (80px clear of the
+  // next label), in the light gray of the page's rules. Flat, wide pixels (10 across, each 15% as tall as it is wide) fill in from the
+  // bottom up as you scroll down, then clear the same way, so they pass through without covering either section's content.
   function pipelinePixels() {
-    const pipeline = document.getElementById('pipeline-section');
-    const team = document.getElementById('team');
-    if (!pipeline || !team) return;
+    ['science', 'pipeline-section'].forEach(id => { const el = document.getElementById(id); if (el) pixelDivider(el); });
+  }
+  function pixelDivider(pipeline) {
     const columns = 10, aspect = 0.15, color = '#e7e7e7', spread = 3;
     const gap = 180; // the strip's height; Team sits a further 80px below it
     pipeline.style.position = 'relative';
@@ -1046,7 +1197,7 @@
   // Science: the four-column row pins to the screen and slides left as you scroll, one pixel across per pixel down,
   // until its last column is in view; then the page scrolls on. scrub: 1 lets the row catch up softly.
   function scienceSlide() {
-    const section = document.getElementById('science');
+    const section = document.getElementById('factoids');
     const viewport = section.querySelector('.sci-viewport');
     const track = section.querySelector('.sci-track');
     section.classList.add('sci-scrub');
