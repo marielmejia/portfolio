@@ -150,19 +150,17 @@
   #news .news-stack .news-item { grid-template-columns: minmax(0, 1fr); align-items: start; gap: 1rem; padding: 2rem; }
   #news .news-stack .news-item time::after { content: ""; display: block; width: 30px; height: 3px; margin-top: 0.75rem; background: currentColor; }
   @media (max-width: 760px) { #news .news-stack .news-item { padding: 1.5rem; } }
-  /* News pages: square buttons joined edge to edge in the white rule of the rows; the current page fills white */
-  .news-pager { display: flex; justify-content: center; margin-top: 2.5rem; }
+  /* News pages: plain numbers split by thin bars (1 | 2 | 3), left-aligned; the current page is white, the others dimmed */
+  .news-pager { display: flex; justify-content: flex-start; align-items: center; margin-top: 2.5rem; }
+  .news-pager button:first-child { padding-left: 0; } /* the 1 starts flush with the left end of the rule above */
   .news-pager button {
-    min-width: 48px; height: 48px; padding: 0 0.75rem; display: grid; place-items: center;
-    background: transparent; color: #fff; border: 1px solid rgb(255 255 255 / 0.2); border-radius: 0;
-    font: 400 0.9375rem/1 var(--font); cursor: pointer; transition: background-color 0.3s ease, color 0.3s ease;
+    padding: 0.5rem 0.25rem; background: none; border: 0; color: rgb(255 255 255 / 0.5);
+    font: 400 0.9375rem/1 var(--font); cursor: pointer; transition: color 0.3s ease;
   }
-  .news-pager button + button { margin-left: -1px; }
-  .news-pager button:hover:not(:disabled, [aria-current]) { background: rgb(255 255 255 / 0.1); }
-  .news-pager button[aria-current] { background: #fff; color: #0c0f11; border-color: #fff; position: relative; }
-  .news-pager button:disabled { opacity: 0.35; cursor: default; }
-  .news-pager button:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; position: relative; }
-  .news-pager .ar { width: 0.75rem; height: 0.75rem; stroke-width: 3; }
+  .news-pager button + button::before { content: "|"; margin-right: 0.5rem; color: rgb(255 255 255 / 0.3); pointer-events: none; }
+  .news-pager button:hover, .news-pager button[aria-current] { color: #fff; }
+  .news-pager button[aria-current] { cursor: default; }
+  .news-pager button:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
   /* Contact in reverse: the framework's colors flipped for this section only. The panel takes the ink color,
      text goes white, fields go dark; red links and the button stay red. */
   #contact {
@@ -863,7 +861,6 @@
   // rows out and the new ones in; the buttons stay put
   const newsList = document.getElementById('news-list');
   const perPage = 3, pages = Math.ceil(news.length / perPage);
-  const chevron = d => `<svg class="ar" viewBox="0 0 16 16" aria-hidden="true"><path d="${d}"/></svg>`;
   newsList.innerHTML = '<div class="news-page"></div>' + (pages > 1 ? '<nav class="news-pager" aria-label="News pages"></nav>' : '');
   const newsPage = newsList.querySelector('.news-page'), pager = newsList.querySelector('.news-pager');
   let currentPage = 1, turning = false;
@@ -873,9 +870,7 @@
     `<h3 class="news-title h4">${n.title}</h3>` +
     `<span class="news-more">Read More<svg class="ar r" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2L11 8L5 14"/></svg></span></a>`).join('');
   const buttons = page =>
-    `<button type="button" data-page="${page - 1}" aria-label="Previous page"${page === 1 ? ' disabled' : ''}>${chevron('M11 2L5 8L11 14')}</button>` +
-    Array.from({ length: pages }, (_, i) => `<button type="button" data-page="${i + 1}"${i + 1 === page ? ' aria-current="page"' : ''}>${i + 1}</button>`).join('') +
-    `<button type="button" data-page="${page + 1}" aria-label="Next page"${page === pages ? ' disabled' : ''}>${chevron('M5 2L11 8L5 14')}</button>`;
+    Array.from({ length: pages }, (_, i) => `<button type="button" data-page="${i + 1}" aria-label="Page ${i + 1}"${i + 1 === page ? ' aria-current="page"' : ''}>${i + 1}</button>`).join('');
   newsPage.innerHTML = rows(1);
   if (pager) pager.innerHTML = buttons(1);
   async function turnTo(page) {
