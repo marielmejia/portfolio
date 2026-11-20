@@ -222,6 +222,27 @@
     /* no header row on phones, so Target and Next Milestone name themselves */
     #pipeline .pl-target::before, #pipeline .pl-milestone::before { content: attr(data-label) ": "; color: var(--muted); }
   }
+  /* Program and Target are merged cells: each program is one accordion whose summary spans its indication rows, the
+     name and target centered beside them; the description opens below the last row. The rows take the last three
+     columns, so their own columns line up with the header's */
+  #pipeline .pl-group {
+    display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 0.8fr) minmax(0, 0.7fr) minmax(0, 3.4fr) minmax(0, 1.1fr);
+    column-gap: var(--gutter); align-items: center;
+    background-image: var(--pl-cols, none); background-repeat: no-repeat; background-position: var(--pl-cols-x, 0 0); background-size: 1px 100%;
+  }
+  #pipeline .pl-group-rows { grid-column: 3 / -1; align-self: stretch; }
+  #pipeline .pl-group .pl-row { grid-template-columns: minmax(0, 0.7fr) minmax(0, 3.4fr) minmax(0, 1.1fr); background-image: var(--pl-cols-in, none); background-position: var(--pl-cols-in-x, 0 0); }
+  /* the rule between indication rows starts at the dotted line beside Target */
+  /* (drawn on its own layer, so the rows themselves keep their place and their dotted lines stay on the header's) */
+  #pipeline .pl-group .pl-row + .pl-row { position: relative; }
+  #pipeline .pl-group .pl-row + .pl-row::before { content: ""; position: absolute; top: 0; left: calc(-0.5 * var(--gutter)); right: -20px; border-top: 1px solid var(--rule); }
+  #pipeline .pl-panel { padding-top: 1.5rem; } /* room between the last row and the description */
+  @media (max-width: 760px) {
+    #pipeline .pl-group { grid-template-columns: minmax(0, 1fr); row-gap: 0.5rem; padding-top: 1.85rem; }
+    #pipeline .pl-group-rows { grid-column: auto; }
+    #pipeline .pl-group .pl-row { grid-template-columns: minmax(0, 1fr); }
+    #pipeline .pl-group .pl-row + .pl-row::before { left: -20px; }
+  }
   .pl-intro > .h2 { margin: 0; max-width: none; text-wrap: pretty; } /* fills its column out to the chart's right edge (no balanced short lines) */
   @media (max-width: 760px) {
     #pipeline-section > .pl-intro,
@@ -485,48 +506,56 @@
 
   // Three stages; each program's progress is counted in slots (fractions fill part of a slot)
   const stages = [['Phase 1', 'PH1'], ['Phase 2', 'PH2'], ['Phase 3', 'PH3']];
+  // Each program and its target span all of its indication rows (merged cells); its description opens below them
   const programs = [
     {
-      name: 'AIR-101', target: 'TSLP/IL33', indication: 'COPD', progress: 1, milestone: 'Phase 1 Readout', date: 'Q1 2027',
-      text: 'Placeholder program description. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-    },
-    {
-      name: 'AIR-102', target: 'TSLP/IL33', indication: 'Asthma', progress: 1, milestone: 'Phase 1 Readout', date: 'Q1 2027',
-      text: 'Placeholder program description. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
+      name: 'AIR-101', target: 'TSLP/IL-33',
+      text: 'Placeholder program description. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+      rows: [
+        { indication: 'COPD', progress: 1, milestone: 'Phase 1 Readout', date: 'Q1 2027' },
+        { indication: 'Asthma', progress: 1, milestone: 'Phase 1 Readout', date: 'Q1 2027' }
+      ]
     }
   ];
 
   const table = document.getElementById('pipeline');
   const stageCells = labels => labels.map(s => `<span>${s}</span>`).join('');
+  let rowCount = 0;
   const plus = '<svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path class="v" d="M8 1V15"/></svg>';
   table.innerHTML =
     `<div class="pl-row pl-head" aria-hidden="true"><span>Program</span><span>Target</span><span>Indication</span>` +
     `<div class="pl-stages">${stageCells(stages.map(s => s[0]))}</div><span>Next Milestone</span></div>` +
-    programs.map((p, r) => {
+    programs.map(g => `<details class="pl-item"><summary class="pl-group"><span class="pl-program">${g.name}${plus}</span>` +
+      `<span class="pl-target" data-label="Target">${g.target}</span><div class="pl-group-rows">` +
+      g.rows.map(p => {
+      const r = rowCount++;
       const current = stages[Math.min(Math.ceil(p.progress), stages.length) - 1][0];
       const slots = stages.map((_, i) =>
         `<span class="pl-slot" style="--fill: ${Math.max(0, Math.min(1, p.progress - i))}; --i: ${i}"></span>`).join('');
-      return `<details class="pl-item" style="--row: ${r}"><summary class="pl-row">` +
-        `<span class="pl-program">${p.name}${plus}${p.code ? `<small>${p.code}</small>` : ''}</span>` +
-        `<span class="pl-target" data-label="Target">${p.target}</span>` +
+      return `<div class="pl-row" style="--row: ${r}">` +
         `<span class="pl-indication">${p.indication}</span>` +
         `<div class="pl-stages pl-stage" aria-hidden="true">${stageCells(stages.map(s => s[1]))}</div>` +
         `<div class="pl-bar" role="img" aria-label="Through ${current}, ${p.progress} of ${stages.length} stages">${slots}</div>` +
         `<span class="pl-milestone" data-label="Next milestone">${p.milestone}${p.date ? `<span class="pl-date">${p.date}</span>` : ''}</span>` +
-        `</summary><div class="pl-panel"><p>${p.text}</p></div></details>`;
-    }).join('');
+        `</div>`;
+      }).join('') + `</div></summary><div class="pl-panel"><p>${g.text}</p></div></details>`).join('');
 
   // Column rules: a dotted line midway across each gap between the header's columns (Program, Target, Indication, the three
   // stages and Next Milestone)
   function plColumns() {
-    if (matchMedia('(max-width: 760px)').matches) { table.style.removeProperty('--pl-cols'); table.style.removeProperty('--pl-cols-x'); return; }
+    if (matchMedia('(max-width: 760px)').matches) { ['--pl-cols', '--pl-cols-x', '--pl-cols-in', '--pl-cols-in-x'].forEach(v => table.style.removeProperty(v)); return; }
     const head = table.querySelector('.pl-head');
     const cells = [...head.children].flatMap(c => c.classList.contains('pl-stages') ? [...c.children] : [c]).map(c => c.getBoundingClientRect());
     const left = head.getBoundingClientRect().left;
     const xs = cells.slice(1).map((c, i) => Math.round((cells[i].right + c.left) / 2 - left));
     const dots = 'repeating-linear-gradient(to bottom, var(--rule, #d9d9d9) 0 2px, transparent 2px 5px)';
-    table.style.setProperty('--pl-cols', xs.map(() => dots).join(', '));
-    table.style.setProperty('--pl-cols-x', xs.map(x => x + 'px 0').join(', '));
+    const inner = table.querySelector('.pl-group .pl-row');
+    const shift = inner ? inner.getBoundingClientRect().left - left : 0;
+    const outer = xs.slice(0, 2), rest = xs.slice(2).map(x => x - shift);
+    table.style.setProperty('--pl-cols', outer.map(() => dots).join(', '));
+    table.style.setProperty('--pl-cols-x', outer.map(x => x + 'px 0').join(', '));
+    table.style.setProperty('--pl-cols-in', rest.map(() => dots).join(', '));
+    table.style.setProperty('--pl-cols-in-x', rest.map(x => Math.round(x) + 'px 0').join(', '));
   }
   plColumns();
   addEventListener('resize', plColumns);
@@ -558,8 +587,8 @@
       };
     });
   }
-  // Pipeline rows (the + 1 is the row's top border)
-  table.querySelectorAll('.pl-item').forEach(item => softAccordion(item, item.querySelector('.pl-panel'), s => s.offsetHeight + 1));
+  // Pipeline rows (plus the row's top border, if it has one)
+  table.querySelectorAll('.pl-item').forEach(item => softAccordion(item, item.querySelector('.pl-panel'), s => s.offsetHeight + item.clientTop));
   // About and Science accordions: the button sits under the text, so the text opens above it. The block's height
   // animates between the button alone and the button plus the text; the label reads More, then Less
   document.querySelectorAll('.accordion:has(> .acc-toggle)').forEach(item => {
