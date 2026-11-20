@@ -69,33 +69,39 @@
   }
   /* Science: one row of four columns (copy, image, copy, image), each half the screen wide (full width on phones).
      The band runs edge to edge with no side padding; the copy pads itself. */
-  /* The slide sits in a light gray band that fills the screen, 200px in from the top and bottom and edge to edge
-     across (160px top and bottom on phones) */
+  /* The slide sits in a light gray band that takes 85% of the screen, 170px in from the top and bottom and edge to edge
+     across (136px top and bottom on phones) */
   #factoids { padding-inline: 0; background: #e7e7e7; }
-  .sci-viewport { background: #e7e7e7; padding: 200px 0; }
+  .sci-viewport { background: #e7e7e7; padding: 170px 0; }
   .sci-window { overflow: hidden; height: 100%; }
   .sci-track { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); width: 200%; background: var(--row-bg); }
   #factoids .split-body { display: grid; grid-template-columns: minmax(0, 24em); justify-content: center; align-content: center; padding: 64px; } /* grid, so the label sits 12px over its headline like every section */
   #factoids .split-media { aspect-ratio: auto; padding: 0; display: grid; place-items: stretch; min-width: 0; min-height: 37.5vw; }
   #factoids .split-img { width: 100%; height: 100%; }
-  #factoids .factoid { gap: 1rem; } /* the line of text sits close under its number */
+  /* Stat cards split into two equal rows, the number in the top one and its line of text in the bottom one, both
+     left-aligned with 25px all around and a faint rule between them */
+  #factoids .split-body.factoid { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); justify-content: stretch; justify-items: stretch; align-content: stretch; gap: 0; padding: 0; }
+  #factoids .factoid > p { margin: 0; padding: 25px; text-align: left; max-width: none; }
+  #factoids .factoid > p + p { border-top: 1px solid rgb(255 255 255 / 0.15); }
+  #factoids .split-body .h4 { color: inherit; max-width: none; } /* the first column's statement: full white like a headline, not dimmed like body copy */
+  #factoids .factoid .h1 { font-variant-numeric: tabular-nums; } /* digits keep one width while they count */
   #factoids .sci-track > :nth-child(even) { background: var(--line); } /* columns 2 and 4 keep the lighter fill the image placeholders had, so the row alternates */
   #factoids .factoid .h1 { font: 200 clamp(3rem, 11vw, 6.0625rem)/1 var(--font); letter-spacing: -0.04em; color: inherit; max-width: none; } /* the H1 style */
   /* Scroll-driven (added by the script when motion is on): the row fills the screen top to bottom, pins, and slides
      left as you scroll down, then lets the page carry on */
-  #factoids.sci-scrub .sci-viewport { height: 100vh; height: 100svh; }
+  #factoids.sci-scrub .sci-viewport { height: 85vh; height: 85svh; } /* 85% of the screen: the section is 15% shorter than a full screen */
   /* While pinned, the row gets whatever the screen has left after the gray above and below, so on short screens the
-     gray gives way: up to 200px each side, never less than 40px, always leaving the row at least 520px (the copy
-     columns need about 470px). Without this, screens under ~870px tall cut off the bottom of the copy. */
-  #factoids.sci-scrub .sci-viewport { padding-block: clamp(40px, (100vh - 520px) / 2, 200px); padding-block: clamp(40px, (100svh - 520px) / 2, 200px); }
+     gray gives way: up to 170px each side, never less than 34px, always leaving the row at least 442px (the copy
+     columns need under 400px). Without this, screens under ~870px tall cut off the bottom of the copy. */
+  #factoids.sci-scrub .sci-viewport { padding-block: clamp(34px, (85vh - 442px) / 2, 170px); padding-block: clamp(34px, (85svh - 442px) / 2, 170px); }
   #factoids.sci-scrub .sci-track { height: 100%; will-change: transform; }
   #factoids.sci-scrub .split-media { min-height: 0; }
   @media (max-width: 760px) {
-    .sci-viewport { padding: 160px 0; }
+    .sci-viewport { padding: 136px 0; }
     .sci-track { width: 400%; } /* one column per window */
     #factoids .split-body { padding: 40px 20px; }
     #factoids .split-media { min-height: 75vw; }
-    #factoids.sci-scrub .sci-viewport { padding-block: clamp(40px, (100vh - 520px) / 2, 160px); padding-block: clamp(40px, (100svh - 520px) / 2, 160px); }
+    #factoids.sci-scrub .sci-viewport { padding-block: clamp(34px, (85vh - 442px) / 2, 136px); padding-block: clamp(34px, (85svh - 442px) / 2, 136px); }
   }
   /* Without the slide (reduced motion or no script): the four columns wrap into a 2 × 2 grid, one column on phones */
   #factoids:not(.sci-scrub) .sci-track { width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -260,6 +266,28 @@
   [data-reveal-01] .line-mask, [data-reveal-01] .word-mask, [data-reveal-01] .char-mask { overflow: clip; overflow-clip-margin: 0.06em; }
   [data-reveal-01] .line-mask > *, [data-reveal-01] .word-mask > *, [data-reveal-01] .char-mask > * { padding-bottom: 0.18em; will-change: transform; }
   [data-reveal-01] .line-mask > * { white-space: nowrap; } /* each split line was measured as one line; keep it one line, or a near-full line wraps inside its mask */
+  /* Team bio, flipped: the name, title and bio fill the wide left column. The narrow right column holds
+     Previous / Next in the top row, level with the bottom of the title, and the photo under the rule, a square as
+     wide as the column. Close sits in the top right, over Next. Phones keep their one column. */
+  @media (min-width: 761px) {
+    /* both side edges match the homepage's (the page gutter plus the side inset: 181px on a 1400px screen);
+       the columns split the width 60/40 */
+    #bio .bio-inner { --bio-x: calc(var(--gutter) + var(--inset-x)); grid-template-columns: minmax(0, 60fr) minmax(0, 40fr); position: relative; padding-inline: var(--bio-x); }
+    #bio .bio-rule { margin-inline: calc(-1 * var(--bio-x)); } /* the rule still runs edge to edge */
+    #bio .bio-head { grid-column: 1; padding-left: 0; padding-right: 64px; }
+    #bio .bio-body { display: contents; } /* its text and its links go to separate cells */
+    #bio .bio-text { grid-column: 1; grid-row: 3; padding-right: 64px; }
+    #bio .bio-nav { grid-column: 2; grid-row: 1; align-self: end; margin: 0; padding-top: 0; border-top: 0; }
+    #bio .bio-photo { grid-column: 2; grid-row: 3; align-self: start; justify-self: stretch; width: 100%; height: auto; aspect-ratio: 1 / 1; } /* a square the full width of the column, whatever the screen height */
+    #bio .bio-close { position: absolute; top: 25px; right: var(--bio-x); } /* on the right edge of the content, over Next */
+  }
+  /* Footer in black, edge to edge, from the bottom of Contact to the bottom of the page. The spacing stays as it was
+     (the gap above it and the page's bottom padding are taken into the black), and the text turns white; the link stays red */
+  #top > footer {
+    --ink: #ffffff; --muted: #9aa59f; color: var(--ink); background: #0c0f11;
+    margin: -4.5rem calc(-1 * var(--gutter)) calc(-1 * var(--gutter));
+    padding: calc(4.5rem + 2.5rem) var(--gutter) var(--gutter);
+  }
 </style>
 
 <div class="topbar pinbar" id="pinbar">
@@ -310,7 +338,7 @@
       <div class="sci-window">
       <div class="sci-track">
         <div class="split-body">
-          <p class="h3">COPD is the highest unmet need in respiratory diseases and potentially in all of inflammatory disease.</p>
+          <p class="h4">COPD is the highest unmet need in respiratory diseases and potentially in all of inflammatory disease.</p>
         </div>
         <div class="split-body factoid">
           <p class="h1">~40 M</p>
@@ -915,7 +943,7 @@
   // Text slides up into place as it scrolls into view. Every visible block of text below the hero gets it
   // (the hero has its own entrance); blocks that arrive together rise one after another.
   if ('IntersectionObserver' in window && motionOK()) {
-    const skip = '#hero, [data-reveal-01], .pinbar, dialog, option, .form-note, .person-photo, .split-img, details:not([open]) > :not(summary), .detail-body[hidden], .acc-toggle, .contact-form'; // image boxes, closed accordion text, the accordion labels and the form stay put
+    const skip = '#hero, footer, [data-reveal-01], .pinbar, dialog, option, .form-note, .person-photo, .split-img, details:not([open]) > :not(summary), .detail-body[hidden], .acc-toggle, .contact-form'; // image boxes, closed accordion text, the accordion labels and the form stay put
     // (a label sits in its accordion's clipped box: pushed 40px down to wait, it can be hidden from the observer and never come back)
     const blocks = new Set();
     const walker = document.createTreeWalker(document.querySelector('.wrap'), NodeFilter.SHOW_TEXT,
@@ -1219,6 +1247,33 @@
 
   // Science: the four-column row pins to the screen and slides left as you scroll, one pixel across per pixel down,
   // until its last column is in view; then the page scrolls on. scrub: 1 lets the row catch up softly.
+  // Factoid numbers count up the first time each slides into view (~40 M from 0, 3rd from 1st, 50% from 0)
+  function factoidCounters() {
+    if (!matchMedia('(prefers-reduced-motion: no-preference)').matches || !('IntersectionObserver' in window)) return;
+    const ordinal = n => n + (n % 100 > 10 && n % 100 < 14 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th');
+    const io = new IntersectionObserver(entries => entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      io.unobserve(e.target);
+      const el = e.target, { pre, to, post, ord, from } = el._count, t0 = performance.now(), duration = 1600;
+      const step = now => {
+        const t = Math.min(1, (now - t0) / duration), v = Math.round(from + (to - from) * (1 - Math.pow(1 - t, 3))); // eases out
+        el.textContent = pre + (ord ? ordinal(v) : v + post);
+        if (t < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }), { threshold: 0.6 });
+    document.querySelectorAll('#factoids .factoid .h1').forEach(el => {
+      const m = el.textContent.match(/^(\D*)(\d+)(.*)$/);
+      if (!m) return;
+      const ord = /^(st|nd|rd|th)$/.test(m[3]);
+      el._count = { pre: m[1], to: +m[2], post: m[3], ord, from: ord ? 1 : 0 };
+      el.setAttribute('aria-label', el.textContent); // screen readers get the final figure, not the count
+      el.textContent = m[1] + (ord ? ordinal(1) : 0 + m[3]);
+      io.observe(el);
+    });
+  }
+  factoidCounters();
+
   function scienceSlide() {
     const section = document.getElementById('factoids');
     const viewport = section.querySelector('.sci-viewport');
