@@ -36,8 +36,47 @@
   #about { position: relative; z-index: 1; }
   #hero[data-st-01] { will-change: transform; }
   /* No video now: a flat mid-gray behind the white hero type */
-  #hero { background: #4a4f4c; }
-  #hero::before { content: none; }
+  #hero { background: #4a4f4c; } /* shows until the video loads */
+  /* The background video (Animated Gradient - 81), in black and white, under a color tint at 100% in screen mode,
+     which lifts the darks toward the color. Both stay inside the hero. */
+  #hero .hero-video { filter: grayscale(1); }
+  #hero::before { background: #4db0f4; mix-blend-mode: screen; }
+  /* The tint loops through light blue, yellow and light purple: each holds for 3 seconds, then fades softly into
+     the next over 3 (18 seconds round). Visitors who prefer reduced motion keep the light blue. */
+  @keyframes hero-tint {
+    0%, 16.667%      { background-color: #4db0f4; } /* light blue */
+    33.333%, 50%     { background-color: #fdcf5a; } /* yellow */
+    66.667%, 83.333% { background-color: #b9a2f5; } /* light purple */
+    100%      { background-color: #4db0f4; }
+  }
+  /* "ingenuity" in the headline runs the same loop in step with the tint, in deeper shades of the three colors so
+     it stands out from the tinted background */
+  @keyframes hero-word {
+    0%, 16.667%      { color: #1c74bd; } /* deep blue */
+    33.333%, 50%     { color: #b07a00; } /* amber */
+    66.667%, 83.333% { color: #6449cc; } /* deep purple */
+    100%      { color: #1c74bd; }
+  }
+  #hero h1 strong { color: #1c74bd; }
+  /* Headline on load: "A breath of fresh" slides in from the left all together, then "ingenuity" slides up */
+  #hero h1 .hl-in, #hero h1 .hl-up { display: inline-block; }
+  #hero h1 .hl-in { color: rgb(41 46 55 / 0.85); } /* "A breath of fresh" in #292e37 at 85% */
+  @keyframes hl-in { from { opacity: 0; transform: translateX(-60px); } to { opacity: 1; transform: none; } }
+  @keyframes hl-up { from { opacity: 0; transform: translateY(0.6em); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: no-preference) {
+    #hero h1 .hl-in { animation: hl-in 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.3s both; }
+    #hero h1 .hl-up { animation: hl-up 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.9s both; }
+    #hero::before { animation: hero-tint 18s ease-in-out infinite; }
+    #hero h1 strong { animation: hero-word 18s ease-in-out infinite; }
+  }
+  #hero { color: var(--ink); } /* dark type on the light tint */
+  #hero h1 strong { font-weight: 400; } /* the bold word: the site's bold weight, as in H2 bold and H3 bold */
+  /* the bar's strokes (bottom rule, dividers, hover line) over the hero and light sections: black at 10%
+     (dark mode keeps its own rule color) */
+  .pinbar.on-light { --nav-line: rgb(41 46 55 / 0.1); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pinbar.on-light { --nav-line: var(--rule); } }
+  :root[data-theme="dark"] .pinbar.on-light { --nav-line: var(--rule); }
+  .pinbar.on-light:not(.scrolled) { background: transparent; } /* at the very top the bar is clear over the tint, with dark type */
   #about > * { padding-inline: var(--inset-x); }
   .about-cols { display: grid; grid-template-columns: calc(30% - 2 * var(--gutter)) minmax(0, 1fr); /* 30/70: the paragraph column starts 30% in and fills the other 70% */ gap: 1.5rem calc(2 * var(--gutter)); align-items: start; }
   .about-cols .section-head { margin: 0; padding-top: 0.6em; } /* the label sits level with the top of the paragraph's first line */
@@ -64,15 +103,15 @@
   }
   /* Science in dark mode: the same token swap as Contact, so the band, text and placeholders invert */
   #factoids {
-    --row-bg: #0c0f11; --ink: #ffffff; --bg: #1a1f1c; --muted: #9aa59f; --line: #333b37; --rule: #333b37; --accent: #9aa59f;
+    --row-bg: #292e37; --ink: #ffffff; --bg: #1a1f1c; --muted: #9aa59f; --line: #333b37; --rule: #333b37; --accent: #9aa59f;
     color: var(--ink); color-scheme: dark;
   }
   /* Science: one row of four columns (copy, image, copy, image), each half the screen wide (full width on phones).
      The band runs edge to edge with no side padding; the copy pads itself. */
-  /* The slide sits in a light gray band that takes 85% of the screen, 170px in from the top and bottom and edge to edge
+  /* The slide sits in a light blue-gray band (#eaeff8 at 50%) that takes 85% of the screen, 170px in from the top and bottom and edge to edge
      across (136px top and bottom on phones) */
-  #factoids { padding-inline: 0; background: #e7e7e7; }
-  .sci-viewport { background: #e7e7e7; padding: 170px 0; }
+  #factoids { padding-inline: 0; background: transparent; } /* the band's color is on the viewport only, so the 50% tint isn't doubled */
+  .sci-viewport { background: rgb(234 239 248 / 0.5); padding: 170px 0; } /* #eaeff8 at 50%, like Pipeline */
   .sci-window { overflow: hidden; height: 100%; }
   .sci-track { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); width: 200%; background: var(--row-bg); }
   #factoids .split-body { display: grid; grid-template-columns: minmax(0, 24em); justify-content: center; align-content: center; padding: 64px; } /* grid, so the label sits 12px over its headline like every section */
@@ -140,7 +179,7 @@
   #news {
     margin-inline: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px))) calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)));
     padding: 100px max(var(--gutter), env(safe-area-inset-right, 0px)) 180px max(var(--gutter), env(safe-area-inset-left, 0px));
-    background: #0c0f11;
+    background: #292e37;
   }
   #news .section-label { color: #fff; }
   #news .news-intro .section-head { margin-bottom: 2.5rem; } /* space above the cards when they stack under it (phones) */
@@ -168,21 +207,21 @@
   .news-pager button[aria-current] { cursor: default; }
   .news-pager button:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
   /* Contact in reverse: the framework's colors flipped for this section only. The panel takes the ink color,
-     text goes white, fields go dark; red links and the button stay red. */
+     text goes white, fields go dark; blue links and the button stay blue. */
   #contact {
-    --row-bg: #0c0f11; --ink: #ffffff; --bg: #1a1f1c; --muted: #9aa59f; --line: #333b37; --rule: #333b37; --accent: #9aa59f;
+    --row-bg: #292e37; --ink: #ffffff; --bg: #1a1f1c; --muted: #9aa59f; --line: #333b37; --rule: #333b37; --accent: #9aa59f;
     color: var(--ink); color-scheme: dark;
     /* Edge to edge on the colorFlow image, touching News; the gutter padding is the band of image around the panel */
     position: relative; isolation: isolate; overflow: hidden;
-    background: #0c0f11; margin-top: -4.5rem; /* cancels .wrap's gap so it meets the News background */
+    background: #292e37; margin-top: -4.5rem; /* cancels .wrap's gap so it meets the News background */
     margin-inline: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px))) calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)));
     padding: var(--gutter) max(var(--gutter), env(safe-area-inset-right, 0px)) var(--gutter) max(var(--gutter), env(safe-area-inset-left, 0px));
   }
   /* Form fields: see-through with white strokes and white text; a missed required field still turns red */
   #contact .field input, #contact .field textarea, #contact .field select { background: transparent; border-color: rgb(255 255 255 / 0.2); color: #fff; } /* stroke: white at 20%, like the nav over the hero */
-  #contact .field :user-invalid { border-color: var(--link); }
+  #contact .field :user-invalid { border-color: #FF3434; }
   /* Black overlay over the image (under the panel), to darken it */
-  #contact::after { content: ""; position: absolute; inset: 0; z-index: -1; background: rgb(12 15 17 / 0.8); } /* the framework's dark ink (#0c0f11) at 80% */
+  #contact::after { content: ""; position: absolute; inset: 0; z-index: -1; background: rgb(41 46 55 / 0.8); } /* the framework's dark ink (#292e37) at 80% */
   /* Frosted panel so the image shows through behind the text and form; fields stay solid */
   /* Inset like the News cards (the side inset), so the panel lines up with them and the image shows there.
      On phones the cards run gutter to gutter (their buttons move below), so the panel does too. */
@@ -198,7 +237,7 @@
     transform: translateY(var(--parallax, 0px)); will-change: transform;
   }
   /* Cards: no fill, white text, a rule underneath; the hover goes solid white with dark text */
-  #news .news-item { --row-bg: #0c0f11; --ink: #ffffff; }
+  #news .news-item { --row-bg: #292e37; --ink: #ffffff; }
   #news .news-item { background: transparent; border-bottom: 1px solid rgb(255 255 255 / 0.2); } /* no fill, a faint white rule under each card */
   #news .news-item:first-child { border-top: 1px solid rgb(255 255 255 / 0.2); } /* and one over the first, so the list is ruled top and bottom */
   #news .news-item:hover, #news .news-item:focus-visible { background: var(--ink); }
@@ -209,6 +248,14 @@
   #team > * { --inset: var(--inset-x); padding-inline: var(--inset); }
   /* The same side inset inside the Pipeline chart */
   #pipeline-section .pipeline { background: transparent; } /* the chart sits on the page background, no white panel */
+  /* Pipeline sits on a light blue-gray band (#eaeff8 at 50%) that runs edge to edge, from the bottom of the pixel transition
+     above it to the bottom of the chart. The 80px above the label moves inside the band, so the label stays put. */
+  #pipeline-section { position: relative; margin-top: calc(180px - 4.5rem); padding-top: 80px; }
+  #pipeline-section::before {
+    content: ""; position: absolute; z-index: -1; top: 0; bottom: 0; background: rgb(234 239 248 / 0.5); /* #eaeff8 at 50% */
+    left: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px)));
+    right: calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)));
+  }
   @media (min-width: 761px) {
     #pipeline-section .pipeline { padding-inline: var(--inset-x); }
   }
@@ -282,9 +329,9 @@
     #bio .bio-close { position: absolute; top: 25px; right: var(--bio-x); } /* on the right edge of the content, over Next */
   }
   /* Footer in black, edge to edge, from the bottom of Contact to the bottom of the page. The spacing stays as it was
-     (the gap above it and the page's bottom padding are taken into the black), and the text turns white; the link stays red */
+     (the gap above it and the page's bottom padding are taken into the black), and the text turns white; the link stays blue */
   #top > footer {
-    --ink: #ffffff; --muted: #9aa59f; color: var(--ink); background: #0c0f11;
+    --ink: #ffffff; --muted: #9aa59f; color: var(--ink); background: #151a23;
     margin: -4.5rem calc(-1 * var(--gutter)) calc(-1 * var(--gutter));
     padding: calc(4.5rem + 2.5rem) var(--gutter) var(--gutter);
   }
@@ -306,8 +353,9 @@
 
 <div class="wrap page-in" id="top">
   <header class="hero" id="hero" data-st-01="parallax" data-st-opacity="0.5">
+    <video class="hero-video" id="hero-video" src="work/Animated%20Gradient%20-%2081.mp4" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
     <div class="hero-body">
-      <h1>A breath of fresh ingenuity</h1>
+      <h1><span class="hl-in">A</span> <span class="hl-in">breath</span> <span class="hl-in">of</span> <span class="hl-in">fresh</span> <span class="hl-up"><strong>ingenuity</strong></span></h1>
       <div class="hero-side">
         <p class="h4">We are advancing novel biologics to transform the treatment of inflammatory diseases.</p>
       </div>
@@ -483,16 +531,23 @@
 </dialog>
 
 <script>
+  // Hero video holds still for visitors who prefer reduced motion
+  if (!matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+    const heroVideo = document.getElementById('hero-video');
+    heroVideo.removeAttribute('autoplay');
+    heroVideo.pause();
+  }
+
   // Pinned bar: frosted once the page scrolls, dark text once it's past the hero
   const pinbar = document.getElementById('pinbar');
   const hero = document.getElementById('hero');
-  const darkBands = ['hero', 'news', 'contact'].map(id => document.getElementById(id));
+  const darkBands = ['news', 'contact'].map(id => document.getElementById(id)); // the hero is light now (tinted video), so the bar is dark over it too
   const navLinks = [...pinbar.querySelectorAll('nav a[href^="#"]')].map(a => ({ a, section: document.querySelector(a.getAttribute('href')) })).filter(l => l.section);
   function updatePinbar() {
     const h = pinbar.offsetHeight;
     document.documentElement.style.setProperty('--pinbar-h', h + 'px');
     pinbar.classList.toggle('scrolled', scrollY > 0);
-    // light style only while the bar sits over a light section; over the hero and the dark bands it stays dark
+    // light style (dark type) while the bar sits over a light section or the hero; over the dark bands it turns white
     // (measured without any transform, so the hero's parallax drift doesn't count: About covers it there, and
     // neither does the page's slide-up entrance, which would otherwise show the light bar over the hero on load)
     const shift = el => { const t = getComputedStyle(el).transform; return t && t !== 'none' ? new DOMMatrixReadOnly(t).m42 : 0; };
@@ -1214,7 +1269,7 @@
     ['science', 'pipeline-section'].forEach(id => { const el = document.getElementById(id); if (el) pixelDivider(el); });
   }
   function pixelDivider(pipeline) {
-    const columns = 10, aspect = 0.15, color = '#e7e7e7', spread = 3;
+    const columns = 10, aspect = 0.15, color = '#eaeff8', spread = 3;
     const gap = 180; // the strip's height; Team sits a further 80px below it
     pipeline.style.position = 'relative';
     const layer = document.createElement('div');
