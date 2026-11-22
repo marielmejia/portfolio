@@ -240,7 +240,10 @@
   #news .news-item { --row-bg: #292e37; --ink: #ffffff; }
   #news .news-item { background: transparent; border-bottom: 1px solid rgb(255 255 255 / 0.2); } /* no fill, a faint white rule under each card */
   #news .news-item:first-child { border-top: 1px solid rgb(255 255 255 / 0.2); } /* and one over the first, so the list is ruled top and bottom */
-  #news .news-item:hover, #news .news-item:focus-visible { background: var(--ink); }
+  /* Hover (or keyboard focus): the card fills with the link blue; the text and Read More turn white so they read on it */
+  #news .news-item:hover, #news .news-item:focus-visible { background: var(--link); color: #fff; }
+  #news .news-item:is(:hover, :focus-visible) :is(.news-more, .ar) { color: #fff; }
+  #news .news-item:hover { transform: none; } /* the card stays put on hover (no lift) */
   /* Inset by the panels' own inner padding (the side inset, 20px on phones): the Pipeline and News labels and headlines
      line up with the text inside the chart and the news rows, and everything in Team sits on that same inset */
   #pipeline-section > .pl-intro,
@@ -266,6 +269,7 @@
   /* Pipeline columns: Program, Target, Indication, the bar across Phase 1–3, then Next Milestone */
   #pipeline .pl-row { grid-template-columns: minmax(0, 0.8fr) minmax(0, 0.8fr) minmax(0, 0.7fr) minmax(0, 3.4fr) minmax(0, 1.1fr); } /* the phase columns get most of the width */
   #pipeline .pl-stages, #pipeline .pl-bar { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  #pipeline .pl-slot::after { background: var(--link); } /* the filled part of each progress bar, in the link blue */
   #pipeline .pl-target, #pipeline .pl-milestone { font-size: 1.125rem; line-height: 1.4; } /* like Indication */
   #pipeline .pl-date { display: block; } /* the date always takes the second line */
   @media (max-width: 760px) {
@@ -335,6 +339,9 @@
     margin: -4.5rem calc(-1 * var(--gutter)) calc(-1 * var(--gutter));
     padding: calc(4.5rem + 2.5rem) var(--gutter) var(--gutter);
   }
+  /* Team cards: the panel that slides in on hover (or keyboard focus) is the link blue instead of the dark ink */
+  #team .person::before { background: var(--link); }
+  #team .person:is(:hover, :focus-visible) .person-role { color: rgb(255 255 255 / 0.85); } /* the gray title wouldn't read on the blue */
 </style>
 
 <div class="topbar pinbar" id="pinbar">
