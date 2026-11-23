@@ -5,25 +5,23 @@
 
    SETUP
    Load the font in the page <head>, before this stylesheet:
-     <link rel="preconnect" href="https://fonts.googleapis.com">
-     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap">
+     <link rel="stylesheet" href="https://use.typekit.net/ndd8ihl.css"> (DM Sans, Adobe Fonts kit)
      <link rel="stylesheet" href="clean-modern-scroll.css">
    And the viewport tag:
      <meta name="viewport" content="width=device-width, initial-scale=1">
 
-   TYPE SCALE (all Geist), largest first
+   TYPE SCALE (all DM Sans), largest first
      H1 / display   200, clamp(48px, 11vw, 97px), line-height 1, -0.04em (also both hero headlines)
-     H2 / .h2       200, clamp(42px, 3.5vw + 16px, 52px), line-height 1.15, -0.02em
+     H2 / .h2       200, clamp(42px, 3.5vw + 16px, 48px), line-height 1.15, -0.01em
      H2 bold        400, the H2 style at weight 400 (.h2-bold)
      H3 / .h3       200, 41px (39px on phones), line-height 1.2, -0.01em
-     H3 bold        400, the H3 style at weight 400 (.h3-bold; the accordion head)
+     H3 bold        500, the H3 style at weight 500 (.h3-bold; the accordion head)
      H4 / .h4       200, 28px (26px on phones), line-height 1.3, -0.01em: between H3 (41px) and the team name style (the News card titles)
      H4 bold        400, the H4 style at weight 400 (.h4-bold; the Careers values)
-     Team name      300, 20px, line-height 1.3, -0.01em (team names, role titles; in the link blue for pipeline program names)
-     Body           300, 18px, line-height 1.5, +0.01em (paragraphs at 80% opacity)
-     Small text     300, 16px, line-height 1.4 (codes, team and location, form fields)
-     Nav link       400, 15px, line-height normal, +0.01em, Title Case (bar links, tabs, Careers button, "Read More")
+     Team name      400, 20px, line-height 1.3, -0.01em (team names, role titles; in the link blue for pipeline program names)
+     Body           300, 18px, line-height 1.4, +0.01em (paragraphs at 80% opacity)
+     Small text     300, 16px, line-height 1.3 (codes, team and location, form fields)
+     Nav link       400, 16px, line-height normal, +0.01em, Title Case (bar links, tabs, Careers button, "Read More")
      Section label  400, 14px, line-height 1.4, in a pill of its color at 8% (the name over each section)
      Label          400, 12.5px, line-height 1.3, +0.06em, UPPERCASE
      Text link      300, blue
@@ -89,7 +87,7 @@
   --link: #4e98d3;
   --acc-bg: rgb(231 231 231 / 0.5);
   --row-bg: #ffffff;
-  --font: "Geist", "Helvetica Neue", Arial, sans-serif;
+  --font: "dm-sans", "Helvetica Neue", Arial, sans-serif;
   --gutter: 24px; /* one value for page margins and every column/row gutter */
   --pill-fill: 8%; /* section label pill: its text color at this strength */
 }
@@ -117,7 +115,7 @@ body {
   margin: 0; /* the gutter is the whole page margin */
   background: var(--bg);
   color: var(--ink);
-  font: 300 1.125rem/1.5 var(--font); /* 18px body text */
+  font: 300 1.125rem/1.4 var(--font); /* 18px body text */
   padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
   padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
 }
@@ -151,10 +149,10 @@ h1 span { color: var(--accent); }
 h1 * { letter-spacing: inherit; } /* anything inside an H1 keeps its -4% */
 header h1 { text-align: center; } /* homepage headline only */
 
-h2, .h2 { font: 200 clamp(2.625rem, calc(3.5vw + 16px), 3rem)/1.15 var(--font); letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
-.h2-bold { font: 400 clamp(2.625rem, calc(3.5vw + 16px), 3rem)/1.15 var(--font); letter-spacing: -0.02em; margin: 0; text-wrap: balance; } /* H2 bold: the H2 style at weight 400 */
+h2, .h2 { font: 200 clamp(2.625rem, calc(3.5vw + 16px), 3rem)/1.15 var(--font); letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+.h2-bold { font: 400 clamp(2.625rem, calc(3.5vw + 16px), 3rem)/1.15 var(--font); letter-spacing: -0.01em; margin: 0; text-wrap: balance; } /* H2 bold: the H2 style at weight 400 */
 h3, .h3 { font: 200 2.5625rem/1.2 var(--font); letter-spacing: -0.01em; margin: 0; text-wrap: balance; } /* between H2 and body */
-.h3-bold { font: 400 2.5625rem/1.2 var(--font); letter-spacing: -0.01em; margin: 0; text-wrap: balance; } /* H3 bold: the H3 style at weight 400 */
+.h3-bold { font: 500 2.5625rem/1.2 var(--font); letter-spacing: -0.01em; margin: 0; text-wrap: balance; } /* H3 bold: the H3 style at weight 500 */
 h4, .h4 { font: 200 1.75rem/1.3 var(--font); letter-spacing: -0.01em; margin: 0; text-wrap: balance; } /* H4: between H3 (41px) and the team name style (20px) */
 .h4-bold { font: 400 1.75rem/1.3 var(--font); letter-spacing: -0.01em; margin: 0; text-wrap: balance; } /* H4 bold: the H4 style at weight 400 */
 
@@ -166,7 +164,7 @@ h4, .h4 { font: 200 1.75rem/1.3 var(--font); letter-spacing: -0.01em; margin: 0;
 header { display: grid; gap: 1.75rem; }
 .topbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem 2rem; padding-bottom: 0.9rem; }
 .topbar nav { display: flex; gap: 1.5rem; }
-.topbar nav a { color: var(--link); text-decoration: none; font: 400 0.9375rem/normal var(--font); letter-spacing: 0.01em; } /* label style, in the link blue */
+.topbar nav a { color: var(--link); text-decoration: none; font: 400 1rem/normal var(--font); letter-spacing: 0.01em; } /* label style, in the link blue */
 
 .section-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem 2rem; margin-bottom: 1.75rem; }
 
@@ -189,12 +187,12 @@ header { display: grid; gap: 1.75rem; }
 
 /* ---------- Footer ---------- */
 footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.75rem var(--gutter); padding-top: 2.5rem; }
-footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/normal var(--font); letter-spacing: 0.01em; } /* matches the nav */
+footer .to-top { color: var(--link); text-decoration: none; font: 400 1rem/normal var(--font); letter-spacing: 0.01em; } /* matches the nav */
 
 
 /* ---------- Detail text (the About accordion's panel) ---------- */
 .detail-body { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 2rem var(--gutter); align-items: start; }
-.detail-body p { margin: 0; font-size: 1.125rem; line-height: 1.5; max-width: 36em; }
+.detail-body p { margin: 0; font-size: 1.125rem; line-height: 1.4; max-width: 36em; }
 
 
 /* ---------- Accordion ---------- */
@@ -208,7 +206,7 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/
   list-style: none; cursor: pointer;
   display: flex; justify-content: space-between; align-items: center; gap: 1rem;
   padding: 0.9rem 0; /* flush with the text around it, now there's no fill */
-  font: 400 2.5625rem/1.2 var(--font); letter-spacing: -0.01em; color: var(--ink); /* H3 bold: the H3 style at weight 400 */
+  font: 500 2.5625rem/1.2 var(--font); letter-spacing: -0.01em; color: var(--ink); /* H3 bold: the H3 style at weight 500 */
 }
 .accordion summary::-webkit-details-marker { display: none; }
 .accordion summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
@@ -246,12 +244,12 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/
 .pl-head .pl-stages { align-items: start; }
 .pl-head > *, .pl-stages > * { font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); } /* label style */
 .pl-stages, .pl-bar { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1px; }
-.pl-program { font: 300 1.25rem/1.3 var(--font); letter-spacing: -0.01em; color: var(--link); } /* the team name style (300, 20px, -1%), in the link blue like every other link */
+.pl-program { font: 400 1.25rem/1.3 var(--font); letter-spacing: -0.01em; color: var(--link); } /* the team name style (400, 20px, -1%), in the link blue like every other link */
 .pl-program .acc-icon { width: 0.6em; height: 0.6em; margin-left: 0.5em; vertical-align: 0.05em; }
 .pl-item[open]:not(.closing) .acc-icon .v { transform: scaleY(0); } /* plus becomes minus */
-.pl-program small { display: block; font: 300 1rem/1.4 var(--font); color: var(--muted); }
+.pl-program small { display: block; font: 300 1rem/1.3 var(--font); color: var(--muted); }
 .pl-panel { padding: 0 0 2rem; }
-.pl-panel p { margin: 0; max-width: 36em; font-size: 1.125rem; line-height: 1.5; } /* body style */
+.pl-panel p { margin: 0; max-width: 36em; font-size: 1.125rem; line-height: 1.4; } /* body style */
 .pl-indication { font-size: 1.125rem; line-height: 1.4; }
 .pl-slot { position: relative; height: 24px; background: var(--line); overflow: hidden; }
 .pl-slot::after { content: ""; position: absolute; inset: 0; background: var(--ink); transform-origin: 0 50%; transform: scaleX(var(--fill, 0)); }
@@ -274,7 +272,7 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/
 .tabs { display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; min-height: 60px; } /* equal columns, sized to the longest tab */
 .tab {
   appearance: none; background: none; border: 0; display: flex; align-items: center; justify-content: center; padding: 0 1.25rem; cursor: pointer;
-  font: 400 0.9375rem/normal var(--font); letter-spacing: 0.01em; color: var(--ink); /* nav style, in ink: the line marks the selected tab */
+  font: 400 1rem/normal var(--font); letter-spacing: 0.01em; color: var(--ink); /* nav style, in ink: the line marks the selected tab */
 }
 .tab { border: 1px solid var(--rule); } /* each tab outlined on its own */
 .tab + .tab { margin-left: -1px; } /* touching tabs share one line instead of doubling it */
@@ -317,7 +315,7 @@ footer .to-top { color: var(--link); text-decoration: none; font: 400 0.9375rem/
   background: var(--line); color: var(--muted); font: 200 clamp(2rem, 4vw, 3.5rem)/1 var(--font); letter-spacing: -0.02em;
 }
 .person-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.person-name { margin-bottom: 0.2rem; font-size: 1.25rem; font-weight: 300; } /* .h3 type at a fixed 20px and weight 300, a step down for the narrower cards */
+.person .person-name { margin-bottom: 0.2rem; font-size: 1.25rem; font-weight: 400; } /* .h3 type at a fixed 20px and weight 400, a step down for the narrower cards (scoped to .person so the phone H3 size doesn't override it) */
 .person-role { font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); } /* label style (12.5px all caps), in the muted gray */
 
 
@@ -341,7 +339,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .bio-top { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding-bottom: 3rem; }
 .bio-close, .bio-nav button {
   appearance: none; background: none; border: 0; padding: 0; cursor: pointer;
-  font: 400 0.9375rem/normal var(--font); letter-spacing: 0.01em; color: var(--link); /* nav style */
+  font: 400 1rem/normal var(--font); letter-spacing: 0.01em; color: var(--link); /* nav style */
 }
 .bio-close { display: grid; place-items: center; padding: 10px; border: 2px solid currentColor; border-radius: 0; } /* an X in a square box, both blue, both a 2px stroke */
 .bio-close .acc-icon { width: 1.4em; height: 1.4em; transform: rotate(45deg); stroke-width: 2; } /* the plus, turned into an x, twice its old size */
@@ -398,7 +396,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 
 
 /* "Read more" line at the bottom of a card, label style in blue, arrow after the text */
-.news-more { align-self: end; color: var(--link); font: 400 0.9375rem/normal var(--font); letter-spacing: 0.01em; }
+.news-more { align-self: end; color: var(--link); font: 400 1rem/normal var(--font); letter-spacing: 0.01em; }
 .news-item .news-more .ar { width: 0.6em; height: 0.6em; margin: 0 0 0 0.35em; stroke-width: 4; } /* the .ar size, not the big row arrow */
 
 /* ---------- Split pieces (copy column and image box) ---------- */
@@ -438,7 +436,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .pinbar-cta {
   grid-column: 3; justify-self: end; align-self: center; display: inline-flex; align-items: center;
   padding: 0.6rem 1rem; background: var(--link); color: #fff; text-decoration: none;
-  font: 400 0.9375rem/1 var(--font); letter-spacing: 0.01em; /* nav style, in a solid blue box */
+  font: 400 1rem/1 var(--font); letter-spacing: 0.01em; /* nav style, in a solid blue box */
 }
 .pinbar-cta:hover, .pinbar-cta:focus-visible { background: #fff; color: #292e37; }
 .pinbar.on-light .pinbar-cta:hover, .pinbar.on-light .pinbar-cta:focus-visible { background: var(--ink); color: var(--bg); }
@@ -464,7 +462,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .menu-links { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
 .menu-links a {
   display: flex; justify-content: space-between; align-items: center; padding: 1.1rem 0; border-bottom: 1px solid var(--rule);
-  color: var(--ink); font: 200 clamp(2.625rem, calc(3.5vw + 16px), 3rem)/1.15 var(--font); letter-spacing: -0.02em; /* h2 style */
+  color: var(--ink); font: 200 clamp(2.625rem, calc(3.5vw + 16px), 3rem)/1.15 var(--font); letter-spacing: -0.01em; /* h2 style */
 }
 .menu-links a:hover, .menu-links a:focus-visible { color: var(--link); }
 .menu-links .ar { width: 0.45em; height: 0.45em; stroke-width: 3; color: var(--link); }
@@ -535,7 +533,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .field { display: grid; gap: 0.5rem; }
 .field input, .field textarea, .field select {
   width: 100%; padding: 0.9rem 1rem; border: 1px solid var(--rule); border-radius: 0;
-  background: var(--bg); color: var(--ink); font: 300 1rem/1.4 var(--font); letter-spacing: 0;
+  background: var(--bg); color: var(--ink); font: 300 1rem/1.3 var(--font); letter-spacing: 0;
 }
 .field textarea { min-height: 9rem; resize: vertical; }
 /* Dropdown: wrap the <select> in <span class="select"> for the chevron */
@@ -551,7 +549,8 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .field input:focus-visible, .field textarea:focus-visible, .field select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .field input:user-invalid, .field textarea:user-invalid, .field select:user-invalid { border-color: #FF3434; } /* red, only after someone has tried */
 .contact-form .button { justify-self: start; margin-top: 0.5rem; }
-.form-note { margin: 0; font-size: 1rem; color: var(--muted); }
+.contact-form .button { font: 400 1rem/1.3 var(--font); letter-spacing: 0.01em; text-transform: none; } /* Submit in the nav link style (16px, +1%, Title Case) */
+.form-note { margin: 0; font-size: 1rem; line-height: 1.3; color: var(--muted); }
 
 .bio-nav { display: flex; justify-content: space-between; gap: 1rem; padding-top: 1.25rem; margin-top: auto; border-top: 1px solid var(--rule); } /* sits at the bottom of the sheet */
 

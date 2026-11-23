@@ -2,9 +2,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Single Page Scroll</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap">
+<link rel="stylesheet" href="https://use.typekit.net/ndd8ihl.css"> <!-- DM Sans (Adobe Fonts kit) -->
 <link rel="stylesheet" href="clean-modern-scroll.css">
 <style>
   /* Side inset shared by every section: fluid from 60px on a 768px tablet up to 200px at 1680px and wider */
@@ -41,6 +39,8 @@
      which lifts the darks toward the color. Both stay inside the hero. */
   #hero .hero-video { filter: grayscale(1); }
   #hero::before { background: #4db0f4; mix-blend-mode: screen; }
+  /* a soft white wash from the top: white at 20% at the top edge, fading to nothing halfway down (over the tint, under the text) */
+  #hero::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(to bottom, rgb(255 255 255 / 0.2), rgb(255 255 255 / 0) 50%); }
   /* The tint loops through light blue, yellow and light purple: each holds for 3 seconds, then fades softly into
      the next over 3 (18 seconds round). Visitors who prefer reduced motion keep the light blue. */
   @keyframes hero-tint {
@@ -60,7 +60,8 @@
   #hero h1 strong { color: #1c74bd; }
   /* Headline on load: "A breath of fresh" slides in from the left all together, then "ingenuity" slides up */
   #hero h1 .hl-in, #hero h1 .hl-up { display: inline-block; }
-  #hero h1 .hl-in { color: rgb(41 46 55 / 0.85); } /* "A breath of fresh" in #292e37 at 85% */
+  #hero h1 .hl-in { color: #3d424b; } /* "A breath of fresh" */
+  #hero .hero-side p { color: #3d424b; } /* the subhead, solid in the same gray */
   @keyframes hl-in { from { opacity: 0; transform: translateX(-60px); } to { opacity: 1; transform: none; } }
   @keyframes hl-up { from { opacity: 0; transform: translateY(0.6em); } to { opacity: 1; transform: none; } }
   @media (prefers-reduced-motion: no-preference) {
@@ -90,11 +91,13 @@
   .accordion .acc-toggle {
     width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 1rem;
     padding: 0.9rem 0; background: none; border: 0; border-radius: 0; color: var(--ink); cursor: pointer; text-align: left;
-    font: 300 1.25rem/1.3 var(--font); letter-spacing: -0.01em; /* the team name style (300, 20px, -1%) */
+    font: 400 1rem/normal var(--font); letter-spacing: 0.01em; /* the nav link style (400, 16px, +1%) */
   }
   .accordion:has(> .acc-toggle) { border-top: 0; }
   .accordion .acc-toggle { border-top: 1px solid var(--rule); } /* the rule rides on the label, so it slides down with it */
   .accordion .acc-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .accordion .acc-toggle { transition: color 0.2s ease; }
+  .accordion .acc-toggle:hover, .accordion .acc-toggle:focus-visible { color: var(--link); } /* More / Less and the plus turn the palette blue (the plus draws in the text color) */
   .accordion.is-open:not(.closing) .acc-icon .v { transform: scaleY(0); } /* plus becomes minus */
   .accordion .detail-body { display: block; padding: 0 0 2.5rem; } /* no space above the text; 40px between its end and the label */
   .accordion .detail-body p { margin: 0; max-width: none; }
@@ -125,13 +128,13 @@
   #factoids .split-body.factoid { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); justify-content: stretch; justify-items: stretch; align-content: stretch; gap: 0; padding: 0; }
   #factoids .factoid > p { margin: 0; padding: 25px; text-align: left; max-width: none; }
   #factoids .factoid > p + p { border-top: 1px solid rgb(255 255 255 / 0.15); }
-  #factoids .split-body .h4 { color: inherit; max-width: none; } /* the first column's statement: full white like a headline, not dimmed like body copy */
+  #factoids .split-body .h3 { color: inherit; max-width: none; } /* the first column's statement: full white like a headline, not dimmed like body copy */
   /* Scroll: each number turns the palette blue once the row has slid most of its card onto the screen, and back to white as it leaves */
   #factoids .factoid > .h1 { transition: color 0.6s ease; }
   #factoids .factoid > .h1.is-lit { color: var(--link); }
   #factoids .factoid > .h1 { align-self: end; } /* the number sits at the bottom of the top row, just above the rule */
   #factoids .factoid .h1 { font-variant-numeric: tabular-nums; } /* digits keep one width while they count */
-  #factoids .factoid .h1 { font: 200 clamp(3rem, 11vw, 6.0625rem)/1 var(--font); letter-spacing: -0.04em; color: inherit; max-width: none; } /* the H1 style */
+  #factoids .factoid .h1 { font: 400 clamp(3rem, 11vw, 6.0625rem)/1 var(--font); letter-spacing: -0.04em; color: inherit; max-width: none; } /* the H1 size, at 400 so the numbers read heavier than the 200 headline */
   /* Scroll-driven (added by the script when motion is on): the row fills the screen top to bottom, pins, and slides
      left as you scroll down, then lets the page carry on */
   #factoids.sci-scrub .sci-viewport { height: 85vh; height: 85svh; } /* 85% of the screen: the section is 15% shorter than a full screen */
@@ -158,7 +161,7 @@
      Right: an image that fills the column's height */
   #science > .sci-cols { padding-inline: var(--inset-x); } /* only the columns: the pixel divider under them runs edge to edge */
   #science { padding-bottom: 80px; } /* clear space between the image and the pixel divider */
-  .sci-cols { display: grid; grid-template-columns: minmax(0, 1fr) calc(30% - 2 * var(--gutter)); /* About's 30/70, flipped: copy takes 70%, the image 30% */ gap: calc(2 * var(--gutter)); align-items: stretch; }
+  .sci-cols { display: grid; grid-template-columns: minmax(0, 1fr) calc(40% - 2 * var(--gutter)); /* copy takes 60%, the image 40% */ gap: calc(2 * var(--gutter)); align-items: stretch; }
   .sci-copy { display: grid; gap: 1.5rem; align-content: center; justify-items: start; }
   .sci-copy > * { margin: 0; }
   .sci-copy > .section-label { margin-bottom: -0.75rem; } /* 12px over its headline, like every section */
@@ -186,6 +189,7 @@
   /* Light nav: the full-color logo (blue mark, slate wordmark), as in Airfield_Bio_Logo.svg. Over dark bands, and in dark mode, it stays one color with the text. */
   .pinbar.on-light .logo-mark { fill: #4e98d3; }
   .pinbar.on-light .logo-word { fill: #474c55; }
+  .pinbar.over-hero { color: #3d424b; --nav-line: rgb(41 46 55 / 0.1); } /* very top of the hero: logo and links all in #3d424b, like the hero type */
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pinbar.on-light :is(.logo-mark, .logo-word) { fill: currentColor; } }
   :root[data-theme="dark"] .pinbar.on-light :is(.logo-mark, .logo-word) { fill: currentColor; }
   /* The bar grows to hold the logo: 30px above it, 58px logo, 30px below (118px); the links share its center. */
@@ -222,7 +226,7 @@
   .news-pager button:first-child { padding-left: 0; } /* the 1 starts flush with the left end of the rule above */
   .news-pager button {
     padding: 0.5rem 0.25rem; background: none; border: 0; color: rgb(255 255 255 / 0.5);
-    font: 400 0.9375rem/1 var(--font); cursor: pointer; transition: color 0.3s ease;
+    font: 400 1rem/1 var(--font); cursor: pointer; transition: color 0.3s ease;
   }
   .news-pager button + button::before { content: "|"; margin-right: 0.5rem; color: rgb(255 255 255 / 0.3); pointer-events: none; }
   .news-pager button:hover, .news-pager button[aria-current] { color: #fff; }
@@ -339,6 +343,14 @@
   [data-reveal-01] .line-mask, [data-reveal-01] .word-mask, [data-reveal-01] .char-mask { overflow: clip; overflow-clip-margin: 0.06em; }
   [data-reveal-01] .line-mask > *, [data-reveal-01] .word-mask > *, [data-reveal-01] .char-mask > * { padding-bottom: 0.18em; will-change: transform; }
   [data-reveal-01] .line-mask > * { white-space: nowrap; } /* each split line was measured as one line; keep it one line, or a near-full line wraps inside its mask */
+  /* Bio overlay: the Pipeline band's light blue (#eaeff8 at 50% over the page color), so it reads the same; dark mode keeps its own */
+  #bio { background: linear-gradient(rgb(234 239 248 / 0.5), rgb(234 239 248 / 0.5)), var(--bg); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) #bio { background: var(--bg); } }
+  :root[data-theme="dark"] #bio { background: var(--bg); }
+  /* Bio overlay close: a thinner 1px box and X in the dark gray, turning the light blue on hover */
+  #bio .bio-close { border-width: 1px; color: #474c55; transition: color 0.2s ease; }
+  #bio .bio-close .acc-icon { stroke-width: 1; }
+  #bio .bio-close:hover, #bio .bio-close:focus-visible { color: #4db0f4; }
   /* Team bio, flipped: the name, title and bio fill the wide left column. The narrow right column holds
      Previous / Next in the top row, level with the bottom of the title, and the photo under the rule, a square as
      wide as the column. Close sits in the top right, over Next. Phones keep their one column. */
@@ -415,7 +427,7 @@
       <div class="sci-window">
       <div class="sci-track">
         <div class="split-body">
-          <p class="h4">COPD is the highest unmet need in respiratory diseases and potentially in all of inflammatory disease.</p>
+          <p class="h3">COPD is the highest unmet need in respiratory diseases and potentially in all of inflammatory disease.</p>
         </div>
         <div class="split-body factoid">
           <p class="h1">~40 M</p>
@@ -491,7 +503,7 @@
       <div class="contact-info">
         <div class="contact-head">
           <h2 id="contact-title" class="section-label">Contact</h2>
-          <p class="h2">Reach out and let’s connect.</p>
+          <p class="h2">Reach out and<br>let’s connect.</p>
         </div>
         <dl class="contact-list">
           <div><dt class="label">General inquiries</dt><dd><a href="mailto:info@example.com">info@example.com</a></dd></div>
@@ -585,10 +597,12 @@
       const r = el.getBoundingClientRect(), dy = shift(el) + entrance;
       return r.top - dy < h && r.bottom - dy > h;
     });
-    // over the hero (until About reaches the bar's bottom edge) the logo and links are all white, like over the dark bands
+    // at the very top of the hero the bar is clear with the logo and links all in one dark gray; once you scroll
+    // (through the hero and the light sections) it's the solid white bar with the full-color logo
     const about = document.getElementById('about');
-    const overHero = about.getBoundingClientRect().top - shift(about) - entrance > h;
-    pinbar.classList.toggle('on-light', !overDark && !overHero);
+    const atHeroTop = scrollY <= 0 && about.getBoundingClientRect().top - shift(about) - entrance > h;
+    pinbar.classList.toggle('on-light', !overDark && !atHeroTop);
+    pinbar.classList.toggle('over-hero', atHeroTop);
     // active link: the section crossing a line 35% down the screen (the last one once the page bottoms out)
     const probe = innerHeight * 0.35, atEnd = innerHeight + scrollY >= document.documentElement.scrollHeight - 2;
     let current = null;
@@ -1265,7 +1279,7 @@
     });
   }
 
-  // First run once Geist has loaded, so the lines are cut where they really break. If GSAP didn't load, or the
+  // First run once DM Sans has loaded, so the lines are cut where they really break. If GSAP didn't load, or the
   // visitor prefers reduced motion, the text simply shows.
   (async () => {
     const showAll = () => document.querySelectorAll('[data-reveal-01]').forEach(el => { el.style.visibility = 'visible'; });
@@ -1280,6 +1294,7 @@
     wrap.classList.remove('page-in');
     textReveal01();
     sectionTransition01();
+    heroTextFade();
     scienceSlide();
     pipelinePixels();
     // Re-measure every scroll effect when the page's height changes after load (the About accordion opening or
@@ -1335,6 +1350,14 @@
 
   // Science: the four-column row pins to the screen and slides left as you scroll, one pixel across per pixel down,
   // until its last column is in view; then the page scrolls on. scrub: 1 lets the row catch up softly.
+  // Hero: the headline and the line under it fade out over the first half screen of scrolling, and back in on the way up
+  function heroTextFade() {
+    if (!motionOK()) return;
+    gsap.to('#hero .hero-body', {
+      opacity: 0, ease: 'none',
+      scrollTrigger: { trigger: '#hero', start: 'top top', end: () => '+=' + innerHeight * 0.5, scrub: true, invalidateOnRefresh: true }
+    });
+  }
   function factoidColor() {
     // a number lights up once the row has slid at least 75% of its card's width onto the screen, and goes back to
     // white as the card leaves; only the sideways position counts, so the last card stays lit as the section scrolls away
