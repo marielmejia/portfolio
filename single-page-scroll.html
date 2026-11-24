@@ -22,7 +22,6 @@
   /* About: a white band on the side inset. Two columns: the section label on the left; on the right a long
      paragraph in the H2 style with an accordion under it */
   #about { padding-block: 180px; }
-  #about .about-main > .h3 { color: #004c95; } /* the headline in the deep blue, like "ingenuity" in the hero */
   /* About sits on the page's own light blue-gray (--bg, #ecf2f5) like Focus, Pipeline and Team, not on a white band */
   #about { background: var(--bg); }
   /* Hero: the headline in the H1 style, and the copy centered top to bottom in the section. The hero pads
@@ -131,15 +130,19 @@
   @media (min-width: 761px) { .fs-cols { padding-inline: var(--inset-x); } }
   .fs-statement { position: sticky; top: 160px; margin: 0; padding-right: 64px; color: inherit; max-width: none; }
   .fs-list { display: grid; gap: var(--gutter); overflow-x: clip; overflow-clip-margin: 0; } /* cards sliding in from the side don't widen the page */
-  .fs-card { display: grid; gap: 1rem; padding: 2.5rem 2rem; background: rgb(255 255 255 / 0.05); color: #fff; transition: background-color 0.5s ease; }
-  .fs-card.is-active { background: var(--link); }
+  .fs-card { display: grid; gap: 1rem; padding: 2.5rem 2rem; background: rgb(255 255 255 / 0.05); color: #fff; transition: background-color 0.5s ease, color 0.5s ease; }
+  /* Highlight: each card takes one of the hero's three color pairs, the tint as its fill and the matching deeper
+     shade (the one "ingenuity" cycles through) for its text: blue, then yellow, then purple */
+  .fs-card:nth-child(3n + 1).is-active { background: #75b1db; color: #004c95; }
+  .fs-card:nth-child(3n + 2).is-active { background: #fdcf5a; color: #b07a00; }
+  .fs-card:nth-child(3n + 3).is-active { background: #b9a2f5; color: #6449cc; }
   .fs-card > p { margin: 0; max-width: none; }
   .fs-card .h1 { font: 400 clamp(3.3125rem, calc(11vw + 0.3125rem), 6.5625rem)/1 var(--font); letter-spacing: -0.04em; color: inherit; font-variant-numeric: tabular-nums; }
-  .fs-card .h1 + p { padding-top: 1rem; border-top: 1px solid rgb(255 255 255 / 0.12); }
+  .fs-card .h1 + p { padding-top: 1rem; border-top: 1px solid color-mix(in srgb, currentColor 12%, transparent); } /* white at 12%, or the card's deep shade when it's lit */
   @media (prefers-reduced-motion: no-preference) {
     /* the script sets --slide from 1 (card entering at the bottom of the screen) to 0 (card reaching the 45% line) */
     /* 280px of travel, and a short trailing ease so the card glides after the scroll rather than locking to it */
-    .fs-card { transform: translateX(calc(var(--slide, 0) * 280px)); opacity: calc(1 - var(--slide, 0)); transition: background-color 0.5s ease, transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.6s ease; }
+    .fs-card { transform: translateX(calc(var(--slide, 0) * 280px)); opacity: calc(1 - var(--slide, 0)); transition: background-color 0.5s ease, color 0.5s ease, transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.6s ease; }
   }
   @media (max-width: 760px) {
     #factoids { padding-block: 100px; }
@@ -364,6 +367,7 @@
     padding: calc(4.5rem + 2.5rem) var(--gutter) var(--gutter);
   }
   /* Team cards: the panel that slides in on hover (or keyboard focus) is the link blue instead of the dark ink */
+  #team .person { background: transparent; } /* no white card: the photo, name and title sit on the page; the blue panel still slides in on hover */
   #team .person::before { background: var(--link); }
   #team .person:is(:hover, :focus-visible) .person-role { color: rgb(255 255 255 / 0.85); } /* the gray title wouldn't read on the blue */
 </style>
