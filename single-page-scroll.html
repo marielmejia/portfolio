@@ -161,11 +161,15 @@
   .sci-copy > .h2 { max-width: none; text-wrap: pretty; }
   .sci-copy > p:not(.h2) { max-width: none; color: color-mix(in srgb, currentColor 80%, transparent); } /* body runs the full width of the headline */
   .sci-copy .accordion { justify-self: stretch; margin-top: 6px; } /* 30px under the last paragraph (the 24px column gap + 6px) */
-  #science .split-media { aspect-ratio: 4 / 3; height: auto; align-self: start; display: grid; } /* 4:3, level with the top of the copy */
-  #science .split-img { width: 100%; height: 100%; }
+  /* Right column: no image, just a soft white glow, a 600px radial gradient from white in the middle to clear at its
+     edge, centered in the column (it may spread past the column; the section clips it at the screen edges) */
+  #science { overflow-x: clip; }
+  .sci-glow { place-self: center; width: 600px; aspect-ratio: 1; max-width: none; pointer-events: none;
+    background: radial-gradient(closest-side, rgb(255 255 255 / 1), rgb(255 255 255 / 0.5) 35%, rgb(255 255 255 / 0)); }
   @media (max-width: 760px) {
     #science > .sci-cols { padding-inline: 20px; }
     .sci-cols { grid-template-columns: minmax(0, 1fr); gap: 3rem; }
+    .sci-glow { width: min(600px, 100%); }
   }
   @media (min-width: 761px) {
     /* The nav (or the Menu bar on tablets) and the hero copy line up on the same inset: one gutter plus the side inset from the screen edges */
@@ -286,7 +290,12 @@
   /* Pipeline columns: Program, Target, Indication, the bar across Phase 1–3, then Next Milestone */
   #pipeline .pl-row { grid-template-columns: minmax(0, 0.8fr) minmax(0, 0.8fr) minmax(0, 0.7fr) minmax(0, 3.4fr) minmax(0, 1.1fr); } /* the phase columns get most of the width */
   #pipeline .pl-stages, #pipeline .pl-bar { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  #pipeline .pl-item[open]:not(.closing), #pipeline .pl-item:hover { background: rgb(117 177 219 / 0.08); } /* hovered or open program: #75b1db at 8% */
+  /* Hovered or open program: a white gradient from solid at the bottom to clear at the top. Its strength (--pl-glow,
+     0 to 1) is what animates, since a gradient itself can't fade, so the band still eases in and out */
+  @property --pl-glow { syntax: "<number>"; inherits: false; initial-value: 0; }
+  #pipeline .pl-item { background: linear-gradient(to top, rgb(255 255 255 / var(--pl-glow)), rgb(255 255 255 / 0)); }
+  #pipeline .pl-item[open]:not(.closing), #pipeline .pl-item:hover { --pl-glow: 1; }
+  @media (prefers-reduced-motion: no-preference) { #pipeline .pl-item { transition: --pl-glow 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); } }
   #pipeline .pl-slot { background: rgb(99 102 106 / 0.12); } /* the empty track of each progress bar: #63666a at 12% */
   #pipeline .pl-slot::after { background: var(--link); } /* the filled part of each progress bar, in the link blue */
   #pipeline .pl-target, #pipeline .pl-milestone { font-size: 1.125rem; line-height: 1.4; } /* like Indication */
@@ -438,7 +447,7 @@
   </section>
 
   <section id="science" aria-labelledby="science-title">
-    <!-- Two columns: copy (label, headline, two paragraphs and an accordion) on the left, an image on the right -->
+    <!-- Two columns: copy (label, headline, paragraphs and an accordion) on the left, a soft white glow on the right -->
     <div class="sci-cols">
       <div class="sci-copy">
         <h2 id="science-title" class="section-label">Focus</h2>
@@ -453,7 +462,7 @@
           <button class="acc-toggle" type="button" aria-expanded="false" aria-controls="science-more"><span>More</span><svg class="acc-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 8H15"/><path class="v" d="M8 1V15"/></svg></button>
         </div>
       </div>
-      <div class="split-media"><div class="split-img" role="img" aria-label="Image placeholder"><span class="label">Image placeholder</span></div></div>
+      <div class="sci-glow" aria-hidden="true"></div>
     </div>
   </section>
 
