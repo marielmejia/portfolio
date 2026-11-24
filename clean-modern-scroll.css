@@ -11,7 +11,7 @@
      <meta name="viewport" content="width=device-width, initial-scale=1">
 
    TYPE SCALE (all DM Sans), largest first
-     H1 / display   200, clamp(48px, 11vw, 97px), line-height 1, -0.04em (also both hero headlines)
+     H1 / display   200, clamp(53px, 11vw + 5px, 105px), line-height 1, -0.04em (also both hero headlines)
      H2 / .h2       200, clamp(42px, 3.5vw + 16px, 48px), line-height 1.15, -0.01em
      H2 bold        400, the H2 style at weight 400 (.h2-bold)
      H3 / .h3       200, 41px (39px on phones), line-height 1.2, -0.01em
@@ -140,7 +140,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 }
 
 h1 {
-  font: 200 clamp(3rem, 11vw, 6.0625rem)/1 var(--font);
+  font: 200 clamp(3.3125rem, calc(11vw + 0.3125rem), 6.5625rem)/1 var(--font);
   letter-spacing: -0.04em;
   margin: 0;
   text-wrap: balance;
@@ -467,7 +467,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .menu-links a:hover, .menu-links a:focus-visible { color: var(--link); }
 .menu-links .ar { width: 0.45em; height: 0.45em; stroke-width: 3; color: var(--link); }
 
-.pinbar.scrolled { background: rgb(41 46 55 / 0.2); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+.pinbar.scrolled { background: rgb(41 46 55 / 0.2); -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); }
 .pinbar.on-light { background: color-mix(in srgb, var(--bg) 72%, transparent); color: var(--ink); --nav-line: var(--rule); }
 
 
