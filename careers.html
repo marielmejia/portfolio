@@ -103,8 +103,8 @@
   .c-roles-head { grid-template-columns: var(--role-cols); gap: 1.5rem var(--gutter); align-items: start; margin-bottom: 80px; } /* 80px above the table, like every section headline */
   .c-roles-head p { grid-column: 2 / -1; color: color-mix(in srgb, currentColor 80%, transparent); } /* body copy at 80% */
   @media (max-width: 760px) { .c-roles-head { grid-template-columns: minmax(0, 1fr); } .c-roles-head p { grid-column: 1; } }
-  .c-roles { list-style: none; margin: 0 -20px; padding: 0; border-top: 1px solid var(--rule, #d9d9d9); } /* rules and band reach 20px past the content on each side; the rows pad back in */
-  .c-role { border-bottom: 1px solid var(--rule, #d9d9d9); }
+  .c-roles { list-style: none; margin: 0 -20px; padding: 0; border-top: 1px solid var(--rule, rgb(0 0 0 / 0.12)); } /* rules and band reach 20px past the content on each side; the rows pad back in */
+  .c-role { border-bottom: 1px solid var(--rule, rgb(0 0 0 / 0.12)); }
   .c-role a {
     display: grid; grid-template-columns: var(--role-cols); gap: 0.5rem var(--gutter); align-items: center;
     padding: 1.85rem 20px; color: var(--ink); /* a little taller */ text-decoration: none; transition: background-color 0.4s ease;

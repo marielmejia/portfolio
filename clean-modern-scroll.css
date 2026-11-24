@@ -27,12 +27,12 @@
      Text link      300, blue
 
    COLORS (light / dark)
-     --bg      #f7f7f7 / #131715   page background
+     --bg      #ecf2f5 / #131715   page background (light blue-gray)
      --ink     #292e37 / #e6ebe7   text ("black")
      --muted   #7a7976 / #9aa59f   gray text
-     --link    #4e98d3             blue links
+     --link    #75b1db             blue links
      --line    #e7e7e7 / #333b37   loading placeholder gray
-     --rule    #d9d9d9 / #333b37   lines and rules (borders, dividers, dotted pipeline lines)
+     --rule    black 12% / white 12% lines and rules (borders, dividers, dotted pipeline lines)
      --row-bg  #ffffff / #1a1f1c   white panels (cards, rows)
 
    GRID
@@ -78,13 +78,13 @@
 
 /* ---------- Tokens ---------- */
 :root {
-  --bg: #f7f7f7;
+  --bg: #ecf2f5;
   --ink: #292e37;
   --muted: #7a7976;
   --line: #e7e7e7; /* placeholder fills */
-  --rule: #d9d9d9; /* lines and rules: a step darker than --line */
+  --rule: rgb(0 0 0 / 0.12); /* lines and rules: a step darker than --line */
   --accent: var(--muted);
-  --link: #4e98d3;
+  --link: #75b1db;
   --acc-bg: rgb(231 231 231 / 0.5);
   --row-bg: #ffffff;
   --font: "dm-sans", "Helvetica Neue", Arial, sans-serif;
@@ -96,13 +96,13 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #131715; --ink: #e6ebe7; --muted: #9aa59f; --line: #333b37; --rule: #333b37; --accent: var(--muted);
+    --bg: #131715; --ink: #e6ebe7; --muted: #9aa59f; --line: #333b37; --rule: rgb(255 255 255 / 0.12); --accent: var(--muted);
     --acc-bg: rgb(255 255 255 / 0.04); --row-bg: #1a1f1c;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #131715; --ink: #e6ebe7; --muted: #9aa59f; --line: #333b37; --rule: #333b37; --accent: var(--muted);
+  --bg: #131715; --ink: #e6ebe7; --muted: #9aa59f; --line: #333b37; --rule: rgb(255 255 255 / 0.12); --accent: var(--muted);
   --acc-bg: rgb(255 255 255 / 0.04); --row-bg: #1a1f1c;
   color-scheme: dark;
 }
@@ -426,7 +426,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   position: fixed; inset: 0 0 auto; z-index: 10;
   min-height: 60px; align-items: stretch; padding: 0 calc(5% + 0.9 * var(--gutter));
   border-bottom: 1px solid var(--nav-line); color: #fff;
-  --nav-line: rgb(255 255 255 / 0.2); /* faint white over the hero video */
+  --nav-line: rgb(255 255 255 / 0.12); /* faint white over the hero video */
 }
 .pinbar .label { color: inherit; align-self: center; }
 /* Three columns: the logo on the left, the links centered on the screen, the Careers button on the right */

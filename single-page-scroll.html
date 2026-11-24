@@ -22,6 +22,9 @@
   /* About: a white band on the side inset. Two columns: the section label on the left; on the right a long
      paragraph in the H2 style with an accordion under it */
   #about { padding-block: 180px; }
+  #about .about-main > .h3 { color: #004c95; } /* the headline in the deep blue, like "ingenuity" in the hero */
+  /* About sits on the page's own light blue-gray (--bg, #ecf2f5) like Focus, Pipeline and Team, not on a white band */
+  #about { background: var(--bg); }
   /* Hero: the headline in the H1 style, and the copy centered top to bottom in the section. The hero pads
      100px at the top (to clear the bar) and one gutter at the bottom; the negative top margin evens that out so
      the copy sits on the true middle of the screen, not the middle of the padded area */
@@ -40,26 +43,26 @@
   /* The background video (Sequence 01), in black and white, under a color tint at 100% in screen mode,
      which lifts the darks toward the color. Both stay inside the hero. */
   #hero .hero-video { filter: grayscale(1); }
-  #hero::before { background: #4db0f4; mix-blend-mode: screen; }
+  #hero::before { background: #75b1db; mix-blend-mode: screen; }
   /* a soft white wash from the top: white at 30% at the top edge, fading to nothing halfway down (over the tint, under the text) */
   #hero::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(to bottom, rgb(255 255 255 / 0.3), rgb(255 255 255 / 0) 50%); }
   /* The tint loops through light blue, yellow and light purple: each holds for 3 seconds, then fades softly into
      the next over 3 (18 seconds round). Visitors who prefer reduced motion keep the light blue. */
   @keyframes hero-tint {
-    0%, 16.667%      { background-color: #4db0f4; } /* light blue */
+    0%, 16.667%      { background-color: #75b1db; } /* light blue */
     33.333%, 50%     { background-color: #fdcf5a; } /* yellow */
     66.667%, 83.333% { background-color: #b9a2f5; } /* light purple */
-    100%      { background-color: #4db0f4; }
+    100%      { background-color: #75b1db; }
   }
   /* "ingenuity" in the headline runs the same loop in step with the tint, in deeper shades of the three colors so
      it stands out from the tinted background */
   @keyframes hero-word {
-    0%, 16.667%      { color: #1c74bd; } /* deep blue */
+    0%, 16.667%      { color: #004c95; } /* deep blue */
     33.333%, 50%     { color: #b07a00; } /* amber */
     66.667%, 83.333% { color: #6449cc; } /* deep purple */
-    100%      { color: #1c74bd; }
+    100%      { color: #004c95; }
   }
-  #hero h1 strong { color: #1c74bd; }
+  #hero h1 strong { color: #004c95; }
   /* Headline on load: "A breath of fresh" slides in from the left all together, then "ingenuity" slides up */
   #hero h1 .hl-in, #hero h1 .hl-up { display: inline-block; }
   #hero h1 .hl-in { color: #3d424b; } /* "A breath of fresh" */
@@ -81,11 +84,11 @@
   #hero h1 strong { font-weight: 400; } /* the bold word: the site's bold weight, as in H2 bold and H3 bold */
   /* the bar's strokes (bottom rule, dividers, hover line) over the hero and light sections: black at 10%
      (dark mode keeps its own rule color) */
-  .pinbar.on-light { --nav-line: rgb(41 46 55 / 0.1); }
+  .pinbar.on-light { --nav-line: rgb(0 0 0 / 0.12); }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pinbar.on-light { --nav-line: var(--rule); } }
   :root[data-theme="dark"] .pinbar.on-light { --nav-line: var(--rule); }
   .pinbar.on-light:not(.scrolled) { background: transparent; } /* clear before you scroll */
-  .pinbar.on-light.scrolled { background: rgb(255 255 255 / 0.75); } /* light bar is white at 75% once you scroll, so the 24px blur shows through (dark mode keeps its own tint) */
+  .pinbar.on-light.scrolled { background: rgb(236 242 245 / 0.75); } /* light bar is the page's #ecf2f5 at 75% once you scroll, so the 24px blur shows through (dark mode keeps its own tint) */
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pinbar.on-light.scrolled { background: color-mix(in srgb, var(--bg) 72%, transparent); } }
   :root[data-theme="dark"] .pinbar.on-light.scrolled { background: color-mix(in srgb, var(--bg) 72%, transparent); }
   #about > * { padding-inline: var(--inset-x); }
@@ -116,14 +119,14 @@
   }
   /* Science in dark mode: the same token swap as Contact, so the band, text and placeholders invert */
   #factoids {
-    --row-bg: #292e37; --ink: #ffffff; --bg: #1a1f1c; --muted: #9aa59f; --line: #333b37; --rule: #333b37; --accent: #9aa59f;
+    --row-bg: #292e37; --ink: #ffffff; --bg: #1a1f1c; --muted: #9aa59f; --line: #333b37; --rule: rgb(255 255 255 / 0.12); --accent: #9aa59f;
     color: var(--ink); color-scheme: dark;
   }
   /* Factoids: the side inset in two columns. The statement on the left stays in view
      (sticky) while the three factoids stack down the right column. As you scroll, each card slides in from the right
      and fades up (like the Values cards on Careers), and the card crossing a line 45% down the screen fills with the
      palette blue. */
-  #factoids { background: #474c55; padding-block: 180px; }
+  #factoids { background: #63666a; padding-block: 180px; }
   .fs-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--gutter); align-items: start; }
   @media (min-width: 761px) { .fs-cols { padding-inline: var(--inset-x); } }
   .fs-statement { position: sticky; top: 160px; margin: 0; padding-right: 64px; color: inherit; max-width: none; }
@@ -132,7 +135,7 @@
   .fs-card.is-active { background: var(--link); }
   .fs-card > p { margin: 0; max-width: none; }
   .fs-card .h1 { font: 400 clamp(3.3125rem, calc(11vw + 0.3125rem), 6.5625rem)/1 var(--font); letter-spacing: -0.04em; color: inherit; font-variant-numeric: tabular-nums; }
-  .fs-card .h1 + p { padding-top: 1rem; border-top: 1px solid rgb(255 255 255 / 0.15); }
+  .fs-card .h1 + p { padding-top: 1rem; border-top: 1px solid rgb(255 255 255 / 0.12); }
   @media (prefers-reduced-motion: no-preference) {
     /* the script sets --slide from 1 (card entering at the bottom of the screen) to 0 (card reaching the 45% line) */
     /* 280px of travel, and a short trailing ease so the card glides after the scroll rather than locking to it */
@@ -174,9 +177,9 @@
   @media (min-width: 761px) { .pinbar-logo { left: calc(max(var(--gutter), env(safe-area-inset-left, 0px)) + var(--inset-x)); } }
   .pinbar-logo svg { display: block; height: 58px; width: auto; }
   /* Light nav: the full-color logo (blue mark, slate wordmark), as in Airfield_Bio_Logo.svg. Over dark bands, and in dark mode, it stays one color with the text. */
-  .pinbar.on-light .logo-mark { fill: #4e98d3; }
+  .pinbar.on-light .logo-mark { fill: #75b1db; }
   .pinbar.on-light .logo-word { fill: #474c55; }
-  .pinbar.over-hero { color: #3d424b; --nav-line: rgb(41 46 55 / 0.1); } /* very top of the hero: logo and links all in #3d424b, like the hero type */
+  .pinbar.over-hero { color: #3d424b; --nav-line: rgb(0 0 0 / 0.12); } /* very top of the hero: logo and links all in #3d424b, like the hero type */
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pinbar.on-light :is(.logo-mark, .logo-word) { fill: currentColor; } }
   :root[data-theme="dark"] .pinbar.on-light :is(.logo-mark, .logo-word) { fill: currentColor; }
   /* The bar grows to hold the logo: 30px above it, 58px logo, 30px below (118px); the links share its center. */
@@ -187,14 +190,13 @@
   @media (max-width: 1024px) { .menu-toggle { grid-column: 2; } }
   /* Section labels sit 12px above their headlines everywhere, as in the About, Science and Contact panels */
   .wrap > section > .section-head { margin-bottom: 0.75rem; }
-  /* News sits on solid black, edge to edge. The negative margins cancel the page gutter and the padding puts it
-     back, so the content stays where it was; 180px below the cards (100px + 80px). Label and headline are white. */
+  /* News sits on a white band, edge to edge, with dark text. The negative margins cancel the page gutter and the
+     padding puts it back, so the content stays where it was; 180px below the cards (100px + 80px). */
   #news {
     margin-inline: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px))) calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)));
     padding: 100px max(var(--gutter), env(safe-area-inset-right, 0px)) 180px max(var(--gutter), env(safe-area-inset-left, 0px));
-    background: #474c55;
+    background: #fff;
   }
-  #news .section-label { color: #fff; }
   #news .news-intro .section-head { margin-bottom: 2.5rem; } /* space above the cards when they stack under it (phones) */
   /* Two columns above phone width: the section label in the left third, the cards stacked in the right two
      thirds (in from the right edge by the side inset) */
@@ -212,17 +214,17 @@
   .news-pager { display: flex; justify-content: flex-start; align-items: center; margin-top: 2.5rem; }
   .news-pager button:first-child { padding-left: 0; } /* the 1 starts flush with the left end of the rule above */
   .news-pager button {
-    padding: 0.5rem 0.25rem; background: none; border: 0; color: rgb(255 255 255 / 0.5);
+    padding: 0.5rem 0.25rem; background: none; border: 0; color: rgb(41 46 55 / 0.5);
     font: 400 1rem/1 var(--font); cursor: pointer; transition: color 0.3s ease;
   }
-  .news-pager button + button::before { content: "|"; margin-right: 0.5rem; color: rgb(255 255 255 / 0.3); pointer-events: none; }
-  .news-pager button:hover, .news-pager button[aria-current] { color: #fff; }
+  .news-pager button + button::before { content: "|"; margin-right: 0.5rem; color: rgb(41 46 55 / 0.3); pointer-events: none; }
+  .news-pager button:hover, .news-pager button[aria-current] { color: var(--ink); }
   .news-pager button[aria-current] { cursor: default; }
   .news-pager button:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
   /* Contact in reverse: the framework's colors flipped for this section only. The panel takes the ink color,
      text goes white, fields go dark; blue links and the button stay blue. */
   #contact {
-    --row-bg: #292e37; --ink: #ffffff; --bg: #1a1f1c; --muted: #9aa59f; --line: #333b37; --rule: #333b37; --accent: #9aa59f;
+    --row-bg: #292e37; --ink: #ffffff; --bg: #1a1f1c; --muted: #9aa59f; --line: #333b37; --rule: rgb(255 255 255 / 0.12); --accent: #9aa59f;
     color: var(--ink); color-scheme: dark;
     /* Edge to edge on the colorFlow image, touching News; the gutter padding is the band of image around the panel */
     position: relative; isolation: isolate; overflow: hidden;
@@ -231,7 +233,7 @@
     padding: var(--gutter) max(var(--gutter), env(safe-area-inset-right, 0px)) var(--gutter) max(var(--gutter), env(safe-area-inset-left, 0px));
   }
   /* Form fields: see-through with white strokes and white text; a missed required field still turns red */
-  #contact .field input, #contact .field textarea, #contact .field select { background: transparent; border-color: rgb(255 255 255 / 0.2); color: #fff; } /* stroke: white at 20%, like the nav over the hero */
+  #contact .field input, #contact .field textarea, #contact .field select { background: transparent; border-color: rgb(255 255 255 / 0.12); color: #fff; } /* stroke: white at 12%, like the nav over the hero */
   #contact .field :user-invalid { border-color: #FF3434; }
   /* Black overlay over the image (under the panel), to darken it */
   #contact::after { content: ""; position: absolute; inset: 0; z-index: -1; background: rgb(41 46 55 / 0.8); } /* the framework's dark ink (#292e37) at 80% */
@@ -249,10 +251,9 @@
     background: url("work/colorFlow.png") 50% 0 / cover no-repeat;
     transform: translateY(var(--parallax, 0px)); will-change: transform;
   }
-  /* Cards: no fill, white text, a rule underneath; the hover goes solid white with dark text */
-  #news .news-item { --row-bg: #292e37; --ink: #ffffff; }
-  #news .news-item { background: transparent; border-bottom: 1px solid rgb(255 255 255 / 0.2); } /* no fill, a faint white rule under each card */
-  #news .news-item:first-child { border-top: 1px solid rgb(255 255 255 / 0.2); } /* and one over the first, so the list is ruled top and bottom */
+  /* Cards: no fill, dark text, a rule underneath; the hover fills blue with white text */
+  #news .news-item { background: transparent; border-bottom: 1px solid var(--rule); } /* no fill, a faint rule under each card */
+  #news .news-item:first-child { border-top: 1px solid var(--rule); } /* and one over the first, so the list is ruled top and bottom */
   /* Hover (or keyboard focus): the card fills with the link blue; the text and Read More turn white so they read on it */
   #news .news-item:hover, #news .news-item:focus-visible { background: var(--link); color: #fff; }
   #news .news-item:is(:hover, :focus-visible) :is(.news-more, .ar) { color: #fff; }
@@ -264,11 +265,11 @@
   #team > * { --inset: var(--inset-x); padding-inline: var(--inset); }
   /* The same side inset inside the Pipeline chart */
   #pipeline-section .pipeline { background: transparent; } /* the chart sits on the page background, no white panel */
-  /* Pipeline sits on a light blue-gray band (#eaeff8 at 50%) that runs edge to edge, from the bottom of the pixel transition
+  /* Pipeline sits on a light blue-gray band (#ecf2f5, solid) that runs edge to edge, from the bottom of the pixel transition
      above it to the bottom of the chart. The 80px above the label moves inside the band, so the label stays put. */
   #pipeline-section { position: relative; margin-top: calc(180px - 4.5rem); padding-top: 80px; }
   #pipeline-section::before {
-    content: ""; position: absolute; z-index: -1; top: 0; bottom: 0; background: rgb(234 239 248 / 0.5); /* #eaeff8 at 50% */
+    content: ""; position: absolute; z-index: -1; top: 0; bottom: 0; background: #ecf2f5; /* solid */
     left: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px)));
     right: calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)));
   }
@@ -282,6 +283,8 @@
   /* Pipeline columns: Program, Target, Indication, the bar across Phase 1–3, then Next Milestone */
   #pipeline .pl-row { grid-template-columns: minmax(0, 0.8fr) minmax(0, 0.8fr) minmax(0, 0.7fr) minmax(0, 3.4fr) minmax(0, 1.1fr); } /* the phase columns get most of the width */
   #pipeline .pl-stages, #pipeline .pl-bar { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  #pipeline .pl-item[open]:not(.closing), #pipeline .pl-item:hover { background: rgb(117 177 219 / 0.08); } /* hovered or open program: #75b1db at 8% */
+  #pipeline .pl-slot { background: rgb(99 102 106 / 0.12); } /* the empty track of each progress bar: #63666a at 12% */
   #pipeline .pl-slot::after { background: var(--link); } /* the filled part of each progress bar, in the link blue */
   #pipeline .pl-target, #pipeline .pl-milestone { font-size: 1.125rem; line-height: 1.4; } /* like Indication */
   #pipeline .pl-date { display: block; } /* the date always takes the second line */
@@ -330,14 +333,14 @@
   [data-reveal-01] .line-mask, [data-reveal-01] .word-mask, [data-reveal-01] .char-mask { overflow: clip; overflow-clip-margin: 0.06em; }
   [data-reveal-01] .line-mask > *, [data-reveal-01] .word-mask > *, [data-reveal-01] .char-mask > * { padding-bottom: 0.18em; will-change: transform; }
   [data-reveal-01] .line-mask > * { white-space: nowrap; } /* each split line was measured as one line; keep it one line, or a near-full line wraps inside its mask */
-  /* Bio overlay: the Pipeline band's light blue (#eaeff8 at 50% over the page color), so it reads the same; dark mode keeps its own */
-  #bio { background: linear-gradient(rgb(234 239 248 / 0.5), rgb(234 239 248 / 0.5)), var(--bg); }
+  /* Bio overlay: the Pipeline band's light blue (#ecf2f5, solid), so it reads the same; dark mode keeps its own */
+  #bio { background: #ecf2f5; }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) #bio { background: var(--bg); } }
   :root[data-theme="dark"] #bio { background: var(--bg); }
   /* Bio overlay close: a thinner 1px box and X in the dark gray, turning the light blue on hover */
   #bio .bio-close { border-width: 1px; color: #474c55; transition: color 0.2s ease; }
   #bio .bio-close .acc-icon { stroke-width: 1; }
-  #bio .bio-close:hover, #bio .bio-close:focus-visible { color: #4db0f4; }
+  #bio .bio-close:hover, #bio .bio-close:focus-visible { color: #75b1db; }
   /* Team bio, flipped: the name, title and bio fill the wide left column. The narrow right column holds
      Previous / Next in the top row, level with the bottom of the title, and the photo under the rule, a square as
      wide as the column. Close sits in the top right, over Next. Phones keep their one column. */
@@ -566,7 +569,7 @@
   // Pinned bar: frosted once the page scrolls, dark text once it's past the hero
   const pinbar = document.getElementById('pinbar');
   const hero = document.getElementById('hero');
-  const darkBands = ['factoids', 'news', 'contact'].map(id => document.getElementById(id)); // the hero is handled separately below: white logo and links over it too
+  const darkBands = ['factoids', 'contact'].map(id => document.getElementById(id)); // the hero is handled separately below: white logo and links over it too
   const navLinks = [...pinbar.querySelectorAll('nav a[href^="#"]')].map(a => ({ a, section: document.querySelector(a.getAttribute('href')) })).filter(l => l.section);
   function updatePinbar() {
     const h = pinbar.offsetHeight;
@@ -659,7 +662,7 @@
     const cells = [...head.children].flatMap(c => c.classList.contains('pl-stages') ? [...c.children] : [c]).map(c => c.getBoundingClientRect());
     const left = head.getBoundingClientRect().left;
     const xs = cells.slice(1).map((c, i) => Math.round((cells[i].right + c.left) / 2 - left));
-    const dots = 'repeating-linear-gradient(to bottom, var(--rule, #d9d9d9) 0 2px, transparent 2px 5px)';
+    const dots = 'repeating-linear-gradient(to bottom, var(--rule, rgb(0 0 0 / 0.12)) 0 2px, transparent 2px 5px)';
     const inner = table.querySelector('.pl-group .pl-row');
     const shift = inner ? inner.getBoundingClientRect().left - left : 0;
     const outer = xs.slice(0, 2), rest = xs.slice(2).map(x => x - shift);
@@ -754,10 +757,6 @@
       { name: 'Name Surname', role: 'Medical Lead', bio: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.' },
       { name: 'Name Surname', role: 'Partner', bio: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.' },
       { name: 'Name Surname', role: 'Advisor', bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.' },
-      { name: 'Name Surname', role: 'Finance Lead', bio: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.' },
-      { name: 'Name Surname', role: 'Science Lead', bio: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.' },
-      { name: 'Name Surname', role: 'Clinical Lead', bio: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.' },
-      { name: 'Name Surname', role: 'People Lead', bio: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.' }
     ],
     'Board of Directors': [
       { name: 'Name Surname', role: 'Chair', bio: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.' },
@@ -1299,13 +1298,13 @@
   })();
 
   // Section dividers (Science → Pipeline, Pipeline → Team): a quick pixel wave in a 180px strip under the section (80px clear of the
-  // next label), in the light gray of the page's rules. Flat, wide pixels (10 across, each 15% as tall as it is wide) fill in from the
+  // next label), in white against the sections' #ecf2f5. Flat, wide pixels (10 across, each 15% as tall as it is wide) fill in from the
   // bottom up as you scroll down, then clear the same way, so they pass through without covering either section's content.
   function pipelinePixels() {
     ['science', 'pipeline-section'].forEach(id => { const el = document.getElementById(id); if (el) pixelDivider(el); });
   }
   function pixelDivider(pipeline) {
-    const columns = 10, aspect = 0.15, color = '#f1f3f8', spread = 3; // the Pipeline band as it shows: #eaeff8 at 50% over the page's #f7f7f7
+    const columns = 10, aspect = 0.15, color = '#ffffff', spread = 3; // white, so the pixels stand out against the #ecf2f5 page
     const gap = 180; // the strip's height; Team sits a further 80px below it
     pipeline.style.position = 'relative';
     const layer = document.createElement('div');
