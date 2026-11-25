@@ -6,32 +6,6 @@
 <title>Single Page Scroll</title>
 <link rel="stylesheet" href="https://use.typekit.net/ndd8ihl.css"> <!-- DM Sans (Adobe Fonts kit) -->
 <link rel="stylesheet" href="clean-modern-scroll.css">
-<script>
-  // Temporary: add ?debug to the address to show what the browser reports for the hero video, plus any script errors
-  if (/[?&]debug/.test(location.search)) {
-    window.__dbgErrors = [];
-    addEventListener('error', e => window.__dbgErrors.push((e.message || 'resource failed: ' + (e.target && (e.target.src || e.target.href))) + (e.lineno ? ' @' + e.lineno : '')), true);
-    addEventListener('unhandledrejection', e => window.__dbgErrors.push('promise: ' + (e.reason && e.reason.message || e.reason)));
-    addEventListener('DOMContentLoaded', () => {
-      const box = document.createElement('pre');
-      box.style.cssText = 'position:fixed;left:8px;right:8px;bottom:8px;z-index:99999;margin:0;padding:8px;background:rgba(255,255,255,.95);color:#000;font:11px/1.35 monospace;white-space:pre-wrap;max-height:45vh;overflow:auto;border:1px solid #000';
-      document.body.append(box);
-      const v = document.getElementById('hero-video'), hero = document.getElementById('hero'), events = [];
-      ['loadedmetadata', 'loadeddata', 'canplay', 'playing', 'pause', 'stalled', 'suspend', 'waiting', 'error', 'emptied', 'abort'].forEach(t => v.addEventListener(t, () => events.push(t)));
-      setInterval(() => {
-        const r = v.getBoundingClientRect(), cs = getComputedStyle(v), hs = getComputedStyle(hero);
-        box.textContent = 'video paused: ' + v.paused + '  time: ' + v.currentTime.toFixed(1) + '  ready: ' + v.readyState + '  net: ' + v.networkState +
-          '\nerror: ' + (v.error ? v.error.code + ' ' + v.error.message : 'none') + '  size: ' + v.videoWidth + 'x' + v.videoHeight +
-          '\nsrc: ' + (v.currentSrc || '').split('/').pop() + '  in page: ' + document.contains(v) +
-          '\nbox: ' + [r.left, r.top, r.width, r.height].map(Math.round).join(',') + '  opacity: ' + cs.opacity + '  display: ' + cs.display + '  vis: ' + cs.visibility +
-          '\nhero parent: ' + (hero.parentElement.className || hero.parentElement.tagName) + '  hero transform: ' + hs.transform +
-          '\nevents: ' + events.join(', ') +
-          '\nerrors: ' + (window.__dbgErrors.join(' | ') || 'none') +
-          '\n' + navigator.userAgent;
-      }, 500);
-    });
-  }
-</script>
 <style>
   /* Side inset shared by every section: fluid from 60px on a 768px tablet up to 200px at 1680px and wider */
   :root { --inset-x: clamp(60px, calc(15.35vw - 57.9px), 200px); }
@@ -77,13 +51,6 @@
      screen; the hero already pads one gutter, so the copy adds the rest) */
   @media (max-width: 760px) { .hero-body { padding-inline: calc(5vw - 0.1 * var(--gutter)); } } /* phones: no subhead, just Scroll for more under the headline area */
   #hero::before { background: #75b1db; mix-blend-mode: screen; }
-  /* iPhones and iPads (Safari on iOS): a blend layer over a video can make Safari draw the video black, leaving only the
-     flat tint. There the tint sits under the video instead, with no blending, and the black-and-white video lies over it
-     at half strength, which keeps much the same look */
-  @supports (-webkit-touch-callout: none) {
-    #hero::before { mix-blend-mode: normal; z-index: -3; }
-    #hero .hero-video { opacity: 0.4; }
-  }
   /* Phones and small tablets pin the hero while About slides over it. The pin measures the hero without its edge-to-edge
      margins and fixes it 40px too narrow, leaving a white strip down the right; keep it the full screen width */
   @media (max-width: 768px) { #hero { width: 100vw !important; max-width: 100vw !important; } }
@@ -704,15 +671,12 @@
 </dialog>
 
 <script>
-  // Hero video holds still for visitors who prefer reduced motion; otherwise it makes sure it's playing. Phones can
-  // skip autoplay (iOS Low Power Mode, data saver), so it asks again once loaded, when the tab comes back into view,
-  // and on the first touch or scroll, which counts as the visitor's go-ahead.
+  // Hero video always plays, even for visitors who prefer reduced motion (it's slow, abstract movement; the page's other
+  // animations still stay off for them). Phones can skip autoplay (iOS Low Power Mode, data saver), so it asks again
+  // once loaded, when the tab comes back into view, and on the first tap or click, which counts as the visitor's go-ahead.
   {
     const heroVideo = document.getElementById('hero-video');
-    if (!matchMedia('(prefers-reduced-motion: no-preference)').matches) {
-      heroVideo.removeAttribute('autoplay');
-      heroVideo.pause();
-    } else {
+    {
       heroVideo.muted = true; heroVideo.defaultMuted = true; // set as properties too: some phones only honor these for autoplay
       const play = () => { if (heroVideo.paused) heroVideo.play().catch(() => {}); };
       play();
