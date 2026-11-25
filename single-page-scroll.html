@@ -46,7 +46,10 @@
   /* The background video (Sequence 01), in black and white, under a color tint at 100% in screen mode,
      which lifts the darks toward the color. Both stay inside the hero. */
   #hero .hero-video { filter: grayscale(1); }
-  @media (max-width: 760px) { .hero-side > .h4 { display: none; } } /* phones: no subhead, just Scroll for more under the headline area */
+  @media (max-width: 760px) { .hero-side > .h4 { display: none; } }
+  /* Phones: the headline and Scroll for more start on the logo's left edge (the logo sits 5% + 0.9 gutter in from the
+     screen; the hero already pads one gutter, so the copy adds the rest) */
+  @media (max-width: 760px) { .hero-body { padding-inline: calc(5vw - 0.1 * var(--gutter)); } } /* phones: no subhead, just Scroll for more under the headline area */
   #hero::before { background: #75b1db; mix-blend-mode: screen; }
   /* a soft white wash from the top: white at 30% at the top edge, fading to nothing halfway down (over the tint, under the text) */
   #hero::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(to bottom, rgb(255 255 255 / 0.3), rgb(255 255 255 / 0) 50%); }
@@ -679,8 +682,12 @@
       play();
       heroVideo.addEventListener('loadeddata', play);
       document.addEventListener('visibilitychange', () => { if (!document.hidden) play(); });
-      const firstGesture = () => { play(); ['touchstart', 'pointerdown', 'scroll', 'keydown'].forEach(t => removeEventListener(t, firstGesture)); };
-      ['touchstart', 'pointerdown', 'scroll', 'keydown'].forEach(t => addEventListener(t, firstGesture, { passive: true }));
+      // iOS only counts touchend and click as the visitor's go-ahead (not touchstart or scroll), so listen for those too
+      // and keep trying until the video is actually playing
+      const gestures = ['touchend', 'click', 'touchstart', 'pointerdown', 'scroll', 'keydown'];
+      const onGesture = () => { play(); };
+      gestures.forEach(t => addEventListener(t, onGesture, { passive: true }));
+      heroVideo.addEventListener('playing', () => gestures.forEach(t => removeEventListener(t, onGesture)), { once: true });
     }
   }
 
