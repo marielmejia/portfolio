@@ -6,6 +6,32 @@
 <title>Single Page Scroll</title>
 <link rel="stylesheet" href="https://use.typekit.net/ndd8ihl.css"> <!-- DM Sans (Adobe Fonts kit) -->
 <link rel="stylesheet" href="clean-modern-scroll.css">
+<script>
+  // Temporary: add ?debug to the address to show what the browser reports for the hero video, plus any script errors
+  if (/[?&]debug/.test(location.search)) {
+    window.__dbgErrors = [];
+    addEventListener('error', e => window.__dbgErrors.push((e.message || 'resource failed: ' + (e.target && (e.target.src || e.target.href))) + (e.lineno ? ' @' + e.lineno : '')), true);
+    addEventListener('unhandledrejection', e => window.__dbgErrors.push('promise: ' + (e.reason && e.reason.message || e.reason)));
+    addEventListener('DOMContentLoaded', () => {
+      const box = document.createElement('pre');
+      box.style.cssText = 'position:fixed;left:8px;right:8px;bottom:8px;z-index:99999;margin:0;padding:8px;background:rgba(255,255,255,.95);color:#000;font:11px/1.35 monospace;white-space:pre-wrap;max-height:45vh;overflow:auto;border:1px solid #000';
+      document.body.append(box);
+      const v = document.getElementById('hero-video'), hero = document.getElementById('hero'), events = [];
+      ['loadedmetadata', 'loadeddata', 'canplay', 'playing', 'pause', 'stalled', 'suspend', 'waiting', 'error', 'emptied', 'abort'].forEach(t => v.addEventListener(t, () => events.push(t)));
+      setInterval(() => {
+        const r = v.getBoundingClientRect(), cs = getComputedStyle(v), hs = getComputedStyle(hero);
+        box.textContent = 'video paused: ' + v.paused + '  time: ' + v.currentTime.toFixed(1) + '  ready: ' + v.readyState + '  net: ' + v.networkState +
+          '\nerror: ' + (v.error ? v.error.code + ' ' + v.error.message : 'none') + '  size: ' + v.videoWidth + 'x' + v.videoHeight +
+          '\nsrc: ' + (v.currentSrc || '').split('/').pop() + '  in page: ' + document.contains(v) +
+          '\nbox: ' + [r.left, r.top, r.width, r.height].map(Math.round).join(',') + '  opacity: ' + cs.opacity + '  display: ' + cs.display + '  vis: ' + cs.visibility +
+          '\nhero parent: ' + (hero.parentElement.className || hero.parentElement.tagName) + '  hero transform: ' + hs.transform +
+          '\nevents: ' + events.join(', ') +
+          '\nerrors: ' + (window.__dbgErrors.join(' | ') || 'none') +
+          '\n' + navigator.userAgent;
+      }, 500);
+    });
+  }
+</script>
 <style>
   /* Side inset shared by every section: fluid from 60px on a 768px tablet up to 200px at 1680px and wider */
   :root { --inset-x: clamp(60px, calc(15.35vw - 57.9px), 200px); }
