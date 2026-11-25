@@ -161,11 +161,33 @@
   .sci-copy > .h2 { max-width: none; text-wrap: pretty; }
   .sci-copy > p:not(.h2) { max-width: none; color: color-mix(in srgb, currentColor 80%, transparent); } /* body runs the full width of the headline */
   .sci-copy .accordion { justify-self: stretch; margin-top: 6px; } /* 30px under the last paragraph (the 24px column gap + 6px) */
-  /* Right column: no image, just a soft white glow, a 600px radial gradient from white in the middle to clear at its
-     edge, centered in the column (it may spread past the column; the section clips it at the screen edges) */
-  #science { overflow-x: clip; }
-  .sci-glow { place-self: center; width: 600px; aspect-ratio: 1; max-width: none; pointer-events: none;
-    background: radial-gradient(closest-side, rgb(255 255 255 / 1), rgb(255 255 255 / 0.5) 35%, rgb(255 255 255 / 0)); }
+  /* Right column: no image, just a soft light blue glow, the same 1200px as the News one, centered in the column. The
+     column keeps a 600px box; the glow is drawn from its center so it spreads past it without making the section
+     taller (the section clips it at the screen edges). It slides with the scroll (focusGlow() below): in from the
+     right as the section comes up, back out to the right as it leaves. */
+  /* The light blue glow used in Focus and News: an irregular, cloud-like shape made of six soft ellipses spread apart and just overlapping
+     of different sizes and positions, blurred so they melt into one */
+  #science, #news {
+    --glow-blob:
+      radial-gradient(34% 22% at 38% 44%, rgb(117 177 219 / 0.32), rgb(117 177 219 / 0)),
+      radial-gradient(24% 32% at 67% 61%, rgb(117 177 219 / 0.27), rgb(117 177 219 / 0)),
+      radial-gradient(22% 13% at 63% 24%, rgb(117 177 219 / 0.22), rgb(117 177 219 / 0)),
+      radial-gradient(17% 25% at 22% 71%, rgb(117 177 219 / 0.19), rgb(117 177 219 / 0)),
+      radial-gradient(15% 11% at 82% 38%, rgb(117 177 219 / 0.17), rgb(117 177 219 / 0)),
+      radial-gradient(21% 13% at 47% 82%, rgb(117 177 219 / 0.18), rgb(117 177 219 / 0));
+  }
+  .sci-glow::before, #news::before { filter: blur(80px); }
+  #science { overflow-x: clip; isolation: isolate; } /* the glow sits behind the copy, but above the section's own fill */
+  /* The section reaches the screen edges (negative margins cancel the page gutter, padding puts the content back), so the
+     glow is clipped at the edge of the screen, not 24px in from it */
+  #science {
+    margin-inline: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px))) calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)));
+    padding-inline: max(var(--gutter), env(safe-area-inset-left, 0px)) max(var(--gutter), env(safe-area-inset-right, 0px));
+  }
+  .sci-glow { position: relative; z-index: -1; place-self: center; width: 600px; aspect-ratio: 1; max-width: none; pointer-events: none; }
+  .sci-glow::before { content: ""; position: absolute; top: 50%; left: 50%; width: 1200px; max-width: 160vw; aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    background: var(--glow-blob); }
   @media (max-width: 760px) {
     #science > .sci-cols { padding-inline: 20px; }
     .sci-cols { grid-template-columns: minmax(0, 1fr); gap: 3rem; }
@@ -197,12 +219,24 @@
   @media (max-width: 1024px) { .menu-toggle { grid-column: 2; } }
   /* Section labels sit 12px above their headlines everywhere, as in the About, Science and Contact panels */
   .wrap > section > .section-head { margin-bottom: 0.75rem; }
-  /* News sits on a white band, edge to edge, with dark text. The negative margins cancel the page gutter and the
+  /* News sits on the light blue-gray page color (like Pipeline), edge to edge, with dark text. The negative margins cancel the page gutter and the
      padding puts it back, so the content stays where it was; 180px below the cards (100px + 80px). */
   #news {
     margin-inline: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px))) calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)));
     padding: 100px max(var(--gutter), env(safe-area-inset-right, 0px)) 180px max(var(--gutter), env(safe-area-inset-left, 0px));
-    background: #fff;
+    background: #ecf2f5;
+    position: relative; isolation: isolate; overflow-x: clip;
+  }
+  /* A large, soft light blue glow behind the News band; it slides in from the left as the band scrolls into view and back out as it leaves */
+  #news::before {
+    content: ""; position: absolute; z-index: -1; pointer-events: none;
+    top: 50%; left: 0; width: 1200px; max-width: 160vw; aspect-ratio: 1;
+    background: var(--glow-blob);
+    transform: translate(-50%, -50%);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    #news::before { opacity: 0; transform: translate(-100%, -50%); transition: transform 1.8s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 1.8s ease; }
+    #news.glow-in::before { opacity: 1; transform: translate(-50%, -50%); }
   }
   #news .news-intro .section-head { margin-bottom: 2.5rem; } /* space above the cards when they stack under it (phones) */
   /* Two columns above phone width: the section label in the left third, the cards stacked in the right two
@@ -280,6 +314,17 @@
     left: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px)));
     right: calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)));
   }
+  /* One soft light blue oval in the middle of the Pipeline band (and of Team), 3600 × 800px (scaled down on narrow
+     screens), the same blue and strength as the Focus and News glows. Drawn as a gradient with a long, eased falloff
+     rather than a blurred shape, so the band's own edges contain it. */
+  #team { position: relative; } /* Team gets the same glow */
+  #pipeline-section::after, #team::after {
+    content: ""; position: absolute; z-index: -1; top: 0; bottom: 0; pointer-events: none;
+    left: calc(-1 * max(var(--gutter), env(safe-area-inset-left, 0px)));
+    right: calc(-1 * max(var(--gutter), env(safe-area-inset-right, 0px)));
+    background: radial-gradient(min(1800px, 135vw) min(400px, 30vw) at 50% 50%,
+      rgb(117 177 219 / 0.32), rgb(117 177 219 / 0.26) 25%, rgb(117 177 219 / 0.15) 55%, rgb(117 177 219 / 0.05) 80%, rgb(117 177 219 / 0));
+  }
   @media (min-width: 761px) {
     #pipeline-section .pipeline { padding-inline: var(--inset-x); }
   }
@@ -290,12 +335,9 @@
   /* Pipeline columns: Program, Target, Indication, the bar across Phase 1–3, then Next Milestone */
   #pipeline .pl-row { grid-template-columns: minmax(0, 0.8fr) minmax(0, 0.8fr) minmax(0, 0.7fr) minmax(0, 3.4fr) minmax(0, 1.1fr); } /* the phase columns get most of the width */
   #pipeline .pl-stages, #pipeline .pl-bar { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  /* Hovered or open program: a white gradient from solid at the bottom to clear at the top. Its strength (--pl-glow,
-     0 to 1) is what animates, since a gradient itself can't fade, so the band still eases in and out */
-  @property --pl-glow { syntax: "<number>"; inherits: false; initial-value: 0; }
-  #pipeline .pl-item { background: linear-gradient(to top, rgb(255 255 255 / var(--pl-glow)), rgb(255 255 255 / 0)); }
-  #pipeline .pl-item[open]:not(.closing), #pipeline .pl-item:hover { --pl-glow: 1; }
-  @media (prefers-reduced-motion: no-preference) { #pipeline .pl-item { transition: --pl-glow 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); } }
+  /* Every program row, at rest, hovered or open: a solid fill in the light blue-gray page color (#ecf2f5), which
+     covers the glow behind the band */
+  #pipeline .pl-item { background: #ecf2f5; }
   #pipeline .pl-slot { background: rgb(99 102 106 / 0.12); } /* the empty track of each progress bar: #63666a at 12% */
   #pipeline .pl-slot::after { background: var(--link); } /* the filled part of each progress bar, in the link blue */
   #pipeline .pl-target, #pipeline .pl-milestone { font-size: 1.125rem; line-height: 1.4; } /* like Indication */
@@ -376,6 +418,11 @@
     padding: calc(4.5rem + 2.5rem) var(--gutter) var(--gutter);
   }
   /* Team cards: the panel that slides in on hover (or keyboard focus) is the link blue instead of the dark ink */
+  /* The rule under the tabs carries on to the right edge of the photo grid (above phone width, where the tabs sit in a row) */
+  @media (min-width: 761px) {
+    #team .team-head .tabs-bar { justify-self: stretch; border-bottom: 1px solid var(--rule); }
+    #team .team-head .tabs { vertical-align: top; margin-bottom: -1px; } /* the tabs' own bottom edge lands on that rule */
+  }
   #team .person { background: transparent; } /* no white card: the photo, name and title sit on the page; the blue panel still slides in on hover */
   #team .person::before { background: var(--link); }
   #team .person:is(:hover, :focus-visible) .person-role { color: rgb(255 255 255 / 0.85); } /* the gray title wouldn't read on the blue */
@@ -1045,6 +1092,15 @@
 
   // Text slides up into place as it scrolls into view. Every visible block of text below the hero gets it
   // (the hero has its own entrance); blocks that arrive together rise one after another.
+  // News: the background glow slides in from the left as the band comes into view, and back out as it leaves
+  if ('IntersectionObserver' in window) {
+    const glowObserver = new IntersectionObserver(entries => entries.forEach(e => {
+      e.target.classList.toggle('glow-in', e.isIntersecting);
+    }), { threshold: 0.2 });
+    const newsBand = document.getElementById('news');
+    if (newsBand) glowObserver.observe(newsBand);
+  }
+
   if ('IntersectionObserver' in window && motionOK()) {
     const skip = '#hero, footer, [data-reveal-01], .pinbar, dialog, option, .form-note, .person-photo, .split-img, details:not([open]) > :not(summary), .detail-body[hidden], .acc-toggle, .contact-form'; // image boxes, closed accordion text, the accordion labels and the form stay put
     // (a label sits in its accordion's clipped box: pushed 40px down to wait, it can be hidden from the observer and never come back)
@@ -1280,6 +1336,19 @@
     });
   }
 
+  // Focus: the background glow is tied to the scroll. It slides in from the right (and fades up) while the section
+  // rises from the bottom of the screen to the middle, holds, then slides back out to the right while the section's
+  // bottom goes from the middle of the screen to the top. Scrolling back plays it in reverse.
+  function focusGlow() {
+    const section = document.getElementById('science');
+    const glow = section && section.querySelector('.sci-glow');
+    if (!glow) return;
+    gsap.timeline({ scrollTrigger: { trigger: section, start: 'top bottom', end: 'bottom top', scrub: 0.6 } })
+      .fromTo(glow, { x: 1100, opacity: 0 }, { x: 200, opacity: 1, ease: 'power2.out', duration: 1 })
+      .to(glow, { x: 200, duration: 0.6 })
+      .to(glow, { x: 1100, opacity: 0, ease: 'power2.in', duration: 1 });
+  }
+
   // First run once DM Sans has loaded, so the lines are cut where they really break. If GSAP didn't load, or the
   // visitor prefers reduced motion, the text simply shows.
   (async () => {
@@ -1296,6 +1365,7 @@
     textReveal01();
     sectionTransition01();
     heroTextFade();
+    focusGlow();
     pipelinePixels();
     // Re-measure every scroll effect when the page's height changes after load (the About accordion opening or
     // closing, images settling): otherwise the Science pin keeps its old start and jumps by the difference.
@@ -1360,7 +1430,8 @@
   }
   function factoidStack() {
     // Factoids: like the Values cards on Careers. The card crossing a line 45% down the screen fills blue, and each
-    // card slides in from the right as it comes up the screen, landing in place as it reaches that line
+    // card slides in from the right over its first fifth of a screen up from the bottom, so one card has landed well
+    // before the next one starts moving
     const cards = [...document.querySelectorAll('#factoids .fs-card')];
     const update = () => {
       const probe = innerHeight * 0.45;
@@ -1368,8 +1439,8 @@
       cards.forEach(c => {
         const r = c.getBoundingClientRect();
         c.classList.toggle('is-active', r.top <= probe && r.bottom > probe);
-        // linear rather than squared, so the slide is spread over the whole climb from the bottom of the screen to the line
-        const t = Math.min(1, Math.max(0, (innerHeight - r.top) / (innerHeight - probe)));
+        // linear, over a short climb (bottom of the screen to 80% down), which leaves a pause between one card's slide and the next
+        const t = Math.min(1, Math.max(0, (innerHeight - r.top) / (innerHeight * 0.2)));
         if (scrub) c.style.setProperty('--slide', (1 - t).toFixed(4));
       });
     };
