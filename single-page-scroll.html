@@ -1460,7 +1460,7 @@
     }).observe(document.body);
   })();
 
-  // Section dividers (Factoids → Focus, Focus → Pipeline, Pipeline → Team): a quick pixel wave in a 180px strip under the section (80px clear of the
+  // Section dividers (Factoids → Focus, Focus → Pipeline, Pipeline → Team): a quick pixel wave in a 90px strip under the section (80px clear of the
   // next label), in white against the sections' #ecf2f5. Flat, wide pixels (10 across, each 15% as tall as it is wide) fill in from the
   // bottom up as you scroll down, then clear the same way, so they pass through without covering either section's content.
   function pipelinePixels() {
@@ -1468,7 +1468,7 @@
   }
   function pixelDivider(pipeline) {
     const columns = 10, aspect = 0.15, color = 'rgb(255 255 255 / 0.9)', spread = 3; // white at 90%, like the Pipeline chart, against the #ecf2f5 page
-    const gap = 180; // the strip's height; Team sits a further 80px below it
+    const gap = 90; // the strip's height, at every screen size: it fills the top half of the 180px space under the section
     pipeline.style.position = 'relative';
     const layer = document.createElement('div');
     layer.setAttribute('aria-hidden', 'true');
