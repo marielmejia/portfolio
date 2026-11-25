@@ -7,8 +7,8 @@
 <style>
   /* Side inset shared by every section: fluid from 60px on a 768px tablet up to 200px at 1680px and wider */
   :root { --inset-x: clamp(60px, calc(15.35vw - 57.9px), 200px); }
-  /* Laptops (1025–1440px wide): half that inset */
-  @media (min-width: 1025px) and (max-width: 1440px) { :root { --inset-x: calc(clamp(60px, calc(15.35vw - 57.9px), 200px) / 2); } }
+  /* Laptops, tablets and phones (up to 1440px wide): half that inset */
+  @media (max-width: 1440px) { :root { --inset-x: calc(clamp(60px, calc(15.35vw - 57.9px), 200px) / 2); } }
   /* 180px between the content sections (.wrap already spaces them 4.5rem) */
   .wrap > section + section { margin-top: calc(180px - 4.5rem); }
   #team, #pipeline-section { margin-top: calc(180px + 80px - 4.5rem); } /* 80px more above Team and Pipeline, between the pixel transition above each and its label */
@@ -101,7 +101,10 @@
   .about-cols { display: grid; grid-template-columns: calc(30% - 2 * var(--gutter)) minmax(0, 1fr); /* 30/70: the paragraph column starts 30% in and fills the other 70% */ gap: 1.5rem calc(2 * var(--gutter)); align-items: start; }
   .about-cols .section-head { margin: 0; padding-top: 0.6em; } /* the label sits level with the top of the paragraph's first line */
   .about-main { display: grid; gap: 3rem; }
-  .about-main > .h3 { margin: 0; text-wrap: pretty; }
+  .about-main > .h2 { margin: 0; max-width: none; text-wrap: pretty; }
+  /* Body copy under the headline: the same body style as Focus (18px, the text at 80%), 24px below the headline */
+  .about-main > .accordion { margin-top: calc(30px - 3rem); } /* 30px between the body copy and More, as in Focus */
+  .about-main > .about-body { margin: calc(24px - 3rem) 0 0; max-width: none; font-size: 1.125rem; line-height: 1.4; color: color-mix(in srgb, currentColor 80%, transparent); }
   /* Accordions (About and Science): the More / Less label sits at the bottom, under a rule, and the text opens
      above it at the full width of the column, like the paragraphs around it */
   .accordion .acc-toggle {
@@ -123,21 +126,17 @@
     .about-cols { grid-template-columns: minmax(0, 1fr); }
     .about-cols .section-head { padding-top: 0; }
   }
-  /* Science in dark mode: the same token swap as Contact, so the band, text and placeholders invert */
-  #factoids {
-    --row-bg: #292e37; --ink: #ffffff; --bg: #1a1f1c; --muted: #9aa59f; --line: #333b37; --rule: rgb(255 255 255 / 0.12); --accent: #9aa59f;
-    color: var(--ink); color-scheme: dark;
-  }
   /* Factoids: the side inset in two columns. The statement on the left stays in view
      (sticky) while the three factoids stack down the right column. As you scroll, each card slides in from the right
      and fades up (like the Values cards on Careers), and the card crossing a line 45% down the screen fills with the
      palette blue. */
-  #factoids { background: #63666a; padding-block: 180px; }
+  #factoids { background: transparent; color: var(--ink); padding-block: 180px; } /* light: no band, dark text on the page */
+  #factoids { overflow-x: clip; } /* the pixel divider under it reaches a gutter past each side; clip it at the screen edge (clip, not hidden, so the sticky statement still sticks) */
   .fs-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--gutter); align-items: start; }
   @media (min-width: 761px) { .fs-cols { padding-inline: var(--inset-x); } }
-  .fs-statement { position: sticky; top: 160px; margin: 0; padding-right: 64px; color: inherit; max-width: none; }
+  .fs-statement { position: sticky; top: 160px; margin: 0; padding-right: 64px; color: #004c95; max-width: 480px; box-sizing: border-box; font-weight: 200; } /* a narrower measure: at most 416px of text */
   .fs-list { display: grid; gap: var(--gutter); overflow-x: clip; overflow-clip-margin: 0; } /* cards sliding in from the side don't widen the page */
-  .fs-card { display: grid; gap: 1rem; padding: 2.5rem 2rem; background: rgb(255 255 255 / 0.05); color: #fff; transition: background-color 0.5s ease, color 0.5s ease; }
+  .fs-card { display: grid; gap: 1rem; padding: 2.5rem 2rem; background: rgb(255 255 255 / 0.9); color: var(--ink); transition: background-color 0.5s ease, color 0.5s ease; }
   /* Highlight: each card takes one of the hero's three color pairs, the tint as its fill and the matching deeper
      shade (the one "ingenuity" cycles through) for its text: blue, then yellow, then purple */
   .fs-card:nth-child(3n + 1).is-active { background: #75b1db; color: #004c95; }
@@ -145,7 +144,7 @@
   .fs-card:nth-child(3n + 3).is-active { background: #b9a2f5; color: #6449cc; }
   .fs-card > p { margin: 0; max-width: none; }
   .fs-card .h1 { font: 400 clamp(3.3125rem, calc(11vw + 0.3125rem), 6.5625rem)/1 var(--font); letter-spacing: -0.04em; color: inherit; font-variant-numeric: tabular-nums; }
-  .fs-card .h1 + p { padding-top: 1rem; border-top: 1px solid color-mix(in srgb, currentColor 12%, transparent); } /* white at 12%, or the card's deep shade when it's lit */
+  .fs-card .h1 + p { padding-top: 1rem; border-top: 1px solid color-mix(in srgb, currentColor 12%, transparent); } /* the dark text at 12%, or the card's deep shade when it's lit */
   @media (prefers-reduced-motion: no-preference) {
     /* the script sets --slide from 1 (card entering at the bottom of the screen) to 0 (card reaching the 45% line) */
     /* 280px of travel, and a short trailing ease so the card glides after the scroll rather than locking to it */
@@ -283,21 +282,18 @@
   /* Form fields: see-through with white strokes and white text; a missed required field still turns red */
   #contact .field input, #contact .field textarea, #contact .field select { background: transparent; border-color: rgb(255 255 255 / 0.12); color: #fff; } /* stroke: white at 12%, like the nav over the hero */
   #contact .field :user-invalid { border-color: #FF3434; }
-  /* Black overlay over the image (under the panel), to darken it */
-  #contact::after { content: ""; position: absolute; inset: 0; z-index: -1; background: rgb(41 46 55 / 0.8); } /* the framework's dark ink (#292e37) at 80% */
   /* Frosted panel so the image shows through behind the text and form; fields stay solid */
   /* Inset like the News cards (the side inset), so the panel lines up with them and the image shows there.
      On phones the cards run gutter to gutter (their buttons move below), so the panel does too. */
   #contact .contact { margin: calc(180px - var(--gutter)) var(--inset-x); } /* 180px of image above and below (with the section's gutter), like the space under the News cards; the sides match the cards */
   @media (max-width: 760px) { #contact .contact { margin: 0; } }
   @media (min-width: 761px) { #contact .contact { padding: 60px; } } /* inner padding: 60px, down from the framework's 100px */
-  #contact .contact { background: rgb(255 255 255 / 0.08); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-radius: 8px; }
-  /* The image is a layer 30% taller than the section; the page script slides it up to 15% either way
-     as the section scrolls past (parallax). Reduced motion leaves it still. */
+  #contact .contact { background: rgb(0 0 0 / 0.1); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-radius: 8px; }
+  /* The image, still (no parallax), filling the section, under a light dark-ink overlay (#292e37 at 20%) */
+  #contact::after { content: ""; position: absolute; inset: 0; z-index: -1; background: rgb(41 46 55 / 0.2); }
   #contact::before {
-    content: ""; position: absolute; inset: -15% 0; z-index: -1;
-    background: url("work/colorFlow.png") 50% 0 / cover no-repeat;
-    transform: translateY(var(--parallax, 0px)); will-change: transform;
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background: url("work/Astral%20-%2014%201.jpg") 50% 50% / cover no-repeat;
   }
   /* Cards: no fill, dark text, a rule underneath; the hover fills blue with white text */
   #news .news-item { background: transparent; border-bottom: 1px solid var(--rule); } /* no fill, a faint rule under each card */
@@ -342,12 +338,12 @@
   /* Pipeline columns: Program, Target, Indication, the bar across Phase 1–3, then Next Milestone */
   #pipeline .pl-row { grid-template-columns: minmax(0, 0.8fr) minmax(0, 0.8fr) minmax(0, 0.7fr) minmax(0, 3.4fr) minmax(0, 1.1fr); } /* the phase columns get most of the width */
   #pipeline .pl-stages, #pipeline .pl-bar { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  /* Every program row, at rest, hovered or open: solid white, over the glow behind the band. The row of column
+  /* Every program row, at rest, hovered or open: white at 90%, over the glow behind the band. The row of column
      labels above them is white too. */
-  #pipeline .pl-item { background: #fff; }
+  #pipeline .pl-item { background: rgb(255 255 255 / 0.9); }
   /* The label row's fill reaches as wide as the rows (they run 20px past the columns on each side) and sits snug
      around the labels; the chart starts right at the 80px under the headline, like the other sections */
-  #pipeline .pl-head { background: #fff; margin: 0 -20px; padding: 16px 20px; }
+  #pipeline .pl-head { background: rgb(255 255 255 / 0.9); margin: 0 -20px; padding: 16px 20px; }
   #pipeline .pl-head { border-radius: 10px 10px 0 0; } /* the chart's outer corners rounded 10px: top on the label row, bottom on the last program */
   #pipeline .pl-item:last-child { border-radius: 0 0 10px 10px; }
   #pipeline .pl-slot { background: rgb(99 102 106 / 0.12); } /* the empty track of each progress bar: #63666a at 12% */
@@ -422,16 +418,15 @@
     #bio .bio-photo { grid-column: 2; grid-row: 3; align-self: start; justify-self: stretch; width: 100%; height: auto; aspect-ratio: 1 / 1; } /* a square the full width of the column, whatever the screen height */
     #bio .bio-close { position: absolute; top: 25px; right: var(--bio-x); } /* on the right edge of the content, over Next */
   }
-  /* Footer in black, edge to edge, from the bottom of Contact to the bottom of the page. The spacing stays as it was
-     (the gap above it and the page's bottom padding are taken into the black), and the text turns white; the link stays blue */
+  /* Footer, light: no background of its own, dark text, blue links; its spacing stays as it was */
   #top > footer {
-    --ink: #ffffff; --muted: #9aa59f; color: var(--ink); background: #151a23;
+    color: var(--ink); background: transparent; /* light: no fill, dark text on the page; the links stay blue */
     margin: -4.5rem calc(-1 * var(--gutter)) calc(-1 * var(--gutter));
     padding: calc(4.5rem + 2.5rem) var(--gutter) var(--gutter);
   }
-  /* Footer links on the right, in the nav's type and the link blue, 2rem apart (wrapping on narrow screens) */
-  footer .footer-links { display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; }
-  footer .footer-links a { color: var(--link); text-decoration: none; font: 400 1rem/normal var(--font); letter-spacing: 0.01em; transition: opacity 0.2s ease; }
+  /* Footer links on the right, in the small label style (12.5px caps, like the copyright) and the link blue, 2rem apart (wrapping on narrow screens) */
+  footer .footer-links { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 2rem; }
+  footer .footer-links a { color: var(--link); text-decoration: none; font: 400 0.78125rem/1.3 var(--font); letter-spacing: 0.06em; text-transform: uppercase; transition: opacity 0.2s ease; }
   footer .footer-links a:hover { opacity: 0.75; }
   /* Team cards: the panel that slides in on hover (or keyboard focus) is the link blue instead of the dark ink */
   /* The rule under the tabs carries on to the right edge of the photo grid (above phone width, where the tabs sit in a row) */
@@ -493,7 +488,8 @@
         <h2 id="about-title" class="section-label" data-reveal-01="lines" data-scroll>About</h2>
       </div>
       <div class="about-main">
-        <p class="h3" data-reveal-01="lines" data-scroll data-delay="0.1">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam. Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <p class="h2" data-reveal-01="lines" data-scroll data-delay="0.1">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</p>
+        <p class="about-body" data-reveal-01="lines" data-scroll data-delay="0.45">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
         <div class="accordion">
           <div class="detail-body about-text" id="about-more" hidden>
             <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.</p>
@@ -668,7 +664,7 @@
   // Pinned bar: frosted once the page scrolls, dark text once it's past the hero
   const pinbar = document.getElementById('pinbar');
   const hero = document.getElementById('hero');
-  const darkBands = ['factoids', 'contact'].map(id => document.getElementById(id)); // the hero is handled separately below: white logo and links over it too
+  const darkBands = ['contact'].map(id => document.getElementById(id)); // the hero is handled separately below: white logo and links over it too
   const navLinks = [...pinbar.querySelectorAll('nav a[href^="#"]')].map(a => ({ a, section: document.querySelector(a.getAttribute('href')) })).filter(l => l.section);
   function updatePinbar() {
     const h = pinbar.offsetHeight;
@@ -711,22 +707,6 @@
   }, { passive: true });
   updatePinbar();
   document.querySelector('.wrap').addEventListener('animationend', updatePinbar); // re-check once the entrance lands
-
-  // Contact background parallax: the image layer drifts against the scroll, from +15% of the section's height
-  // as it enters the bottom of the screen to -15% as it leaves the top
-  const parallaxSection = document.getElementById('contact');
-  let parallaxQueued = false;
-  function updateParallax() {
-    parallaxQueued = false;
-    if (!matchMedia('(prefers-reduced-motion: no-preference)').matches) { parallaxSection.style.removeProperty('--parallax'); return; }
-    const r = parallaxSection.getBoundingClientRect();
-    if (r.bottom < 0 || r.top > innerHeight) return; // off screen
-    const progress = (innerHeight - r.top) / (innerHeight + r.height); // 0 entering, 1 leaving
-    parallaxSection.style.setProperty('--parallax', ((0.5 - progress) * 0.3 * r.height).toFixed(1) + 'px');
-  }
-  addEventListener('scroll', () => { if (!parallaxQueued) { parallaxQueued = true; requestAnimationFrame(updateParallax); } }, { passive: true });
-  addEventListener('resize', updateParallax);
-  updateParallax();
 
   // Three stages; each program's progress is counted in slots (fractions fill part of a slot)
   const stages = [['Phase 1', 'PH1'], ['Phase 2', 'PH2'], ['Phase 3', 'PH3']];
@@ -1430,14 +1410,14 @@
     }).observe(document.body);
   })();
 
-  // Section dividers (Science → Pipeline, Pipeline → Team): a quick pixel wave in a 180px strip under the section (80px clear of the
+  // Section dividers (Factoids → Focus, Focus → Pipeline, Pipeline → Team): a quick pixel wave in a 180px strip under the section (80px clear of the
   // next label), in white against the sections' #ecf2f5. Flat, wide pixels (10 across, each 15% as tall as it is wide) fill in from the
   // bottom up as you scroll down, then clear the same way, so they pass through without covering either section's content.
   function pipelinePixels() {
-    ['science', 'pipeline-section'].forEach(id => { const el = document.getElementById(id); if (el) pixelDivider(el); });
+    ['factoids', 'science', 'pipeline-section'].forEach(id => { const el = document.getElementById(id); if (el) pixelDivider(el); });
   }
   function pixelDivider(pipeline) {
-    const columns = 10, aspect = 0.15, color = '#ffffff', spread = 3; // white, so the pixels stand out against the #ecf2f5 page
+    const columns = 10, aspect = 0.15, color = 'rgb(255 255 255 / 0.9)', spread = 3; // white at 90%, like the Pipeline chart, against the #ecf2f5 page
     const gap = 180; // the strip's height; Team sits a further 80px below it
     pipeline.style.position = 'relative';
     const layer = document.createElement('div');
