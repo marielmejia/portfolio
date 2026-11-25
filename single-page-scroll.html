@@ -1402,10 +1402,12 @@
       if (!nextSection) return;
 
       if (mode === "pin") {
-        ScrollTrigger.create({ trigger: nextSection, start: "top bottom", end: "top top", pin: section, pinSpacing: false });
+        // clamp(): on phones the next section's top can already sit above the bottom of the (toolbar-shortened) screen when
+        // the page loads, which would start the pin before the top of the page and fix the section that much too low
+        ScrollTrigger.create({ trigger: nextSection, start: "clamp(top bottom)", end: "top top", pin: section, pinSpacing: false });
         if (configuredMode === "parallax" && opacity !== null) {
           const overlay = getOverlayElement(section, getOverlayColor(section, config.overlayColor));
-          gsap.timeline({ scrollTrigger: { trigger: nextSection, start: "top bottom", end: "top top", scrub: true } })
+          gsap.timeline({ scrollTrigger: { trigger: nextSection, start: "clamp(top bottom)", end: "top top", scrub: true } })
             .to(overlay, { opacity, ease: "none" }, 0);
           return;
         }
