@@ -7,6 +7,8 @@
 <style>
   /* Side inset shared by every section: fluid from 60px on a 768px tablet up to 200px at 1680px and wider */
   :root { --inset-x: clamp(60px, calc(15.35vw - 57.9px), 200px); }
+  /* Laptops (1025–1440px wide): half that inset */
+  @media (min-width: 1025px) and (max-width: 1440px) { :root { --inset-x: calc(clamp(60px, calc(15.35vw - 57.9px), 200px) / 2); } }
   /* 180px between the content sections (.wrap already spaces them 4.5rem) */
   .wrap > section + section { margin-top: calc(180px - 4.5rem); }
   #team, #pipeline-section { margin-top: calc(180px + 80px - 4.5rem); } /* 80px more above Team and Pipeline, between the pixel transition above each and its label */
@@ -86,6 +88,11 @@
   .pinbar.on-light { --nav-line: rgb(0 0 0 / 0.12); }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pinbar.on-light { --nav-line: var(--rule); } }
   :root[data-theme="dark"] .pinbar.on-light { --nav-line: var(--rule); }
+  /* The bar slides up out of view while you scroll down, and back down as soon as you scroll up (or tab into it) */
+  .pinbar.nav-hidden:not(:focus-within) { transform: translateY(-100%); }
+  @media (prefers-reduced-motion: no-preference) { /* the stylesheet's own fades, plus the slide */
+    .pinbar { transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1), background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, -webkit-backdrop-filter 0.3s ease, backdrop-filter 0.3s ease; }
+  }
   .pinbar.on-light:not(.scrolled) { background: transparent; } /* clear before you scroll */
   .pinbar.on-light.scrolled { background: rgb(236 242 245 / 0.75); } /* light bar is the page's #ecf2f5 at 75% once you scroll, so the 24px blur shows through (dark mode keeps its own tint) */
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pinbar.on-light.scrolled { background: color-mix(in srgb, var(--bg) 72%, transparent); } }
@@ -284,7 +291,7 @@
   #contact .contact { margin: calc(180px - var(--gutter)) var(--inset-x); } /* 180px of image above and below (with the section's gutter), like the space under the News cards; the sides match the cards */
   @media (max-width: 760px) { #contact .contact { margin: 0; } }
   @media (min-width: 761px) { #contact .contact { padding: 60px; } } /* inner padding: 60px, down from the framework's 100px */
-  #contact .contact { background: rgb(255 255 255 / 0.08); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+  #contact .contact { background: rgb(255 255 255 / 0.08); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border-radius: 8px; }
   /* The image is a layer 30% taller than the section; the page script slides it up to 15% either way
      as the section scrolls past (parallax). Reduced motion leaves it still. */
   #contact::before {
@@ -335,9 +342,14 @@
   /* Pipeline columns: Program, Target, Indication, the bar across Phase 1–3, then Next Milestone */
   #pipeline .pl-row { grid-template-columns: minmax(0, 0.8fr) minmax(0, 0.8fr) minmax(0, 0.7fr) minmax(0, 3.4fr) minmax(0, 1.1fr); } /* the phase columns get most of the width */
   #pipeline .pl-stages, #pipeline .pl-bar { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  /* Every program row, at rest, hovered or open: a solid fill in the light blue-gray page color (#ecf2f5), which
-     covers the glow behind the band */
-  #pipeline .pl-item { background: #ecf2f5; }
+  /* Every program row, at rest, hovered or open: solid white, over the glow behind the band. The row of column
+     labels above them is white too. */
+  #pipeline .pl-item { background: #fff; }
+  /* The label row's fill reaches as wide as the rows (they run 20px past the columns on each side) and sits snug
+     around the labels; the chart starts right at the 80px under the headline, like the other sections */
+  #pipeline .pl-head { background: #fff; margin: 0 -20px; padding: 16px 20px; }
+  #pipeline .pl-head { border-radius: 10px 10px 0 0; } /* the chart's outer corners rounded 10px: top on the label row, bottom on the last program */
+  #pipeline .pl-item:last-child { border-radius: 0 0 10px 10px; }
   #pipeline .pl-slot { background: rgb(99 102 106 / 0.12); } /* the empty track of each progress bar: #63666a at 12% */
   #pipeline .pl-slot::after { background: var(--link); } /* the filled part of each progress bar, in the link blue */
   #pipeline .pl-target, #pipeline .pl-milestone { font-size: 1.125rem; line-height: 1.4; } /* like Indication */
@@ -430,9 +442,22 @@
   /* Contact: the LinkedIn icon under "Follow us on", 24px, in the link color, a touch lighter on hover */
   .contact-list .social-link { display: inline-flex; margin-top: 0.25rem; transition: opacity 0.2s ease; }
   .contact-list .social-link:hover { opacity: 0.75; }
-  #team .person { background: transparent; } /* no white card: the photo, name and title sit on the page; the blue panel still slides in on hover */
-  #team .person::before { background: var(--link); }
-  #team .person:is(:hover, :focus-visible) .person-role { color: rgb(255 255 255 / 0.85); } /* the gray title wouldn't read on the blue */
+  /* 8px rounded corners on every team photo (the grid and the bio overlay) and on the factoid boxes */
+  .person-photo, .bio-photo, .fs-card { border-radius: 8px; }
+  /* No card and no hover panel: the photo, name and title sit on the page, the name and title flush with the photo's
+     left edge. Keyboard focus shows as a blue ring around the photo. */
+  #team .person { background: transparent; padding: 0 0 1.75rem; }
+  #team .person::before { display: none; }
+  #team .person:is(:hover, :focus-visible) { color: var(--ink); }
+  #team .person .person-photo { margin: 0 0 1rem; }
+  #team .person:focus-visible .person-photo { outline: 2px solid var(--link); outline-offset: 3px; }
+  /* Rollover: a soft blue gradient rises from the bottom of the photo and fades to clear 40% of the way up */
+  #team .person-photo::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
+    background: linear-gradient(to top, rgb(117 177 219 / 0.75), rgb(117 177 219 / 0.3) 20%, rgb(117 177 219 / 0) 40%);
+  }
+  #team .person:is(:hover, :focus-visible) .person-photo::after { opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) { #team .person-photo::after { transition: opacity 0.5s cubic-bezier(0.2, 0.7, 0.2, 1); } }
 </style>
 
 <div class="topbar pinbar" id="pinbar">
@@ -673,6 +698,17 @@
   }
   addEventListener('scroll', updatePinbar, { passive: true });
   addEventListener('resize', updatePinbar);
+  // Hide on the way down, show on the way up; always shown within one bar's height of the top. Small moves
+  // (under 6px) are ignored so the bar doesn't flicker on a trackpad's jitter.
+  let lastY = scrollY;
+  addEventListener('scroll', () => {
+    const y = scrollY, dy = y - lastY;
+    if (y <= pinbar.offsetHeight) pinbar.classList.remove('nav-hidden');
+    else if (dy > 6) pinbar.classList.add('nav-hidden');
+    else if (dy < -6) pinbar.classList.remove('nav-hidden');
+    else return;
+    lastY = y;
+  }, { passive: true });
   updatePinbar();
   document.querySelector('.wrap').addEventListener('animationend', updatePinbar); // re-check once the entrance lands
 
@@ -734,7 +770,7 @@
     if (matchMedia('(max-width: 760px)').matches) { ['--pl-cols', '--pl-cols-x', '--pl-cols-in', '--pl-cols-in-x'].forEach(v => table.style.removeProperty(v)); return; }
     const head = table.querySelector('.pl-head');
     const cells = [...head.children].flatMap(c => c.classList.contains('pl-stages') ? [...c.children] : [c]).map(c => c.getBoundingClientRect());
-    const left = head.getBoundingClientRect().left;
+    const left = head.getBoundingClientRect().left + parseFloat(getComputedStyle(head).paddingLeft); // the header's content edge, which lines up with the rows' (its fill reaches 20px past it)
     const xs = cells.slice(1).map((c, i) => Math.round((cells[i].right + c.left) / 2 - left));
     const dots = 'repeating-linear-gradient(to bottom, var(--rule, rgb(0 0 0 / 0.12)) 0 2px, transparent 2px 5px)';
     const inner = table.querySelector('.pl-group .pl-row');
