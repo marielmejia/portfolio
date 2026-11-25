@@ -46,6 +46,7 @@
   /* The background video (Sequence 01), in black and white, under a color tint at 100% in screen mode,
      which lifts the darks toward the color. Both stay inside the hero. */
   #hero .hero-video { filter: grayscale(1); }
+  @media (max-width: 760px) { .hero-side > .h4 { display: none; } } /* phones: no subhead, just Scroll for more under the headline area */
   #hero::before { background: #75b1db; mix-blend-mode: screen; }
   /* a soft white wash from the top: white at 30% at the top edge, fading to nothing halfway down (over the tint, under the text) */
   #hero::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(to bottom, rgb(255 255 255 / 0.3), rgb(255 255 255 / 0) 50%); }
@@ -664,11 +665,23 @@
 </dialog>
 
 <script>
-  // Hero video holds still for visitors who prefer reduced motion
-  if (!matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+  // Hero video holds still for visitors who prefer reduced motion; otherwise it makes sure it's playing. Phones can
+  // skip autoplay (iOS Low Power Mode, data saver), so it asks again once loaded, when the tab comes back into view,
+  // and on the first touch or scroll, which counts as the visitor's go-ahead.
+  {
     const heroVideo = document.getElementById('hero-video');
-    heroVideo.removeAttribute('autoplay');
-    heroVideo.pause();
+    if (!matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+      heroVideo.removeAttribute('autoplay');
+      heroVideo.pause();
+    } else {
+      heroVideo.muted = true; heroVideo.defaultMuted = true; // set as properties too: some phones only honor these for autoplay
+      const play = () => { if (heroVideo.paused) heroVideo.play().catch(() => {}); };
+      play();
+      heroVideo.addEventListener('loadeddata', play);
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) play(); });
+      const firstGesture = () => { play(); ['touchstart', 'pointerdown', 'scroll', 'keydown'].forEach(t => removeEventListener(t, firstGesture)); };
+      ['touchstart', 'pointerdown', 'scroll', 'keydown'].forEach(t => addEventListener(t, firstGesture, { passive: true }));
+    }
   }
 
   // Pinned bar: frosted once the page scrolls, dark text once it's past the hero

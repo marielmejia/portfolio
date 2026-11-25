@@ -462,7 +462,7 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
 .menu-links { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
 .menu-links a {
   display: flex; justify-content: space-between; align-items: center; padding: 1.1rem 0; border-bottom: 1px solid var(--rule);
-  color: var(--ink); font: 300 2.125rem/1.2 var(--font); letter-spacing: -0.01em; /* h3 style (32px on phones, below) */
+  color: var(--ink); font: 200 1.75rem/1.3 var(--font); letter-spacing: -0.01em; /* h4 style (26px on phones, below) */
 }
 .menu-links a:hover, .menu-links a:focus-visible { color: var(--link); }
 .menu-links .ar { width: 0.45em; height: 0.45em; stroke-width: 3; color: var(--link); }
@@ -581,8 +581,8 @@ html:has(.bio[open]) { overflow: hidden; } /* the page stays put behind the over
   .person { padding: 12px 12px 1.25rem; }
   .bio-inner { padding: var(--gutter) var(--gutter) 2rem; }
   .news-item { padding: 1.75rem 20px; }
-  h3, .h3, .h3-bold, .accordion summary, .menu-links a { font-size: 2rem; } /* H3 and H3 bold */
-  h4, .h4, .h4-bold { font-size: 1.625rem; }
+  h3, .h3, .h3-bold, .accordion summary { font-size: 2rem; } /* H3 and H3 bold */
+  h4, .h4, .h4-bold, .menu-links a { font-size: 1.625rem; }
   .split-body { padding: 40px 20px; }
   .hero-body { grid-template-columns: minmax(0, 1fr); padding: 0 10% 10%; }
   .pinbar { padding-inline: calc(10% + 0.8 * var(--gutter)); }
