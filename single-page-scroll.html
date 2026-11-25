@@ -51,6 +51,16 @@
      screen; the hero already pads one gutter, so the copy adds the rest) */
   @media (max-width: 760px) { .hero-body { padding-inline: calc(5vw - 0.1 * var(--gutter)); } } /* phones: no subhead, just Scroll for more under the headline area */
   #hero::before { background: #75b1db; mix-blend-mode: screen; }
+  /* iPhones and iPads (Safari on iOS): a blend layer over a video can make Safari draw the video black, leaving only the
+     flat tint. There the tint sits under the video instead, with no blending, and the black-and-white video lies over it
+     at half strength, which keeps much the same look */
+  @supports (-webkit-touch-callout: none) {
+    #hero::before { mix-blend-mode: normal; z-index: -3; }
+    #hero .hero-video { opacity: 0.4; }
+  }
+  /* Phones and small tablets pin the hero while About slides over it. The pin measures the hero without its edge-to-edge
+     margins and fixes it 40px too narrow, leaving a white strip down the right; keep it the full screen width */
+  @media (max-width: 768px) { #hero { width: 100vw !important; max-width: 100vw !important; } }
   /* a soft white wash from the top: white at 30% at the top edge, fading to nothing halfway down (over the tint, under the text) */
   #hero::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(to bottom, rgb(255 255 255 / 0.3), rgb(255 255 255 / 0) 50%); }
   /* The tint loops through light blue, yellow and light purple: each holds for 3 seconds, then fades softly into
@@ -688,6 +698,9 @@
       const onGesture = () => { play(); };
       gestures.forEach(t => addEventListener(t, onGesture, { passive: true }));
       heroVideo.addEventListener('playing', () => gestures.forEach(t => removeEventListener(t, onGesture)), { once: true });
+      // if the phone pauses it later (the hero being moved into its scroll pin, the page restored from memory), start it again
+      heroVideo.addEventListener('pause', () => { if (!document.hidden) setTimeout(play, 100); });
+      addEventListener('pageshow', play);
     }
   }
 
