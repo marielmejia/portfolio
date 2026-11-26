@@ -117,7 +117,10 @@
   #hero { color: var(--ink); } /* dark type on the light tint */
   /* Light version: the hero type in white (headline, subhead and Scroll for more); "ingenuity" keeps its color cycle */
   #hero, #hero h1 .hl-in, #hero .hero-side p, #hero .hero-more { color: #fff; }
-  #hero h1 strong { font-weight: 400; } /* the bold word: the site's bold weight, as in H2 bold and H3 bold */
+  #hero h1 strong { font-weight: 700; } /* the bold word, in bold (700) */
+  /* Above phones the whole headline sits on one line: no wrapping, and the H1 size shrinks with the screen so it always
+     fits across. Phones keep the full H1 size and let it wrap */
+  @media (min-width: 761px) { #hero h1 { max-width: none; white-space: nowrap; font-size: min(clamp(3.3125rem, calc(11vw + 0.3125rem), 6.5625rem), 5.8vw); } }
   /* the bar's strokes (bottom rule, dividers, hover line) over the hero and light sections: black at 10%
      (dark mode keeps its own rule color) */
   .pinbar.on-light { --nav-line: rgb(0 0 0 / 0.12); }
@@ -714,6 +717,24 @@
 </dialog>
 
 <script>
+  // Hero headline, 1440px and up: sized so the one line runs exactly the width of the content area, edge to edge.
+  // It measures the line at its current size (offsetWidth ignores the load-in slide) and scales the size to match.
+  (() => {
+    const h1 = document.querySelector('#hero h1'), wide = matchMedia('(min-width: 1440px)');
+    const fit = () => {
+      h1.style.fontSize = '';
+      if (!wide.matches) return;
+      const room = h1.clientWidth;                     // the content area's width (the headline's own box)
+      h1.style.width = 'max-content';
+      const text = h1.offsetWidth, size = parseFloat(getComputedStyle(h1).fontSize);
+      h1.style.width = '';
+      if (text) h1.style.fontSize = (size * room / text).toFixed(2) + 'px';
+    };
+    fit();
+    if (document.fonts) document.fonts.ready.then(fit);
+    addEventListener('resize', fit);
+  })();
+
   // Hero video always plays, even for visitors who prefer reduced motion (it's slow, abstract movement; the page's other
   // animations still stay off for them). Phones can skip autoplay (iOS Low Power Mode, data saver), so it asks again
   // once loaded, when the tab comes back into view, and on the first tap or click, which counts as the visitor's go-ahead.
