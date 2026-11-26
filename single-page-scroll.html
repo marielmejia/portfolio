@@ -47,9 +47,8 @@
      which lifts the darks toward the color. Both stay inside the hero. */
   #hero .hero-video { filter: grayscale(1); }
   /* The antibody line drawing on top of the video and its tint (under the copy), the whole drawing centered in the hero */
-  #hero .hero-antibody { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
-  #hero .hero-antibody { mix-blend-mode: overlay; opacity: 1; transform: scaleX(-1); } /* blended in overlay mode at 100%, flipped left to right */
-  #hero .hero-antibody { top: 100px; bottom: auto; object-position: 50% 0; } /* the drawing starts 100px from the top of the hero, at the same size (its bottom runs off the hero) */
+  #hero .hero-antibody { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; object-fit: cover; pointer-events: none; } /* fills the hero edge to edge (cropped to fit, like the video) */
+  #hero .hero-antibody { mix-blend-mode: overlay; opacity: 0.5; } /* blended in overlay mode at 50% */
   /* A soft radial light circling the drawing: the lines show fully inside a large round glow that travels around
      the sketch on a 14-second loop, and fade to 30% outside it. Reduced motion keeps the glow still in the middle */
   @property --ab-x { syntax: "<percentage>"; inherits: false; initial-value: 50%; }
@@ -74,19 +73,19 @@
   /* Phones: the headline and Scroll for more start on the logo's left edge (the logo sits 5% + 0.9 gutter in from the
      screen; the hero already pads one gutter, so the copy adds the rest) */
   @media (max-width: 760px) { .hero-body { padding-inline: calc(5vw - 0.1 * var(--gutter)); } } /* phones: no subhead, just Scroll for more under the headline area */
-  #hero::before { background: #75b1db; mix-blend-mode: screen; }
+  #hero::before { background: #4496ce; mix-blend-mode: screen; } /* the tints are each 12 points darker (same hue and saturation) so the white type reads better */
+  /* a solid black wash at 8% over the whole video and tint (under the text) */
+  #hero::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: rgb(0 0 0 / 0.08); }
   /* Phones and small tablets pin the hero while About slides over it. The pin measures the hero without its edge-to-edge
      margins and fixes it 40px too narrow, leaving a white strip down the right; keep it the full screen width */
   @media (max-width: 768px) { #hero { width: 100vw !important; max-width: 100vw !important; } }
-  /* a solid black wash at 12% over the whole video and tint (under the text) */
-  #hero::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: rgb(0 0 0 / 0.12); }
   /* The tint loops through light blue, yellow and light purple: each holds for 3 seconds, then fades softly into
      the next over 3 (18 seconds round). Visitors who prefer reduced motion keep the light blue. */
   @keyframes hero-tint {
-    0%, 16.667%      { background-color: #75b1db; } /* light blue */
-    33.333%, 50%     { background-color: #fdcf5a; } /* yellow */
-    66.667%, 83.333% { background-color: #b9a2f5; } /* light purple */
-    100%      { background-color: #75b1db; }
+    0%, 16.667%      { background-color: #4496ce; } /* blue (was #75b1db) */
+    33.333%, 50%     { background-color: #fcbd1e; } /* yellow (was #fdcf5a) */
+    66.667%, 83.333% { background-color: #8f6bef; } /* purple (was #b9a2f5) */
+    100%      { background-color: #4496ce; }
   }
   /* "ingenuity" in the headline runs the same loop in step with the tint, in deeper shades of the three colors so
      it stands out from the tinted background */
@@ -118,9 +117,12 @@
   /* Light version: the hero type in white (headline, subhead and Scroll for more); "ingenuity" keeps its color cycle */
   #hero, #hero h1 .hl-in, #hero .hero-side p, #hero .hero-more { color: #fff; }
   #hero h1 strong { font-weight: 700; } /* the bold word, in bold (700) */
-  /* Above phones the whole headline sits on one line: no wrapping, and the H1 size shrinks with the screen so it always
-     fits across. Phones keep the full H1 size and let it wrap */
-  @media (min-width: 761px) { #hero h1 { max-width: none; white-space: nowrap; font-size: min(clamp(3.3125rem, calc(11vw + 0.3125rem), 6.5625rem), 5.8vw); } }
+  /* "ingenuity" in color dodge, so its color brightens the video behind it. Set on its wrapper, the span that slides
+     up on load, since that span is its own layer and would otherwise keep the blend from reaching the video */
+  #hero h1 .hl-up { mix-blend-mode: color-dodge; }
+  /* 1024px and up the whole headline sits on one line (the script below sizes it to fill the content area). Below
+     that it keeps the full H1 size and wraps */
+  @media (min-width: 1024px) { #hero h1 { max-width: none; white-space: nowrap; font-size: min(clamp(3.3125rem, calc(11vw + 0.3125rem), 6.5625rem), 5.8vw); } }
   /* the bar's strokes (bottom rule, dividers, hover line) over the hero and light sections: black at 10%
      (dark mode keeps its own rule color) */
   .pinbar.on-light { --nav-line: rgb(0 0 0 / 0.12); }
@@ -534,7 +536,7 @@
 <div class="wrap page-in" id="top">
   <header class="hero" id="hero" data-st-01="parallax" data-st-opacity="0.5" data-st-overlay="#fff">
     <video class="hero-video" id="hero-video" src="work/Sequence%2001%20web.mp4" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
-    <img class="hero-antibody" src="work/antibody_outlines.svg" alt="" aria-hidden="true">
+    <img class="hero-antibody" src="work/antibodies_outlines_3.svg" alt="" aria-hidden="true">
     <div class="hero-body">
       <h1><span class="hl-in">A</span> <span class="hl-in">breath</span> <span class="hl-in">of</span> <span class="hl-in">fresh</span> <span class="hl-up"><strong>ingenuity</strong></span></h1>
       <div class="hero-side">
@@ -717,10 +719,10 @@
 </dialog>
 
 <script>
-  // Hero headline, 1440px and up: sized so the one line runs exactly the width of the content area, edge to edge.
+  // Hero headline, 1024px and up: sized so the one line runs exactly the width of the content area, edge to edge.
   // It measures the line at its current size (offsetWidth ignores the load-in slide) and scales the size to match.
   (() => {
-    const h1 = document.querySelector('#hero h1'), wide = matchMedia('(min-width: 1440px)');
+    const h1 = document.querySelector('#hero h1'), wide = matchMedia('(min-width: 1024px)');
     const fit = () => {
       h1.style.fontSize = '';
       if (!wide.matches) return;
