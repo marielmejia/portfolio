@@ -46,6 +46,30 @@
   /* The background video (Sequence 01), in black and white, under a color tint at 100% in screen mode,
      which lifts the darks toward the color. Both stay inside the hero. */
   #hero .hero-video { filter: grayscale(1); }
+  /* The antibody line drawing on top of the video and its tint (under the copy), the whole drawing centered in the hero */
+  #hero .hero-antibody { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+  #hero .hero-antibody { mix-blend-mode: overlay; opacity: 1; transform: scaleX(-1); } /* blended in overlay mode at 100%, flipped left to right */
+  #hero .hero-antibody { top: 100px; bottom: auto; object-position: 50% 0; } /* the drawing starts 100px from the top of the hero, at the same size (its bottom runs off the hero) */
+  /* A soft radial light circling the drawing: the lines show fully inside a large round glow that travels around
+     the sketch on a 14-second loop, and fade to 30% outside it. Reduced motion keeps the glow still in the middle */
+  @property --ab-x { syntax: "<percentage>"; inherits: false; initial-value: 50%; }
+  @property --ab-y { syntax: "<percentage>"; inherits: false; initial-value: 50%; }
+  #hero .hero-antibody {
+    --ab-mask: radial-gradient(circle 45vmax at var(--ab-x) var(--ab-y), #000 0%, rgb(0 0 0 / 0.65) 35%, rgb(0 0 0 / 0.3) 100%);
+    -webkit-mask-image: var(--ab-mask); mask-image: var(--ab-mask);
+  }
+  @keyframes ab-orbit {
+    0% { --ab-x: 50.0%; --ab-y: 22.0%; }
+    12.5% { --ab-x: 69.8%; --ab-y: 30.2%; }
+    25% { --ab-x: 78.0%; --ab-y: 50.0%; }
+    37.5% { --ab-x: 69.8%; --ab-y: 69.8%; }
+    50% { --ab-x: 50.0%; --ab-y: 78.0%; }
+    62.5% { --ab-x: 30.2%; --ab-y: 69.8%; }
+    75% { --ab-x: 22.0%; --ab-y: 50.0%; }
+    87.5% { --ab-x: 30.2%; --ab-y: 30.2%; }
+    100% { --ab-x: 50.0%; --ab-y: 22.0%; }
+  }
+  @media (prefers-reduced-motion: no-preference) { #hero .hero-antibody { animation: ab-orbit 14s linear infinite; } }
   @media (max-width: 760px) { .hero-side > .h4 { display: none; } }
   /* Phones: the headline and Scroll for more start on the logo's left edge (the logo sits 5% + 0.9 gutter in from the
      screen; the hero already pads one gutter, so the copy adds the rest) */
@@ -54,8 +78,8 @@
   /* Phones and small tablets pin the hero while About slides over it. The pin measures the hero without its edge-to-edge
      margins and fixes it 40px too narrow, leaving a white strip down the right; keep it the full screen width */
   @media (max-width: 768px) { #hero { width: 100vw !important; max-width: 100vw !important; } }
-  /* a soft white wash from the top: white at 30% at the top edge, fading to nothing halfway down (over the tint, under the text) */
-  #hero::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(to bottom, rgb(255 255 255 / 0.3), rgb(255 255 255 / 0) 50%); }
+  /* a solid black wash at 12% over the whole video and tint (under the text) */
+  #hero::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: rgb(0 0 0 / 0.12); }
   /* The tint loops through light blue, yellow and light purple: each holds for 3 seconds, then fades softly into
      the next over 3 (18 seconds round). Visitors who prefer reduced motion keep the light blue. */
   @keyframes hero-tint {
@@ -91,6 +115,8 @@
     #hero h1 strong { animation: hero-word 18s ease-in-out infinite; }
   }
   #hero { color: var(--ink); } /* dark type on the light tint */
+  /* Light version: the hero type in white (headline, subhead and Scroll for more); "ingenuity" keeps its color cycle */
+  #hero, #hero h1 .hl-in, #hero .hero-side p, #hero .hero-more { color: #fff; }
   #hero h1 strong { font-weight: 400; } /* the bold word: the site's bold weight, as in H2 bold and H3 bold */
   /* the bar's strokes (bottom rule, dividers, hover line) over the hero and light sections: black at 10%
      (dark mode keeps its own rule color) */
@@ -223,7 +249,7 @@
   /* Light nav: the full-color logo (blue mark, slate wordmark), as in Airfield_Bio_Logo.svg. Over dark bands, and in dark mode, it stays one color with the text. */
   .pinbar.on-light .logo-mark { fill: #75b1db; }
   .pinbar.on-light .logo-word { fill: #474c55; }
-  .pinbar.over-hero { color: #3d424b; --nav-line: rgb(0 0 0 / 0.12); } /* very top of the hero: logo and links all in #3d424b, like the hero type */
+  .pinbar.over-hero { color: #fff; --nav-line: rgb(255 255 255 / 0.2); } /* very top of the hero: logo and links all in white, like the hero type */
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pinbar.on-light :is(.logo-mark, .logo-word) { fill: currentColor; } }
   :root[data-theme="dark"] .pinbar.on-light :is(.logo-mark, .logo-word) { fill: currentColor; }
   /* The bar grows to hold the logo: 30px above it, 58px logo, 30px below (118px); the links share its center. */
@@ -402,6 +428,7 @@
   #pipeline .pl-group .pl-row + .pl-row { position: relative; }
   #pipeline .pl-group .pl-row + .pl-row::before { content: ""; position: absolute; top: 0; left: calc(-0.5 * var(--gutter)); right: -20px; border-top: 1px solid var(--rule); }
   #pipeline .pl-panel { padding-top: 1.5rem; } /* room between the last row and the description */
+  #pipeline .pl-panel { border-top: 1px solid var(--rule); } /* a light gray stroke across the top of the open description, above the paragraph */
   @media (max-width: 760px) {
     #pipeline .pl-group { grid-template-columns: minmax(0, 1fr); row-gap: 0.5rem; padding-top: 1.85rem; }
     #pipeline .pl-group-rows { grid-column: auto; }
@@ -504,6 +531,7 @@
 <div class="wrap page-in" id="top">
   <header class="hero" id="hero" data-st-01="parallax" data-st-opacity="0.5" data-st-overlay="#fff">
     <video class="hero-video" id="hero-video" src="work/Sequence%2001%20web.mp4" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
+    <img class="hero-antibody" src="work/antibody_outlines.svg" alt="" aria-hidden="true">
     <div class="hero-body">
       <h1><span class="hl-in">A</span> <span class="hl-in">breath</span> <span class="hl-in">of</span> <span class="hl-in">fresh</span> <span class="hl-up"><strong>ingenuity</strong></span></h1>
       <div class="hero-side">
@@ -761,7 +789,7 @@
   // Each program and its target span all of its indication rows (merged cells); its description opens below them
   const programs = [
     {
-      name: 'AIR-101', target: 'TSLP/IL-33',
+      name: 'AFB-725', target: 'TSLP/IL-33',
       text: 'Placeholder program description. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
       rows: [
         { indication: 'COPD', progress: 1, milestone: 'Phase 1 Readout', date: 'Q1 2027' },
