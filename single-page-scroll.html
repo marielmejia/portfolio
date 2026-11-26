@@ -778,10 +778,10 @@
       const r = el.getBoundingClientRect(), dy = shift(el) + entrance;
       return r.top - dy < h && r.bottom - dy > h;
     });
-    // at the very top of the hero the bar is clear with the logo and links all in one dark gray; once you scroll
-    // (through the hero and the light sections) it's the solid white bar with the full-color logo
+    // while the bar is over the hero it stays in its white version (logo and links in white); once About reaches the
+    // bar it switches to the light bar with the full-color logo
     const about = document.getElementById('about');
-    const atHeroTop = scrollY <= 0 && about.getBoundingClientRect().top - shift(about) - entrance > h;
+    const atHeroTop = about.getBoundingClientRect().top - shift(about) - entrance > h;
     pinbar.classList.toggle('on-light', !overDark && !atHeroTop);
     pinbar.classList.toggle('over-hero', atHeroTop);
     // active link: the section crossing a line 35% down the screen (the last one once the page bottoms out)
@@ -793,12 +793,13 @@
   }
   addEventListener('scroll', updatePinbar, { passive: true });
   addEventListener('resize', updatePinbar);
-  // Hide on the way down, show on the way up; always shown within one bar's height of the top. Small moves
+  // Hide on the way down, show on the way up; always shown at the very top. It hides on the first scroll down,
+  // even inside the hero (it used to wait until you'd scrolled one bar's height, 118px). Small moves
   // (under 6px) are ignored so the bar doesn't flicker on a trackpad's jitter.
   let lastY = scrollY;
   addEventListener('scroll', () => {
     const y = scrollY, dy = y - lastY;
-    if (y <= pinbar.offsetHeight) pinbar.classList.remove('nav-hidden');
+    if (y <= 0) pinbar.classList.remove('nav-hidden');
     else if (dy > 6) pinbar.classList.add('nav-hidden');
     else if (dy < -6) pinbar.classList.remove('nav-hidden');
     else return;
