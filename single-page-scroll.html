@@ -48,7 +48,7 @@
   #hero .hero-video { filter: grayscale(1); }
   /* The antibody line drawing on top of the video and its tint (under the copy), the whole drawing centered in the hero */
   #hero .hero-antibody { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; object-fit: cover; pointer-events: none; } /* fills the hero edge to edge (cropped to fit, like the video) */
-  #hero .hero-antibody { mix-blend-mode: overlay; opacity: 0.5; } /* blended in overlay mode at 50% */
+  #hero .hero-antibody { mix-blend-mode: overlay; opacity: 0.35; } /* blended in overlay mode at 35% */
   /* A soft radial light circling the drawing: the lines show fully inside a large round glow that travels around
      the sketch on a 14-second loop, and fade to 30% outside it. Reduced motion keeps the glow still in the middle */
   @property --ab-x { syntax: "<percentage>"; inherits: false; initial-value: 50%; }
