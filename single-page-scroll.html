@@ -234,10 +234,18 @@
   .sci-glow::before { content: ""; position: absolute; top: 50%; left: 50%; width: 1200px; max-width: 160vw; aspect-ratio: 1;
     transform: translate(-50%, -50%);
     background: var(--glow-blob); }
+  /* Right column: the TSLP x IL-33 illustration, with no box, on top of the glow, which keeps sliding behind it */
+  .sci-glow, .sci-figure { grid-column: 2; grid-row: 1; }
+  .sci-figure { margin: 0; align-self: center; } /* no box: the diagram sits right on the glow */
+  .sci-figure img { display: block; width: 100%; height: auto; }
+  /* The diagram tops out at its drawn size, 423 × 535px, and sits at the right of the column, on the same right edge
+     as the Factoid cards */
+  .sci-figure { justify-self: end; width: 100%; max-width: 423px; }
   @media (max-width: 760px) {
     #science > .sci-cols { padding-inline: 20px; }
     .sci-cols { grid-template-columns: minmax(0, 1fr); gap: 3rem; }
     .sci-glow { width: min(600px, 100%); }
+    .sci-glow, .sci-figure { grid-column: 1; grid-row: 2; }
   }
   @media (min-width: 761px) {
     /* The nav (or the Menu bar on tablets) and the hero copy line up on the same inset: one gutter plus the side inset from the screen edges */
@@ -603,6 +611,9 @@
         </div>
       </div>
       <div class="sci-glow" aria-hidden="true"></div>
+      <figure class="sci-figure">
+        <img src="work/TSLPxIL-33.svg" width="423" height="535" alt="Diagram of the TSLP and IL-33 inflammatory pathways">
+      </figure>
     </div>
   </section>
 
